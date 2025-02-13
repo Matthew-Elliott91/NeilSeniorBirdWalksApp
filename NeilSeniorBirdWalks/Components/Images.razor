@@ -1,0 +1,29 @@
+﻿@inject BlobStorageService BlobStorageService
+
+@if (imageUris is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div class="row">
+		@foreach (var url in imageUris)
+		{
+			<div class="col-sm-6 col-md-2">
+				<img src="@url" alt="Bird Image" class="img-fluid" />
+			</div>
+		}
+	</div>
+}
+
+@code {
+
+	// Parameter tto control the number of images displayed
+	[Parameter] public int ImageCount { get; set; }		
+	private List<string> imageUris = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		imageUris = await BlobStorageService.ListBlobUrisAsync(ImageCount);
+	}
+}
