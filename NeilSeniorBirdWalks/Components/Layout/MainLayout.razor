@@ -1,21 +1,47 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.CodeAnalysis.CSharp.Syntax
+@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider  @bind-IsDarkMode="_useDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-      
+<MudLayout>
+	<MudAppBar>
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Dark" Edge="Edge.Start" OnClick="DrawerToggle" />
+		Neil Senior Nature Walks
+		<MudIconButton Icon="@(_useDarkMode ? Icons.Material.Filled.Brightness7 : Icons.Material.Filled.Brightness4)" Color="Color.Dark" Edge="Edge.End" OnClick="ToggleDarkMode" />
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+	</MudAppBar>
+	<MudDrawer @bind-Open="_drawerOpen">
+		<MyNavMenu/>
+	</MudDrawer>
+	<MudMainContent>
+		@Body
+	</MudMainContent>
+</MudLayout>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+@code {
+
+	// Drawer
+	private bool _drawerOpen = true;
+
+	private void DrawerToggle()
+	{
+		_drawerOpen = !_drawerOpen;
+	}
+
+	// Dark Mode
+	private bool _useDarkMode = false;
+
+	private void ToggleDarkMode()
+	{
+		_useDarkMode = !_useDarkMode;
+	}
+
+	
+
+	
+
+	
+}
