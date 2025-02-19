@@ -6,14 +6,20 @@
 }
 else
 {
-	<div class="row gx-3">
+	<MudGrid Class="mt-1">
 		@foreach (var url in imageUris)
 		{
-			<div class="col-sm-2 col-md-2 pb-3">
-				<MudImage src="@url" alt="Bird Image" Fluid="true" />
-			</div>
+
+			<MudItem xs="4" sm="4" md="3" lg="2">
+				<MudImage src="@url" alt="Bird Image" Fluid="true" Class="m-1" />
+			</MudItem>
+
 		}
-	</div>
+	</MudGrid>
+		
+
+		
+	
 }
 
 @code {
