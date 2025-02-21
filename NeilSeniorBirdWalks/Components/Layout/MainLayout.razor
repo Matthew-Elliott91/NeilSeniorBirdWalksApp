@@ -1,4 +1,5 @@
-﻿@using Microsoft.CodeAnalysis.CSharp.Syntax
+﻿@using Microsoft.AspNetCore.Server.HttpSys
+@using Microsoft.CodeAnalysis.CSharp.Syntax
 @using MudBlazor.Utilities
 @inherits LayoutComponentBase
 
@@ -8,18 +9,12 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-	<MudAppBar >
-		<MudGrid Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-			<MudItem >
-				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Tertiary" Edge="Edge.Start" OnClick="DrawerToggle" />
-			</MudItem>
-			<MudItem >
-				<MudImage Src="/Images/logo_white.png" Fluid="false" Alt="Neil Senior Logo" Height="50"/>
-			</MudItem>
-			<MudItem >
-				<MudIconButton Icon="@(_useDarkMode ? Icons.Material.Filled.Brightness7 : Icons.Material.Filled.Brightness4)" Color="Color.Tertiary" Edge="Edge.End" OnClick="ToggleDarkMode" />
-			</MudItem>
-		</MudGrid>
+	<MudAppBar  >
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Tertiary" Edge="Edge.Start" OnClick="DrawerToggle" />
+		<MudSpacer />
+		<MudImage Src="/Images/Logo.svg"  Alt="Neil Senior Logo" Fluid="true" />
+		<MudSpacer />
+		<MudIconButton Icon="@(_useDarkMode ? Icons.Material.Filled.Brightness7 : Icons.Material.Filled.Brightness4)" Color="Color.Tertiary" Edge="Edge.End" OnClick="ToggleDarkMode" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen">
 		<MyNavMenu/>
@@ -65,7 +60,12 @@
 				AppbarBackground = new MudColor("#424242ff"),
 			Primary = new MudColor("#1DACD6"),
 			Secondary = new MudColor("#48D1CC"),
+		}, LayoutProperties = new LayoutProperties()
+		{
+			AppbarHeight = "80px"
 		}
+
+
 	};
 
 	//Theme Manager

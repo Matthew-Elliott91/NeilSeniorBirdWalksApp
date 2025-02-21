@@ -76,6 +76,8 @@ h1:focus {
     height: 100%;
 }
 
+
+
 @media (max-width: 768px) {
     .header-title {
         font-size: 2rem;
