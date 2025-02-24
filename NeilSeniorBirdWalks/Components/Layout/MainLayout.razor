@@ -3,56 +3,57 @@
 @using MudBlazor.Utilities
 @inherits LayoutComponentBase
 
-<MudThemeProvider  @bind-IsDarkMode="_useDarkMode" Theme="NeilSeniorTheme" />
+<MudThemeProvider  Theme="_neilSeniorTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
 	<MudAppBar  >
-		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Tertiary" Edge="Edge.Start" OnClick="DrawerToggle" />
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Secondary"  Edge="Edge.Start" OnClick="DrawerToggle" />
 		<MudSpacer />
 		<MudImage Src="/Images/Logo.svg"  Alt="Neil Senior Logo" Fluid="true" />
 		<MudSpacer />
-		<MudIconButton Icon="@(_useDarkMode ? Icons.Material.Filled.Brightness7 : Icons.Material.Filled.Brightness4)" Color="Color.Tertiary" Edge="Edge.End" OnClick="ToggleDarkMode" />
+		
 	</MudAppBar>
-	<MudDrawer @bind-Open="_drawerOpen">
+	<MudDrawer  @bind-Open="_drawerOpen" >
 		<MyNavMenu/>
 	</MudDrawer>
 	<MudMainContent>
 		@Body
 	</MudMainContent>
-	<MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-	<MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+	
 </MudLayout>
 
 @code {
 
 	// Drawer
-	private bool _drawerOpen = true;
+	private bool _drawerOpen = false;
 
 	private void DrawerToggle()
 	{
 		_drawerOpen = !_drawerOpen;
 	}
 
-	// Dark Mode
-	private bool _useDarkMode = false;
-
-	private void ToggleDarkMode()
-	{
-		_useDarkMode = !_useDarkMode;
-	}
 
 	//Theme
-	MudTheme NeilSeniorTheme = new MudTheme()
+	MudTheme _neilSeniorTheme = new ()
 	{
 		PaletteLight = new PaletteLight()
 		{
-				AppbarBackground = new MudColor("#424242ff"),
-			Primary = new MudColor("#003D59"),
-			Secondary = new MudColor("#013243"),
-			Tertiary = new MudColor("#FFFFFF")
+			AppbarBackground = new MudColor("#3E5E3E"),
+			Primary = new MudColor("#4C7C4C"),
+			Secondary = new MudColor("#A67C52"),
+			Tertiary = new MudColor("#6A9FB5"),
+			Background = new MudColor("#F1EFE7"),
+			Surface = new MudColor("#DAD7CD"),
+			ActionDefault = new MudColor("#3E5E3E"),
+			Success = new MudColor("#6A994E"),
+			Warning = new MudColor(" #E9B44C"),
+			Error = new MudColor("#A63D40"),
+			Info = new MudColor("#5B8DB3"),
+			TextPrimary = new MudColor("#2C3E50"),
+			TextSecondary = new MudColor("#4C7C4C"),
 				
 		},
 		PaletteDark = new PaletteDark()
@@ -68,25 +69,25 @@
 
 	};
 
-	//Theme Manager
-	private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
-	public bool _themeManagerOpen = false;
+	// //Theme Manager
+	// private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+	// public bool _themeManagerOpen = false;
 
-	void OpenThemeManager(bool value)
-	{
-		_themeManagerOpen = value;
-	}
+	// void OpenThemeManager(bool value)
+	// {
+	// 	_themeManagerOpen = value;
+	// }
 
-	void UpdateTheme(ThemeManagerTheme value)
-	{
-		_themeManager = value;
-		StateHasChanged();
-	}
+	// void UpdateTheme(ThemeManagerTheme value)
+	// {
+	// 	_themeManager = value;
+	// 	StateHasChanged();
+	// }
 
-	protected override void OnInitialized()
-	{
-		StateHasChanged();
-	}
+	// protected override void OnInitialized()
+	// {
+	// 	StateHasChanged();
+	// }
 
 	
 
