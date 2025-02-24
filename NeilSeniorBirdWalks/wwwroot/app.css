@@ -53,18 +53,12 @@ h1:focus {
 /*Header*/
 
 .header-banner {
-    height: 900px;
+    height: 100vh;
     background-image: url('/Images/HeaderImg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    color: white;
-    text-align: center;
-    margin-top: 
+  
 }
 
 
@@ -78,12 +72,3 @@ h1:focus {
 
 
 
-@media (max-width: 768px) {
-    .header-title {
-        font-size: 2rem;
-    }
-
-    .header-banner {
-        height: 300px;
-    }
-}
