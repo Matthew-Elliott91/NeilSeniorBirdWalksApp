@@ -1,27 +1,33 @@
 ﻿<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner mb-2">
-	<MudGrid Class="header-content justify-center align-center">
-		<MudItem>
-			<MudPaper Style="background-color: rgba(0, 0, 0, 0.5);">
-				<MudText Typo="Typo.h4" Color="Color.Primary">Explore, Discover, Soar – Birdwatching Adventures with Neil Senior!</MudText>
-			</MudPaper>
-		</MudItem>
-		<MudItem>
-			<MudText Typo="Typo.h6">Discover amazing content and features</MudText>
-		</MudItem>
-		<MudItem>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3">View Tours</MudButton>
-		</MudItem>
-		<MudItem>
-			<MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3">About Me</MudButton>
-		</MudItem>
-		<MudItem>
-			<MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="mt-3">Calendar</MudButton>
-		</MudItem>
-
-	</MudGrid>
+	<MudPaper>
+		<MudGrid Class="header-content justify-center align-center">
+			<MudItem xs="12">
+				<MudText Typo="Typo.h4" Color="Color.Primary">@Title</MudText>
+			</MudItem>
+			<MudItem xs="12">
+				<MudText Typo="Typo.h6">@Subtitle</MudText>
+			</MudItem>
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3">View Tours</MudButton>
+			</MudItem>
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3">About Me</MudButton>
+			</MudItem>
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="mt-3">Calendar</MudButton>
+			</MudItem>
+		</MudGrid>
+	</MudPaper>
+	
 </MudContainer>
 
+@code {
+	[Parameter]
+	public string Title { get; set; } = "Explore, Discover, Soar – Birdwatching Adventures with Neil Senior!";
 
+	[Parameter]
+	public string Subtitle { get; set; } = "Discover amazing content and features";
+}
 
 
 

@@ -38,12 +38,12 @@ namespace NeilSeniorBirdWalks.Components.Layout
             PaletteDark = new PaletteDark()
             {
                 AppbarBackground = new MudColor("#424242ff"),
-                Primary = new MudColor("#1DACD6"),
+                Primary = new MudColor("#FFFFFF"),
                 Secondary = new MudColor("#48D1CC"),
             },
             LayoutProperties = new LayoutProperties()
             {
-                AppbarHeight = "80px"
+                AppbarHeight = "70px"
             }
 
 
