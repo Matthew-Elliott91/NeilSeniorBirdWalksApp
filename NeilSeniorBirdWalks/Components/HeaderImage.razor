@@ -1,4 +1,6 @@
-﻿<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner mb-2 d-flex px-0" Style="overflow: hidden;">
+﻿@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner mb-2 d-flex px-0" Style="overflow: hidden;">
 	<MudPaper Elevation="3" Class="header-content-box pa-4 desktop-offset" Style="max-height: 90%; width: 90%; margin: 5% auto;">
 		<MudGrid Class="header-content justify-center align-center text-center">
 			<MudItem xs="12">
@@ -8,13 +10,13 @@
 				<MudText Typo="Typo.h6" Class="mud-text-wrap">@Subtitle</MudText>
 			</MudItem>
 			<MudItem xs="12" sm="4" md="4">
-				<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-3">View Tours</MudButton>
+				<MudButton @onclick="ViewTours" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-3">View Tours</MudButton>
 			</MudItem>
 			<MudItem xs="12" sm="4" md="4">
-				<MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="mt-3">About Me</MudButton>
+				<MudButton @onclick="AboutMe" Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="mt-3">About Me</MudButton>
 			</MudItem>
 			<MudItem xs="12" sm="4" md="4">
-				<MudButton Variant="Variant.Filled" Color="Color.Tertiary" FullWidth="true" Class="mt-3">Calendar</MudButton>
+				<MudButton @onclick="Calendar" Variant="Variant.Filled" Color="Color.Tertiary" FullWidth="true" Class="mt-3">Calendar</MudButton>
 			</MudItem>
 		</MudGrid>
 	</MudPaper>
@@ -26,6 +28,21 @@
 
 	[Parameter]
 	public string Subtitle { get; set; } = "Discover amazing content and features";
+
+	private void ViewTours()
+	{
+		NavigationManager.NavigateTo("/tours");
+	}
+
+	private void AboutMe()
+	{
+		NavigationManager.NavigateTo("/about");
+	}
+
+	private void Calendar()
+	{
+		NavigationManager.NavigateTo("/calendar");
+	}
 }
 
 
