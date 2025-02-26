@@ -8,6 +8,7 @@ using NeilSeniorBirdWalks.Components.Account;
 using NeilSeniorBirdWalks.Data;
 using MudBlazor;
 using MudBlazor.Services;
+using NeilSeniorBirdWalks.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 var blobConnectionString = builder.Configuration["AzureBlobStorage:BlobConnectionString"];
 var containerName = builder.Configuration["AzureBlobStorage:ContainerName"];
 builder.Services.AddSingleton(new BlobStorageService(blobConnectionString, containerName));
+builder.Services.AddScoped<TourService>();
 
 //Mudblazor services
 builder.Services.AddMudServices();

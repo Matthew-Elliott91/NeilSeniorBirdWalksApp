@@ -1,0 +1,66 @@
+﻿@page "/tours/location/{location}"
+@page "/tours/location/{location}/{season}"
+
+<PageTitle>@LocationTitle @(Season != null ? $"- {Season} Tours" : "")</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+	<MudBreadcrumbs Items="@breadcrumbs"></MudBreadcrumbs>
+    
+	@if (Season == null)
+	{
+		<MudText Typo="Typo.h3" Class="mb-4">@LocationTitle Bird Watching</MudText>
+		<MudText Class="mb-4">Choose a season for @LocationTitle bird watching tours:</MudText>
+        
+		<MudGrid>
+			@foreach (var season in seasons)
+			{
+				<MudItem xs="12" sm="6" md="3">
+					<MudCard Elevation="3" Class="mb-4">
+						<MudCardMedia Image="@($"/images/{Location.ToLower()}-{season.ToLower()}.jpg")" Height="150" />
+						<MudCardContent>
+							<MudText Typo="Typo.h5">@season</MudText>
+						</MudCardContent>
+						<MudCardActions>
+							<MudButton Variant="Variant.Filled" Color="Color.Primary" 
+							           Href="@($"/tours/location/{Location}/{season.ToLower()}")">Select</MudButton>
+						</MudCardActions>
+					</MudCard>
+				</MudItem>
+			}
+		</MudGrid>
+	}
+	else
+	{
+		<MudText Typo="Typo.h3" Class="mb-4">@Season Tours in @LocationTitle</MudText>
+        
+		<TourDetails Location="@Location" Season="@Season" />
+	}
+</MudContainer>
+
+@code {
+	[Parameter] public string Location { get; set; }
+	[Parameter] public string Season { get; set; }
+
+	private string LocationTitle => Location switch
+	{
+		"northnorfolk" => "North Norfolk",
+		"westnorfolk" => "West Norfolk",
+		_ => Location
+	};
+
+	private string[] seasons = new[] { "Spring", "Summer", "Autumn", "Winter" };
+
+	private List<BreadcrumbItem> breadcrumbs => Season == null 
+		? new List<BreadcrumbItem>
+		{
+			new BreadcrumbItem("Tours", "/tours"),
+			new BreadcrumbItem(LocationTitle, null, true)
+		}
+		: new List<BreadcrumbItem>
+		{
+			new BreadcrumbItem("Tours", "/tours"),
+			new BreadcrumbItem(LocationTitle, $"/tours/location/{Location}"),
+			new BreadcrumbItem(Season, null, true)
+		};
+
+}

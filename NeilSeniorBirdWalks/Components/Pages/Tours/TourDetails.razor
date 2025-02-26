@@ -1,0 +1,42 @@
+﻿@using NeilSeniorBirdWalks.Services
+@inject TourService TourService
+
+<MudPaper Class="pa-4 mb-4">
+	@if (tourDetails != null)
+	{
+		<MudText Typo="Typo.h5" Class="mb-2">@tourDetails.Title</MudText>
+		<MudText>@tourDetails.Description</MudText>
+        
+		<MudDivider Class="my-4" />
+        
+		<MudText Typo="Typo.subtitle1">Birds You Might See:</MudText>
+		<MudList T="string">
+			@foreach (var bird in tourDetails.Birds)
+			{
+				<MudListItem T="string" Text="@bird" Icon="@Icons.Material.Filled.ChevronRight" />
+			}
+		</MudList>
+        
+		<MudButton Class="mt-4" Variant="Variant.Filled" Color="Color.Primary">Book This Tour</MudButton>
+	}
+	else
+	{
+		<MudProgressCircular Indeterminate="true" />
+	}
+</MudPaper>
+
+@code {
+	[Parameter]
+	public string Location { get; set; }
+    
+	[Parameter]
+	public string Season { get; set; }
+    
+	private TourDetail tourDetails;
+    
+	protected override async Task OnParametersSetAsync()
+	{
+		
+		tourDetails = await TourService.GetTourDetailsAsync(Location, Season);
+	}
+}
