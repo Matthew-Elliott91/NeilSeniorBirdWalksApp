@@ -61,14 +61,12 @@ h1:focus {
   
 }
 
-
-.header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+.header-content-box {
+    opacity: 0.5;
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
 }
+
 
 
 
