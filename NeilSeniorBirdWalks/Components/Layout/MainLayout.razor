@@ -22,7 +22,19 @@
 	<MudMainContent>
 		@Body
 	</MudMainContent>
-	
+	<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16 pb-8 px-8">
+		<MudDivider Class="mb-4" />
+		<MudPaper Elevation="0" Class="py-4">
+			<MudContainer MaxWidth="MaxWidth.Large" Class="d-flex flex-column flex-md-row justify-center justify-md-between align-center">
+				<MudText Typo="Typo.body2">&copy; @DateTime.Now.Year - Neil Senior Bird Walks</MudText>
+				<MudStack Row="true" Spacing="2" Class="mt-2 mt-md-0">
+					<MudIconButton Icon="@Icons.Custom.Brands.Facebook" Color="Color.Primary" Href="https://facebook.com" Target="_blank" />
+					<MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Primary" Href="https://x.com/NeilSeniorLtd" Target="_blank" />
+					
+				</MudStack>
+			</MudContainer>
+		</MudPaper>
+	</MudContainer>
 </MudLayout>
 
 @code {
