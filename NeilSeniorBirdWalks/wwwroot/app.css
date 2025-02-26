@@ -53,20 +53,50 @@ h1:focus {
 /*Header*/
 
 .header-banner {
-    height: 100vh;
+    min-height: 90vh; 
     background-image: url('/Images/HeaderImg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-  
+    width: 100%;
+    position: relative;
+    align-items: flex-start;
+   
 }
 
 .header-content-box {
-    opacity: 0.5;
+    opacity: 0.7; /
     backdrop-filter: blur(10px);
     border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+/* Add responsive adjustments */
+@media (max-width: 960px) {
+    .header-banner {
+        min-height: 70vh; /* Smaller height on medium screens */
+    }
+
+    .header-content-box {
+        width: 95% !important;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-banner {
+        min-height: 50vh;
+        align-items: center; 
+        padding-top: 0; 
+    }
+
+    .header-content-box {
+        width: 100% !important;
+        border-radius: 15px;
+    }
+}
 
 
 
