@@ -1,19 +1,53 @@
 ﻿@using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Models
 @inject TourService TourService
 
 <MudPaper Class="pa-4 mb-4">
-	@if (tourDetails != null)
+	@if (tour != null)
 	{
-		<MudText Typo="Typo.h5" Class="mb-2">@tourDetails.Title</MudText>
-		<MudText>@tourDetails.Description</MudText>
+		<MudText Typo="Typo.h5" Class="mb-2">@tour.Title</MudText>
+		<MudText>@tour.Description</MudText>
+		
+		@if (tour.Price.HasValue)
+		{
+			<MudChip T="int" Color="Color.Primary" Class="mt-2">£@tour.Price.Value.ToString("0.00")</MudChip>
+		}
+		
+		@if (tour.Duration.HasValue)
+		{
+			<MudChip T="decimal" Color="Color.Secondary" Class="mt-2">
+				@(tour.Duration.Value / 60)h @(tour.Duration.Value % 60)m
+			</MudChip>
+		}
         
 		<MudDivider Class="my-4" />
         
+		@if (!string.IsNullOrEmpty(tour.InfoHeadline))
+		{
+			<MudCard Class="my-4">
+				<MudCardHeader>
+					<MudText Typo="Typo.h6">@tour.InfoHeadline</MudText>
+				</MudCardHeader>
+				<MudCardMedia Image="@tour.InfoImageUrl" Height="200" />
+				<MudCardContent>
+					<MudText>@tour.InfoText</MudText>
+				</MudCardContent>
+			</MudCard>
+            
+			<MudDivider Class="my-4" />
+		}
+
 		<MudText Typo="Typo.subtitle1">Birds You Might See:</MudText>
 		<MudList T="string">
-			@foreach (var bird in tourDetails.Birds)
+			@foreach (var tourBird in tour.TourBirds)
 			{
-				<MudListItem T="string" Text="@bird" Icon="@Icons.Material.Filled.ChevronRight" />
+				<MudListItem Icon="@Icons.Material.Filled.ChevronRight">
+					<div class="d-flex align-center">
+						<span>@tourBird.Bird.CommonName</span>
+						<MudChip T="string" Size="Size.Small" Color="@GetLikelihoodColor(tourBird.Likelihood)" 
+							   Class="ml-2">@tourBird.Likelihood</MudChip>
+					</div>
+				</MudListItem>
 			}
 		</MudList>
         
@@ -32,11 +66,20 @@
 	[Parameter]
 	public string Season { get; set; }
     
-	private TourDetail tourDetails;
+	private Tour tour;
     
 	protected override async Task OnParametersSetAsync()
 	{
-		
-		tourDetails = await TourService.GetTourDetailsAsync(Location, Season);
+		tour = await TourService.GetTourDetailsAsync(Location, Season);
 	}
+	
+	private Color GetLikelihoodColor(string likelihood) => likelihood?.ToLower() switch
+	{
+		"common" => Color.Success,
+		"likely" => Color.Info,
+		"occasional" => Color.Warning,
+		"rare" => Color.Error,
+		_ => Color.Default
+	};
 }
+

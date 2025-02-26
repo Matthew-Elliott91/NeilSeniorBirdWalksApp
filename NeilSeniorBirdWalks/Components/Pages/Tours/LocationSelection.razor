@@ -1,39 +1,47 @@
-﻿@page "/tours/location"
+﻿@page "/tours"
+@page "/tours/location"
+@using Microsoft.EntityFrameworkCore
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Data
+@inject ApplicationDbContext DbContext
 
 <PageTitle>Tour Locations</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
 	<MudText Typo="Typo.h3" Class="mb-4">Choose a Tour Location</MudText>
     
-	<MudGrid>
-		<MudItem xs="12" sm="6">
-			<MudCard Elevation="3" Class="mb-4">
-				<MudCardMedia Image="/images/north-norfolk.jpg" Height="200" />
-				<MudCardContent>
-					<MudText Typo="Typo.h5">North Norfolk</MudText>
-					<MudText Typo="Typo.body2">Explore the diverse habitats and rich birdlife of North Norfolk.</MudText>
-				</MudCardContent>
-				<MudCardActions>
-					<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/tours/location/northnorfolk">View Tours</MudButton>
-				</MudCardActions>
-			</MudCard>
-		</MudItem>
-        
-		<MudItem xs="12" sm="6">
-			<MudCard Elevation="3" Class="mb-4">
-				<MudCardMedia Image="/images/west-norfolk.jpg" Height="200" />
-				<MudCardContent>
-					<MudText Typo="Typo.h5">West Norfolk</MudText>
-					<MudText Typo="Typo.body2">Discover the unique birdwatching opportunities in West Norfolk.</MudText>
-				</MudCardContent>
-				<MudCardActions>
-					<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/tours/location/westnorfolk">View Tours</MudButton>
-				</MudCardActions>
-			</MudCard>
-		</MudItem>
-	</MudGrid>
+	@if (locations == null)
+	{
+		<MudProgressCircular Indeterminate="true" />
+	}
+	else
+	{
+		<MudGrid>
+			@foreach (var location in locations)
+			{
+				<MudItem xs="12" sm="6">
+					<MudCard Elevation="3" Class="mb-4">
+						<MudCardMedia Image="@($"/images/{location.LocationCode}.jpg")" Height="200" />
+						<MudCardContent>
+							<MudText Typo="Typo.h5">@location.LocationName</MudText>
+							<MudText Typo="Typo.body2">@location.Description</MudText>
+						</MudCardContent>
+						<MudCardActions>
+							<MudButton Variant="Variant.Filled" Color="Color.Primary" 
+							           Href="@($"/tours/location/{location.LocationCode}")">View Tours</MudButton>
+						</MudCardActions>
+					</MudCard>
+				</MudItem>
+			}
+		</MudGrid>
+	}
 </MudContainer>
 
 @code {
+	private List<Location> locations;
 
+	protected override async Task OnInitializedAsync()
+	{
+		locations = await DbContext.Locations.ToListAsync();
+	}
 }

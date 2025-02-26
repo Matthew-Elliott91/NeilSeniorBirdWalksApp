@@ -1,64 +1,33 @@
-﻿using System.Threading.Tasks;
+﻿
+using Microsoft.EntityFrameworkCore;
+using NeilSeniorBirdWalks.Data;
+using NeilSeniorBirdWalks.Models;
+using System.Threading.Tasks;
 
 namespace NeilSeniorBirdWalks.Services
 {
     public class TourService
     {
-        public async Task<TourDetail> GetTourDetailsAsync(string location, string season)
-        {
-            // In a real app, this would fetch from a database
-            await Task.Delay(300); // Simulate network delay
+        private readonly ApplicationDbContext _context;
 
-            // Example data
-            return new TourDetail
-            {
-                Title = $"{season} {GetLocationName(location)} Tour",
-                Description = $"Experience the beauty of {GetLocationName(location)} during {season}. This guided tour takes you through the region's prime birdwatching spots.",
-                Birds = GetBirdsForLocationAndSeason(location, season)
-            };
+        public TourService(ApplicationDbContext context)
+        {
+            _context = context;
         }
 
-        private string GetLocationName(string location) => location.ToLower() switch
+        public async Task<Tour> GetTourDetailsAsync(string location, string season)
         {
-            "northnorfolk" => "North Norfolk",
-            "westnorfolk" => "West Norfolk",
-            _ => location
-        };
+            
+            var tour = await _context.Tours
+                .Include(t => t.Location)
+                .Include(t => t.Season)
+                .Include(t => t.TourBirds)
+                .ThenInclude(tb => tb.Bird)
+                .FirstOrDefaultAsync(t =>
+                    t.Location.LocationCode.ToLower() == location.ToLower() &&
+                    t.Season.SeasonCode.ToLower() == season.ToLower());
 
-        private string[] GetBirdsForLocationAndSeason(string location, string season)
-        {
-            // This would typically come from a database
-            if (location.ToLower() == "northnorfolk")
-            {
-                return season.ToLower() switch
-                {
-                    "spring" => new[] { "Chiffchaff", "Blackcap", "Marsh Harrier", "Avocet", "Bittern" },
-                    "summer" => new[] { "Little Tern", "Common Tern", "Swift", "Cuckoo", "Reed Warbler" },
-                    "autumn" => new[] { "Brent Goose", "Pink-footed Goose", "Yellow-browed Warbler", "Redwing", "Fieldfare" },
-                    "winter" => new[] { "Snow Bunting", "Shore Lark", "Long-tailed Duck", "Common Scoter", "Red-throated Diver" },
-                    _ => new[] { "Various local birds" }
-                };
-            }
-            else if (location.ToLower() == "westnorfolk")
-            {
-                return season.ToLower() switch
-                {
-                    "spring" => new[] { "Nightingale", "Garden Warbler", "Hobby", "Little Ringed Plover", "Common Crane" },
-                    "summer" => new[] { "Spotted Flycatcher", "Turtle Dove", "Bearded Tit", "Marsh Harrier", "Bittern" },
-                    "autumn" => new[] { "Waxwing", "Redstart", "Wheatear", "Brambling", "Common Crane" },
-                    "winter" => new[] { "Whooper Swan", "Bewick's Swan", "Hen Harrier", "Short-eared Owl", "Rough-legged Buzzard" },
-                    _ => new[] { "Various local birds" }
-                };
-            }
-
-            return new[] { "Various local birds", "Seasonal migrants", "Coastal species" };
+            return tour; // Returns null if no match found
         }
-    }
-
-    public class TourDetail
-    {
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string[] Birds { get; set; }
     }
 }

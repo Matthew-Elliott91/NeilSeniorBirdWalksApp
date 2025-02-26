@@ -1,66 +1,100 @@
 ﻿@page "/tours/location/{location}"
 @page "/tours/location/{location}/{season}"
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
 
-<PageTitle>@LocationTitle @(Season != null ? $"- {Season} Tours" : "")</PageTitle>
+<PageTitle>@locationName @(seasonName != null ? $"- {seasonName} Tours" : "")</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
 	<MudBreadcrumbs Items="@breadcrumbs"></MudBreadcrumbs>
-    
-	@if (Season == null)
+
+	@if (seasonName == null)
 	{
-		<MudText Typo="Typo.h3" Class="mb-4">@LocationTitle Bird Watching</MudText>
-		<MudText Class="mb-4">Choose a season for @LocationTitle bird watching tours:</MudText>
-        
+		<MudText Typo="Typo.h3" Class="mb-4">@locationName Bird Watching</MudText>
+		<MudText Class="mb-4">Choose a season for @locationName bird watching tours:</MudText>
+
 		<MudGrid>
-			@foreach (var season in seasons)
+			@if (seasons != null)
 			{
-				<MudItem xs="12" sm="6" md="3">
-					<MudCard Elevation="3" Class="mb-4">
-						<MudCardMedia Image="@($"/images/{Location.ToLower()}-{season.ToLower()}.jpg")" Height="150" />
-						<MudCardContent>
-							<MudText Typo="Typo.h5">@season</MudText>
-						</MudCardContent>
-						<MudCardActions>
-							<MudButton Variant="Variant.Filled" Color="Color.Primary" 
-							           Href="@($"/tours/location/{Location}/{season.ToLower()}")">Select</MudButton>
-						</MudCardActions>
-					</MudCard>
-				</MudItem>
+				@foreach (var season in seasons)
+				{
+					<MudItem xs="12" sm="6" md="3">
+						<MudCard Elevation="3" Class="mb-4">
+							<MudCardMedia Image="@($"/images/tours/{Location.ToLower()}-{season.SeasonCode}.jpg")" Height="150" />
+							<MudCardContent>
+								<MudText Typo="Typo.h5">@season.SeasonName</MudText>
+							</MudCardContent>
+							<MudCardActions>
+								<MudButton Variant="Variant.Filled" Color="Color.Primary"
+										   Href="@($"/tours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
+							</MudCardActions>
+						</MudCard>
+					</MudItem>
+				}
+			}
+			else
+			{
+				<MudProgressCircular Indeterminate="true" />
 			}
 		</MudGrid>
 	}
 	else
 	{
-		<MudText Typo="Typo.h3" Class="mb-4">@Season Tours in @LocationTitle</MudText>
-        
+		<MudText Typo="Typo.h3" Class="mb-4">@seasonName Tours in @locationName</MudText>
+
 		<TourDetails Location="@Location" Season="@Season" />
 	}
-</MudContainer>
+	</MudContainer>
 
-@code {
+	@code {
 	[Parameter] public string Location { get; set; }
 	[Parameter] public string Season { get; set; }
 
-	private string LocationTitle => Location switch
+	private string locationName;
+	private string seasonName;
+	private List<Season> seasons;
+	private Location locationEntity;
+
+	protected override async Task OnParametersSetAsync()
 	{
-		"northnorfolk" => "North Norfolk",
-		"westnorfolk" => "West Norfolk",
-		_ => Location
-	};
+		locationEntity = await DbContext.Locations
+			.FirstOrDefaultAsync(l => l.LocationCode.ToLower() == Location.ToLower());
 
-	private string[] seasons = new[] { "Spring", "Summer", "Autumn", "Winter" };
-
-	private List<BreadcrumbItem> breadcrumbs => Season == null 
-		? new List<BreadcrumbItem>
+		if (locationEntity != null)
 		{
-			new BreadcrumbItem("Tours", "/tours"),
-			new BreadcrumbItem(LocationTitle, null, true)
+			locationName = locationEntity.LocationName;
+
+			// Load all seasons
+			seasons = await DbContext.Seasons.ToListAsync();
+
+			// If we have a season parameter, get its name
+			if (!string.IsNullOrEmpty(Season))
+			{
+				var seasonEntity = await DbContext.Seasons
+					.FirstOrDefaultAsync(s => s.SeasonCode.ToLower() == Season.ToLower());
+				seasonName = seasonEntity?.SeasonName;
+			}
 		}
-		: new List<BreadcrumbItem>
+		else
 		{
-			new BreadcrumbItem("Tours", "/tours"),
-			new BreadcrumbItem(LocationTitle, $"/tours/location/{Location}"),
-			new BreadcrumbItem(Season, null, true)
-		};
+			// Fallback if location not found
+			locationName = Location;
+		}
+	}
 
+	private List<BreadcrumbItem> breadcrumbs => Season == null
+		? new List<BreadcrumbItem>
+			{
+			new BreadcrumbItem("Tours", "/tours"),
+			new BreadcrumbItem(locationName ?? Location, null, true)
+			}
+		: new List<BreadcrumbItem>
+			{
+			new BreadcrumbItem("Tours", "/tours"),
+			new BreadcrumbItem(locationName ?? Location, $"/tours/location/{Location}"),
+			new BreadcrumbItem(seasonName ?? Season, null, true)
+			};
 }
+
