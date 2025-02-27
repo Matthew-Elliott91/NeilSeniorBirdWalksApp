@@ -34,6 +34,16 @@ namespace NeilSeniorBirdWalks.Services
             return tour;
         }
 
+        public async Task<List<Tour>> GetTourPricingAsync()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Tours
+                .Include (t => t.Location)
+                .Include(t => t.Season)
+                .Where(t => t.Price.HasValue)
+                .ToListAsync();
+        }
+
         public async Task<List<Location>> GetLocationsAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
