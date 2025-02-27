@@ -6,6 +6,9 @@ namespace NeilSeniorBirdWalks.Components.Layout
 {
     public partial class MainLayout : LayoutComponentBase
     {
+        [Inject] private NavigationManager NavigationManager { get; set; }
+
+
         // Drawer
         private bool _drawerOpen = false;
 
