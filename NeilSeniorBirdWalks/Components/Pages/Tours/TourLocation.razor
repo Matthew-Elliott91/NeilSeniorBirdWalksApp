@@ -1,100 +1,145 @@
 ﻿@page "/tours/location/{location}"
 @page "/tours/location/{location}/{season}"
 @using NeilSeniorBirdWalks.Models
-@using NeilSeniorBirdWalks.Data
-@using Microsoft.EntityFrameworkCore
-@inject ApplicationDbContext DbContext
+@inject NeilSeniorBirdWalks.Services.TourService TourService
+@inject NavigationManager NavigationManager
+@implements IDisposable
 
 <PageTitle>@locationName @(seasonName != null ? $"- {seasonName} Tours" : "")</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-	<MudBreadcrumbs Items="@breadcrumbs"></MudBreadcrumbs>
+    <MudBreadcrumbs Items="@breadcrumbs"></MudBreadcrumbs>
 
-	@if (seasonName == null)
-	{
-		<MudText Typo="Typo.h3" Class="mb-4">@locationName Bird Watching</MudText>
-		<MudText Class="mb-4">Choose a season for @locationName bird watching tours:</MudText>
+    @if (seasonName == null)
+    {
+        <MudText Typo="Typo.h3" Class="mb-4">@locationName Bird Watching</MudText>
+        <MudText Class="mb-4">Choose a season for @locationName bird watching tours:</MudText>
 
-		<MudGrid>
-			@if (seasons != null)
-			{
-				@foreach (var season in seasons)
-				{
-					<MudItem xs="12" sm="6" md="3">
-						<MudCard Elevation="3" Class="mb-4">
-							<MudCardMedia Image="@($"/images/tours/{Location.ToLower()}-{season.SeasonCode}.jpg")" Height="150" />
-							<MudCardContent>
-								<MudText Typo="Typo.h5">@season.SeasonName</MudText>
-							</MudCardContent>
-							<MudCardActions>
-								<MudButton Variant="Variant.Filled" Color="Color.Primary"
-										   Href="@($"/tours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
-							</MudCardActions>
-						</MudCard>
-					</MudItem>
-				}
-			}
-			else
-			{
-				<MudProgressCircular Indeterminate="true" />
-			}
-		</MudGrid>
-	}
-	else
-	{
-		<MudText Typo="Typo.h3" Class="mb-4">@seasonName Tours in @locationName</MudText>
+        <MudGrid>
+            @if (seasons != null)
+            {
+                @foreach (var season in seasons)
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCard Elevation="3" Class="mb-4">
+                            <MudCardMedia Image="@($"/images/tours/{Location.ToLower()}-{season.SeasonCode}.jpg")" Height="150" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5">@season.SeasonName</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                           Href="@($"/tours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+            else
+            {
+                <MudProgressCircular Indeterminate="true" />
+            }
+        </MudGrid>
+    }
+    else
+    {
+        <MudText Typo="Typo.h3" Class="mb-4">@seasonName Tours in @locationName</MudText>
 
-		<TourDetails Location="@Location" Season="@Season" />
-	}
-	</MudContainer>
+        <TourDetails Location="@Location" Season="@Season" />
 
-	@code {
-	[Parameter] public string Location { get; set; }
-	[Parameter] public string Season { get; set; }
+        <MudButton Class="mt-3" Variant="Variant.Outlined" Color="Color.Secondary"
+                   OnClick="@HandleBackToSeasons">Back to Seasons</MudButton>
+    }
+    </MudContainer>
 
-	private string locationName;
-	private string seasonName;
-	private List<Season> seasons;
-	private Location locationEntity;
+    @code {
+    [Parameter] public string Location { get; set; }
+    [Parameter] public string Season { get; set; }
 
-	protected override async Task OnParametersSetAsync()
-	{
-		locationEntity = await DbContext.Locations
-			.FirstOrDefaultAsync(l => l.LocationCode.ToLower() == Location.ToLower());
+    private string locationName;
+    private string seasonName;
+    private List<Season> seasons;
+    private Location locationEntity;
+    private string currentUrl;
 
-		if (locationEntity != null)
-		{
-			locationName = locationEntity.LocationName;
+    protected override void OnInitialized()
+    {
+        
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        currentUrl = NavigationManager.Uri;
+    }
 
-			// Load all seasons
-			seasons = await DbContext.Seasons.ToListAsync();
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        currentUrl = e.Location;
 
-			// If we have a season parameter, get its name
-			if (!string.IsNullOrEmpty(Season))
-			{
-				var seasonEntity = await DbContext.Seasons
-					.FirstOrDefaultAsync(s => s.SeasonCode.ToLower() == Season.ToLower());
-				seasonName = seasonEntity?.SeasonName;
-			}
-		}
-		else
-		{
-			// Fallback if location not found
-			locationName = Location;
-		}
-	}
+        
+        if (HasNavigatedBackFromSeason())
+        {
+            Season = null;
+            seasonName = null;
+            StateHasChanged();
+        }
+    }
 
-	private List<BreadcrumbItem> breadcrumbs => Season == null
-		? new List<BreadcrumbItem>
-			{
-			new BreadcrumbItem("Tours", "/tours"),
-			new BreadcrumbItem(locationName ?? Location, null, true)
-			}
-		: new List<BreadcrumbItem>
-			{
-			new BreadcrumbItem("Tours", "/tours"),
-			new BreadcrumbItem(locationName ?? Location, $"/tours/location/{Location}"),
-			new BreadcrumbItem(seasonName ?? Season, null, true)
-			};
+    private bool HasNavigatedBackFromSeason()
+    {
+        
+        return currentUrl.EndsWith($"/tours/location/{Location}") &&
+               !currentUrl.Contains($"/{Location}/") &&
+               !string.IsNullOrEmpty(Season);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        locationEntity = await TourService.GetLocationByCodeAsync(Location);
+
+        if (locationEntity != null)
+        {
+            locationName = locationEntity.LocationName;
+
+           
+            seasons = await TourService.GetSeasonsAsync();
+
+         
+            if (!string.IsNullOrEmpty(Season))
+            {
+                var seasonEntity = await TourService.GetSeasonByCodeAsync(Season);
+                seasonName = seasonEntity?.SeasonName;
+            }
+            else
+            {
+                // If Season is null, ensure seasonName is also null
+                seasonName = null;
+            }
+        }
+        else
+        {
+           
+            locationName = Location;
+        }
+    }
+
+    private void HandleBackToSeasons()
+    {
+        NavigationManager.NavigateTo($"/tours/location/{Location}");
+    }
+
+    private List<BreadcrumbItem> breadcrumbs => Season == null
+        ? new List<BreadcrumbItem>
+                {
+                new ("Tours", "/tours"),
+                new (locationName ?? Location, null, true)
+                }
+        : new List<BreadcrumbItem>
+                {
+                new ("Tours", "/tours"),
+                new (locationName ?? Location, $"/tours/location/{Location}"),
+                new (seasonName ?? Season, null, true)
+                };
+
+    public void Dispose()
+    {
+        
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
 }
-

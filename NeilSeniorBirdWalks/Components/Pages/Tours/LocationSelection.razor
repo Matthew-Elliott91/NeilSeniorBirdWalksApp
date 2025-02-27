@@ -1,9 +1,7 @@
 ﻿@page "/tours"
 @page "/tours/location"
-@using Microsoft.EntityFrameworkCore
 @using NeilSeniorBirdWalks.Models
-@using NeilSeniorBirdWalks.Data
-@inject ApplicationDbContext DbContext
+@inject NeilSeniorBirdWalks.Services.TourService TourService
 
 <PageTitle>Tour Locations</PageTitle>
 
@@ -42,6 +40,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		locations = await DbContext.Locations.ToListAsync();
+		locations = await TourService.GetLocationsAsync();
 	}
 }
