@@ -36,6 +36,8 @@ namespace NeilSeniorBirdWalks.Components.Layout
                 Info = new MudColor("#5B8DB3"),
                 TextPrimary = new MudColor("#2C3E50"),
                 TextSecondary = new MudColor("#4C7C4C"),
+                Black = new MudColor("#000000"),
+                White = new MudColor("#FFFFFF")
 
             },
             PaletteDark = new PaletteDark()

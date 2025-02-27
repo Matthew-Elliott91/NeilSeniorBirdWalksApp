@@ -1,26 +1,26 @@
 ﻿@inject BlobStorageService BlobStorageService
 
-@if (imageUris is null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<MudGrid Class="mt-1">
-		@foreach (var url in imageUris)
-		{
+<MudContainer>
+	@if (imageUris is null)
+	{
+		<p>Loading...</p>
+	}
+	else
+	{
+		<MudGrid Class="mt-1">
+			@foreach (var url in imageUris)
+			{
 
-			<MudItem xs="4" sm="4" md="3" lg="2">
-				<MudImage src="@url" alt="Bird Image" Fluid="true" Class="m-1" />
-			</MudItem>
+				<MudItem xs="4" sm="4" md="3" lg="2">
+					<MudImage src="@url" alt="Bird Image" Fluid="true" Class="m-1" />
+				</MudItem>
 
-		}
-	</MudGrid>
-		
-
-		
+			}
+		</MudGrid>
 	
-}
+	}
+
+</MudContainer>
 
 @code {
 
