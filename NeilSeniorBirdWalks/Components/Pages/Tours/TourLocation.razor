@@ -22,11 +22,11 @@
                 {
                     <MudItem xs="12" sm="6" md="3">
                         <MudCard Elevation="3" Class="mb-4">
-                            <MudCardMedia Image="@($"/images/tours/seasons/{Location.ToLower()}-{season.SeasonCode}.jpg")" Height="150" />
-                            <MudCardContent>
+                            <MudCardMedia Image="@GetSeasonImage(season)" Height="150" Style="margin: 5% 5% 0 5%" />
+                            <MudCardContent Class="d-flex justify-center ">
                                 <MudText Typo="Typo.h5">@season.SeasonName</MudText>
                             </MudCardContent>
-                            <MudCardActions>
+                            <MudCardActions Class="d-flex justify-center">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                            Href="@($"/tours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
                             </MudCardActions>
@@ -123,6 +123,33 @@
     {
         NavigationManager.NavigateTo($"/tours/location/{Location}");
     }
+
+    private string GetSeasonImage(Season season)
+    {
+	    
+	    string defaultPath = $"/images/tours/seasons/{Location.ToLower()}-{season.SeasonCode}.jpg";
+    
+	 
+	    if (locationEntity == null)
+		    return defaultPath;
+    
+	    
+	    string imagePath = season.SeasonCode.ToLower() switch
+	    {
+		    "spring" => locationEntity.SpringImagePath,
+		    "summer" => locationEntity.SummerImagePath,
+		    "autumn" => locationEntity.AutumnImagePath,
+		    "winter" => locationEntity.WinterImagePath,
+		    _ => null
+	    };
+    
+	    
+	    return !string.IsNullOrEmpty(imagePath) ? imagePath : defaultPath;
+    }
+
+
+
+    
 
     private List<BreadcrumbItem> breadcrumbs => Season == null
         ? new List<BreadcrumbItem>
