@@ -1,5 +1,6 @@
 ﻿@inject BlobStorageService BlobStorageService
 
+
 <MudContainer>
 	@if (imageUris is null)
 	{
@@ -7,29 +8,43 @@
 	}
 	else
 	{
-		<MudGrid Class="mt-1">
-			@foreach (var url in imageUris)
-			{
+		<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="false">
+			<MudCarousel TData="MudCarouselItem" Class="mt-1" AutoCycle="false" ShowBullets="false" ShowArrows="true" 
+			             EnableSwipeGesture="true" Style="height: 30vh;">
+				@foreach (var url in imageUris)
+				{
+					<MudCarouselItem>
+						<div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+							<MudImage src="@url" alt="Bird Image" ObjectFit="ObjectFit.Contain" 
+							          Style="max-height: 100%; max-width: 100%;" />
+						</div>
+					</MudCarouselItem>
+				}
+			</MudCarousel>
+		</MudHidden>
 
-				<MudItem xs="4" sm="4" md="3" lg="2">
-					<MudImage src="@url" alt="Bird Image" Fluid="true" Class="m-1" />
-				</MudItem>
-
-			}
-		</MudGrid>
-	
+		<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+			<MudGrid Class="mt-1">
+				@foreach (var url in imageUris)
+				{
+					<MudItem md="3" lg="2">
+						<MudImage src="@url" alt="Bird Image" Fluid="true" Class="m-1" />
+					</MudItem>
+				}
+			</MudGrid>
+		</MudHidden>
 	}
-
 </MudContainer>
 
 @code {
-
-	// Parameter tto control the number of images displayed
-	[Parameter] public int ImageCount { get; set; }		
+	// Parameter to control the number of images displayed
+	[Parameter] public int ImageCount { get; set; }
 	private List<string> imageUris = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		imageUris = await BlobStorageService.ListBlobUrisAsync(ImageCount);
 	}
+
+	
 }

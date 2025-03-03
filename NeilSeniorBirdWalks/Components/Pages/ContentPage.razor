@@ -1,5 +1,6 @@
 ﻿@page "/about"
 @page "/tour-info"
+@page "/contact"
 
 @using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
@@ -41,7 +42,9 @@
 			pageType = "About";
 		else if (url.EndsWith("/tour-info")) 
 			pageType = "TourInfo";
-            
+		else if (url.EndsWith("/contact"))
+			pageType = "Contact";
+
 		if (pageType != null)
 		{
 			Content = await PageContentService.GetPageContentAsync(pageType);
