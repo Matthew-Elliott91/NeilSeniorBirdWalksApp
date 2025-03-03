@@ -192,19 +192,6 @@ namespace NeilSeniorBirdWalks.Data
                     },
                     new PageContent
                     {
-                        PageType = "Blog",
-                        Title = "Bird Watching Blog",
-                        Subtitle = "Latest sightings and birding tips",
-                        MainContent = "Our latest expedition to North Norfolk yielded some extraordinary sightings! The highlight was undoubtedly the pair of Marsh Harriers hunting over the reedbeds at dawn. Their graceful flight and distinctive V-shaped wing profile provided perfect viewing conditions for our group.",
-                        MainContentImage = "/images/content/blog-main.jpg",
-                        SecondaryContent = "Spring migration is now in full swing. Last week we spotted the first Chiffchaffs and Blackcaps of the season, their distinctive calls alerting us to their presence before they became visible. Tip: Learning bird calls can double your identification success rate, especially in woodland habitats.",
-                        SecondaryContentImage = "/images/content/blog-secondary.jpg",
-                        TertiaryContent = "Bird watching equipment spotlight: We've been testing the new Swarovski NL Pure binoculars on recent tours. The wider field of view and incredible edge-to-edge clarity has impressed everyone who's tried them. While they represent a significant investment, their performance in low light conditions is remarkable.",
-                        TertiaryContentImage = "/images/content/blog-tertiary.jpg",
-                        IsPublished = true
-                    },
-                    new PageContent
-                    {
                         PageType = "TourInfo",
                         Title = "Tour Information",
                         Subtitle = "Everything you need to know about our bird watching tours",
