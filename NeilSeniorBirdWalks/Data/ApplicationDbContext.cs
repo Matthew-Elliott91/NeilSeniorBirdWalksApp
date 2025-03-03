@@ -12,6 +12,7 @@ namespace NeilSeniorBirdWalks.Data
         public DbSet<Bird> Birds { get; set; }
         public DbSet<Tour> Tours { get; set; }
         public DbSet<TourBird> TourBirds { get; set; }
+        public DbSet<PageContent> PageContents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

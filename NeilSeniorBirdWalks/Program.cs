@@ -51,8 +51,9 @@ var blobConnectionString = builder.Configuration["AzureBlobStorage:BlobConnectio
 var containerName = builder.Configuration["AzureBlobStorage:ContainerName"];
 builder.Services.AddSingleton(new BlobStorageService(blobConnectionString, containerName));
 
-// Update TourService to use DbContextFactory
+// Update Custom Services to use DbContextFactory
 builder.Services.AddScoped<TourService>();
+builder.Services.AddScoped<PageContentService>();
 
 //Mudblazor services
 builder.Services.AddMudServices();
