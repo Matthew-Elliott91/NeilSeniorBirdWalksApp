@@ -54,6 +54,7 @@ builder.Services.AddSingleton(new BlobStorageService(blobConnectionString, conta
 // Update Custom Services to use DbContextFactory
 builder.Services.AddScoped<TourService>();
 builder.Services.AddScoped<PageContentService>();
+builder.Services.AddScoped<BlogService>();
 
 //Mudblazor services
 builder.Services.AddMudServices();

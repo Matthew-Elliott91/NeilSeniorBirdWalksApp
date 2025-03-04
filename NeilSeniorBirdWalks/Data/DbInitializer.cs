@@ -208,6 +208,72 @@ namespace NeilSeniorBirdWalks.Data
                 context.PageContents.AddRange(pageContents);
                 context.SaveChanges();
             }
+            // Seed BlogPosts
+            if (!context.BlogPosts.Any())
+            {
+                var blogPosts = new BlogPost[]
+                {
+        new BlogPost
+        {
+            Title = "Spring Migration Highlights",
+            Slug = "spring-migration-highlights",
+            CreatedDate = new DateTime(2023, 4, 15),
+            FeaturedImageUrl = "/images/blogs/spring-migration-featured.jpg",
+            FirstParagraph = "This spring has brought an exceptional wave of migratory birds to Norfolk's shores. The warm southerly winds in early April created perfect conditions for birds crossing from continental Europe. Our spring tours have been rewarded with sightings of early migrants including Chiffchaffs, Blackcaps, and the always crowd-pleasing Avocets returning to their breeding grounds.",
+            FirstImageUrl = "/images/blogs/avocets-breeding.jpg",
+            SecondParagraph = "Cley Marshes has been particularly productive this season, with multiple sightings of Marsh Harriers displaying over the reedbeds. These magnificent birds of prey were once on the brink of extinction in the UK but have made a remarkable comeback. Their graceful aerial displays are one of the highlights of any spring visit to North Norfolk's coastal reserves.",
+            SecondImageUrl = "/images/blogs/marsh-harrier-flight.jpg",
+            ThirdParagraph = "Looking ahead to late spring, we're anticipating the arrival of more scarce migrants. The dawn chorus is reaching its peak intensity now, with Nightingales occasionally heard in traditional sites across West Norfolk. Our upcoming dawn chorus special tours still have a few places available for those wanting to experience this magnificent natural concert in the company of fellow enthusiasts.",
+            ThirdImageUrl = "/images/blogs/dawn-chorus.jpg",
+            AdditionalImageUrls = new List<string>
+            {
+                "/images/blogs/nightingale.jpg",
+                "/images/blogs/spring-reserve.jpg"
+            }
+        },
+
+        new BlogPost
+        {
+            Title = "Accessible Birdwatching: Norfolk's Best Senior-Friendly Sites",
+            Slug = "accessible-birdwatching-norfolk",
+            CreatedDate = new DateTime(2023, 5, 20),
+            FeaturedImageUrl = "/images/blogs/accessible-birding-featured.jpg",
+            FirstParagraph = "Birdwatching should be enjoyable for everyone regardless of mobility. Fortunately, Norfolk boasts several excellent reserves with accessible facilities specifically designed for senior birdwatchers and those with limited mobility. RSPB Titchwell Marsh leads the way with its well-maintained paths, frequent benches, and accessible hides that accommodate wheelchairs and mobility scooters.",
+            FirstImageUrl = "/images/blogs/accessible-hide.jpg",
+            SecondParagraph = "NWT Cley Marshes visitor center deserves special mention for its thoughtful design. The panoramic windows offer spectacular views across the marshes without needing to walk the trails, and the elevated boardwalk provides easy access to viewing areas. Their café serves excellent refreshments - perfect for warming up on chilly days when the North Sea winds are particularly biting!",
+            SecondImageUrl = "/images/blogs/cley-visitor-center.jpg",
+            ThirdParagraph = "For those with reasonable mobility but who prefer shorter walks, Holkham Hall's grounds offer an excellent compromise. The wide, firm paths around the lake attract a good variety of woodland and wetland birds, and the Hall itself provides a cultural dimension to your outing. Look out for the resident flock of White-fronted Geese that winters on the estate's extensive grazing marshes.",
+            ThirdImageUrl = "/images/blogs/holkham-grounds.jpg",
+            AdditionalImageUrls = new List<string>
+            {
+                "/images/blogs/senior-birdwatchers.jpg",
+                "/images/blogs/snettisham-rspb.jpg"
+            }
+        },
+
+        new BlogPost
+        {
+            Title = "Bird Photography Tips for Beginners",
+            Slug = "bird-photography-tips-beginners",
+            CreatedDate = new DateTime(2023, 6, 10),
+            FeaturedImageUrl = "/images/blogs/photography-beginners-featured.jpg",
+            FirstParagraph = "Many of our tour participants ask about capturing better bird photos with their cameras. You don't need expensive equipment to start taking rewarding bird photographs. The most important factors are patience, field craft, and understanding your subject. Even a basic camera with modest zoom capability can capture memorable images if you're in the right place at the right time.",
+            FirstImageUrl = "/images/blogs/beginner-camera-gear.jpg",
+            SecondParagraph = "Getting to know your subject's behavior is crucial for anticipation. Birds are creatures of habit, and learning their feeding, preening, and flight patterns allows you to prepare for action shots before they happen. On our tours, we point out behavioral cues that indicate when a bird might take flight or dive for prey, giving photographers valuable seconds to prepare for the shot.",
+            SecondImageUrl = "/images/blogs/bird-behavior-sequence.jpg",
+            ThirdParagraph = "Light is perhaps the most critical factor in bird photography. Early morning and late afternoon offer the warmest, most flattering light - conveniently coinciding with when birds are most active. Consider the direction of light in relation to your subject; side-lighting often reveals texture in feathers, while backlighting can create dramatic silhouettes. Don't be afraid of cloudy days either - the soft, diffused light can be perfect for capturing detail without harsh shadows.",
+            ThirdImageUrl = "/images/blogs/golden-hour-birding.jpg",
+            AdditionalImageUrls = new List<string>
+            {
+                "/images/blogs/camera-settings-chart.jpg",
+                "/images/blogs/hide-photography.jpg"
+            }
+        }
+                };
+
+                context.BlogPosts.AddRange(blogPosts);
+                context.SaveChanges();
+            }
         }
     }
 }

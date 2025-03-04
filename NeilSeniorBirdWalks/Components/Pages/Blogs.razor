@@ -1,0 +1,59 @@
+﻿@page "/blogs"
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject BlogService BlogService
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h3" Class="mb-4">Blog Posts</MudText>
+
+    @if (blogPosts == null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (!blogPosts.Any())
+    {
+        <MudAlert Severity="Severity.Info">No blog posts available.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var post in blogPosts)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Style="height: 100%"  >
+                        @if (!string.IsNullOrEmpty(post.FeaturedImageUrl))
+                        {
+                            <MudCardMedia Image="@post.FeaturedImageUrl" Height="200" />
+                        }
+                        else
+                        {
+                            <MudCardMedia Image="/images/placeholder.jpg" Height="200" />
+                        }
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">@post.Title</MudText>
+                            <MudText Typo="Typo.body2">@post.CreatedDate.ToString("MMMM d, yyyy")</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton @onclick="@(() => NavigateToBlog(post.Slug))" Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    </MudContainer>
+
+    @code {
+    private List<BlogPost> blogPosts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blogPosts = await BlogService.GetAllBlogPostsAsync();
+    }
+
+    private void NavigateToBlog(string slug)
+    {
+        NavigationManager.NavigateTo($"/blog/{slug}");
+    }
+}
