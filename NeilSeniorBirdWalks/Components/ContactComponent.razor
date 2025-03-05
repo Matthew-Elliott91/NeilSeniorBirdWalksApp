@@ -4,49 +4,64 @@
 @inject IContactService ContactService
 @inject NavigationManager NavigationManager
 
-<MudCard>
-	<MudCardHeader Style="justify-content: center; text-align: center;">
-		<MudText Typo="Typo.h3">Contact Us</MudText>
-	</MudCardHeader>
+<MudCard Class="mt-6 mx-auto" Style="max-width: 800px;">
+    <MudCardHeader Style="justify-content: center; text-align: center;">
+        <MudText Typo="Typo.h3">Contact Us</MudText>
+    </MudCardHeader>
 
     <MudCardContent>
         <MudForm @ref="form" Model="@contactForm" @bind-IsValid="@success" ValidationDelay="0">
-            <MudTextField T="string"
-                          Label="Name"
-                          @bind-Value="contactForm.Name"
-                          Required="true"
-                          RequiredError="Name is required" />
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="Name"
+                                  @bind-Value="contactForm.Name"
+                                  Required="true"
+                                  RequiredError="Name is required"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
 
-            <MudTextField T="string"
-                          Label="Email"
-                          @bind-Value="contactForm.Email"
-                          Required="true"
-                          RequiredError="Email is required"
-                          Validation="@(new EmailAddressAttribute() {ErrorMessage = "Please enter a valid email address"})" />
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="Email"
+                                  @bind-Value="contactForm.Email"
+                                  Required="true"
+                                  RequiredError="Email is required"
+                                  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Please enter a valid email address"})"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
 
-            <MudTextField T="string"
-                          Label="Phone"
-                          @bind-Value="contactForm.Phone"
-                          Validation="@(new RegularExpressionAttribute(@"^(\+\d{1,3}[- ]?)?\d{10,15}$") { ErrorMessage = "Please enter a valid phone number" })" />
-            
-						
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="Phone"
+                                  @bind-Value="contactForm.Phone"
+                                  Validation="@(new RegularExpressionAttribute(@"^(\+\d{1,3}[- ]?)?\d{10,15}$") { ErrorMessage = "Please enter a valid phone number" })"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
 
-            <MudTextField T="string"
-                          Label="Subject"
-                          @bind-Value="contactForm.Subject"
-                          Required="true"
-                          RequiredError="Subject is required" />
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="Subject"
+                                  @bind-Value="contactForm.Subject"
+                                  Required="true"
+                                  RequiredError="Subject is required"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
 
-            <MudTextField T="string"
-                          Label="Message"
-                          @bind-Value="contactForm.Message"
-                          Required="true"
-                          RequiredError="Message is required"
-                          Lines="5" />
+                <MudItem xs="12">
+                    <MudTextField T="string"
+                                  Label="Message"
+                                  @bind-Value="contactForm.Message"
+                                  Required="true"
+                                  RequiredError="Message is required"
+                                  Lines="5"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
         </MudForm>
     </MudCardContent>
 
-    <MudCardActions>
+    <MudCardActions Class="justify-center">
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    DisableElevation="true"
