@@ -26,34 +26,64 @@
                       Class="rounded-lg mb-8 width-100" Width="100" ObjectFit="ObjectFit.Cover" />
         }
 
-        <MudPaper Elevation="0" Class="mb-8 px-2">
-            <MudText Typo="Typo.body1">@blogPost.FirstParagraph</MudText>
-        </MudPaper>
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="0" Class="mb-4 px-2">
+                    <MudText Typo="Typo.body1">@blogPost.FirstParagraph</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                @if (!string.IsNullOrEmpty(blogPost.FirstImageUrl))
+                {
+                    <MudImage Src="@blogPost.FirstImageUrl" Alt="First image"
+                              Class="rounded-lg" Elevation="2"
+                              ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
+                }
+            </MudItem>
+        </MudGrid>
 
-        @if (!string.IsNullOrEmpty(blogPost.FirstImageUrl))
+        <MudDivider Class="my-6" />
+
+        <!-- Second paragraph with image on left -->
+        @if (!string.IsNullOrEmpty(blogPost.SecondParagraph))
         {
-            <MudImage Src="@blogPost.FirstImageUrl" Alt="First image"
-                      Class="rounded-lg mb-8 width-100" Width="100" ObjectFit="ObjectFit.Cover" />
+            <MudGrid>
+                <MudItem xs="12" md="6" Order="2" OrderMd="1">
+                    @if (!string.IsNullOrEmpty(blogPost.SecondImageUrl))
+                    {
+                        <MudImage Src="@blogPost.SecondImageUrl" Alt="Second image"
+                                  Class="rounded-lg" Elevation="2"
+                                  ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
+                    }
+                </MudItem>
+                <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                    <MudPaper Elevation="0" Class="mb-4 px-2">
+                        <MudText Typo="Typo.body1">@blogPost.SecondParagraph</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-6" />
         }
 
-        <MudPaper Elevation="0" Class="mb-8 px-2">
-            <MudText Typo="Typo.body1">@blogPost.SecondParagraph</MudText>
-        </MudPaper>
-
-        @if (!string.IsNullOrEmpty(blogPost.SecondImageUrl))
+        <!-- Third paragraph with image on right -->
+        @if (!string.IsNullOrEmpty(blogPost.ThirdParagraph))
         {
-            <MudImage Src="@blogPost.SecondImageUrl" Alt="Second image"
-                      Class="rounded-lg mb-8 width-100" Width="100" ObjectFit="ObjectFit.Cover" />
-        }
-
-        <MudPaper Elevation="0" Class="mb-8 px-2">
-            <MudText Typo="Typo.body1">@blogPost.ThirdParagraph</MudText>
-        </MudPaper>
-
-        @if (!string.IsNullOrEmpty(blogPost.ThirdImageUrl))
-        {
-            <MudImage Src="@blogPost.ThirdImageUrl" Alt="Third image"
-                      Class="rounded-lg mb-8 width-100" Width="100" ObjectFit="ObjectFit.Cover" />
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudPaper Elevation="0" Class="mb-4 px-2">
+                        <MudText Typo="Typo.body1">@blogPost.ThirdParagraph</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    @if (!string.IsNullOrEmpty(blogPost.ThirdImageUrl))
+                    {
+                        <MudImage Src="@blogPost.ThirdImageUrl" Alt="Third image"
+                                  Class="rounded-lg" Elevation="2"
+                                  ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
+                    }
+                </MudItem>
+            </MudGrid>
         }
 
         @if (blogPost.AdditionalImageUrls != null && blogPost.AdditionalImageUrls.Any())

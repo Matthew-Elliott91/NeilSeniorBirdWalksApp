@@ -54,7 +54,7 @@ h1:focus {
 
 .header-banner {
     min-height: 90vh; 
-    background-image: url('/Images/HeaderImg.jpg');
+  /*  background-image: url('/Images/HeaderImg.jpg');*/
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
