@@ -10,7 +10,7 @@
 
 <MudLayout>
 	<MudAppBar  >
-		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Secondary"  Edge="Edge.Start" OnClick="DrawerToggle" />
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Primary"  Edge="Edge.Start" OnClick="DrawerToggle" />
 		<MudSpacer />
 		<MudLink Href="/">
 			<MudImage Src="/Images/Logo.svg" Alt="Neil Senior Logo" Fluid="true" />
@@ -19,15 +19,15 @@
 		<MudSpacer />
 		
 	</MudAppBar>
-	<MudDrawer  @bind-Open="_drawerOpen" >
+	<MudDrawer  @bind-Open="_drawerOpen" Color="Color.Primary" >
 		<MyNavMenu/>
 	</MudDrawer>
 	<MudMainContent>
 		@Body
 	</MudMainContent>
-	<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16 pb-8 px-8">
+	<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16 pb-8 px-8" Style="">
 		<MudDivider Class="mb-4" />
-		<MudPaper Elevation="0" Class="py-4">
+		<MudPaper Elevation="0" Class="py-4" Style="background-color: white">
 			<MudContainer MaxWidth="MaxWidth.Large" Class="d-flex flex-column flex-md-row justify-center justify-md-between align-center">
 				<MudText Typo="Typo.body2">&copy; @DateTime.Now.Year - Neil Senior Bird Walks</MudText>
 				<MudStack Row="true" Spacing="2" Class="mt-2 mt-md-0">

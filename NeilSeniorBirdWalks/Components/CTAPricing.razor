@@ -9,7 +9,7 @@
 			@foreach (var tour in tours.Take(6))
 			{
 				<MudItem xs="12" sm="6" md="4">
-					<MudCard Elevation="25" Class="rounded-lg pb-4">
+					<MudCard Elevation="25" Class="rounded-lg pb-4" Style="background-color: white">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudText Typo="Typo.h5" Align="Align.Center">@tour.Title</MudText>
@@ -21,15 +21,15 @@
 								<MudText Typo="Typo.h5" Class="ml-1 mt-5" Color="Color.Secondary">/tour</MudText>
 							</div>
 							<MudList T="string" Class="mx-auto mt-4" Style="width:300px;">
-								<MudListItem Icon="@Icons.Material.Filled.LocationOn">
+								<MudListItem Icon="@Icons.Material.Filled.LocationOn" IconColor="Color.Tertiary">
 									@tour.Location.LocationName
 								</MudListItem>
-								<MudListItem Icon="@Icons.Material.Filled.CalendarToday">
+								<MudListItem Icon="@Icons.Material.Filled.CalendarToday" IconColor="Color.Tertiary">
 									@tour.Season.SeasonName Season
 								</MudListItem>
 								@if (tour.Duration.HasValue)
 								{
-									<MudListItem Icon="@Icons.Material.Filled.Timer">
+									<MudListItem Icon="@Icons.Material.Filled.Timer" IconColor="Color.Tertiary">
 										@(tour.Duration.Value / 60)h @(tour.Duration.Value % 60)m duration
 									</MudListItem>
 								}

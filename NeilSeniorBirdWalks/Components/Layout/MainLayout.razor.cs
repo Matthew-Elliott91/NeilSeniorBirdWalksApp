@@ -23,11 +23,11 @@ namespace NeilSeniorBirdWalks.Components.Layout
         {
             PaletteLight = new PaletteLight()
             {
-                AppbarBackground = new MudColor("#3E5E3E"),
-                Primary = new MudColor("#4C7C4C"),
-                Secondary = new MudColor("#A67C52"),
-                Tertiary = new MudColor("#6A9FB5"),
-                Background = new MudColor("#F1EFE7"),
+                AppbarBackground = new MudColor("#5885af"),
+                Primary = new MudColor("#274472"),
+                Secondary = new MudColor("#41729f"),
+                Tertiary = new MudColor("#5885af"),
+                Background = new MudColor("#c3e0e5"),
                 Surface = new MudColor("#DAD7CD"),
                 ActionDefault = new MudColor("#3E5E3E"),
                 Success = new MudColor("#6A994E"),
