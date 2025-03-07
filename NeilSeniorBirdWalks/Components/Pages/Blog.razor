@@ -1,4 +1,4 @@
-﻿@page "/blog/{slug}"
+﻿@page "/news/{slug}"
 @using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
 @inject BlogService BlogService
@@ -123,7 +123,7 @@
         _breadcrumbs = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/"),
-            new BreadcrumbItem("Blogs", href: "/blogs"),
+            new BreadcrumbItem("News", href: "/news"),
             new BreadcrumbItem("Blog Post", href: null, disabled: true)
         };
     }

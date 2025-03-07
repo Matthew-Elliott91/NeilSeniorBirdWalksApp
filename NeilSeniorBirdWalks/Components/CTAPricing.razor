@@ -2,8 +2,8 @@
 @using NeilSeniorBirdWalks.Services
 @inject TourService TourService
 @inject NavigationManager NavigationManager
-<MudContainer>
-	<MudGrid Class="mt-8">
+
+	<MudGrid Class="mt-2">
 		@if (tours != null)
 		{
 			@foreach (var tour in tours.Take(6))
@@ -55,7 +55,6 @@
 			</MudItem>
 		}
 	</MudGrid>
-</MudContainer>
 
 @code {
 	private List<Tour> tours;

@@ -1,0 +1,53 @@
+﻿@inject BlobStorageService BlobStorageService
+
+<style>
+	.carousel-arrow {
+		background-color: rgba(255,255,255,0.7);
+		border-radius: 50%;
+		margin: 0 -20px;
+		z-index: 10;
+	}
+</style>
+
+@if (imageUris is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div style="max-width: 1000px; margin: 0 auto; padding: 0 30px;">
+		<MudCarousel TData="MudCarouselItem"
+		             Class="mt-1 responsive-carousel"
+		             AutoCycle="true"
+					 AutoCycleTime="TimeSpan.FromSeconds(5)"
+		             ShowBullets="false"
+		             ShowArrows="true"
+		             ArrowsPosition="Position.Center"
+		             NavigationButtonsClass="carousel-arrow"
+		             EnableSwipeGesture="true">
+
+			@foreach (var url in imageUris)
+			{
+				<MudCarouselItem>
+					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+						<MudImage src="@url"
+						          alt="Bird Image"
+						          ObjectFit="ObjectFit.Contain"
+						          Fluid="true"
+						          Style="max-height: 100%; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"/>
+					</div>
+				</MudCarouselItem>
+			}
+		</MudCarousel>
+	</div>
+}
+
+@code {
+	[Parameter] public int ImageCount { get; set; }
+	private List<string> imageUris = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		imageUris = await BlobStorageService.ListBlobUrisAsync(ImageCount);
+	}
+}
