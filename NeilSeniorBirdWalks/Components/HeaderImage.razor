@@ -1,7 +1,7 @@
 ﻿@inject NavigationManager NavigationManager
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner mb-2 d-flex px-0" Style="@($"overflow: hidden; background-image: url('{BackgroundImageUrl}');")">
-	<MudPaper Elevation="3" Class="header-content-box pa-4">
+	<MudPaper Elevation="3" Class="header-content-box pa-4" Style="@(!DisplayContentBox ? "display: none;" : "")">
 		<MudGrid Class="header-content align-center text-center">
 			<MudItem xs="12" md="6">
 				<!-- First column - text and buttons -->
@@ -46,7 +46,8 @@
 	public string BackgroundImageUrl { get; set; } = "/Images/HeaderImg.jpg";
 	[Parameter]
 	public bool ShowButtons { get; set; } = true;
-
+	[Parameter] 
+	public bool DisplayContentBox { get; set; } = true;
 	private void ViewTours()
 	{
 		NavigationManager.NavigateTo("/tours");

@@ -1,15 +1,21 @@
-﻿<MudNavMenu>
-	<MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
-	<MudNavGroup Title="Tours" Expanded="true">
-		<MudNavLink Href="/tour-info" Match="NavLinkMatch.Prefix">Tour Information</MudNavLink>
-		<MudNavLink Href="/tours/location" Match="NavLinkMatch.Prefix">Tour Locations</MudNavLink>
-	</MudNavGroup>
-	<MudNavLink Href="/calendar" Match="NavLinkMatch.Prefix">Tour Calendar</MudNavLink>
-	<MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About Me</MudNavLink>
-	<MudNavLink Href="/giftvoucher" Match="NavLinkMatch.Prefix">Gift Vouchers</MudNavLink>
-	<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix">Contact</MudNavLink>
-	<MudNavLink Href="/imagegallery" Match="NavLinkMatch.Prefix">Image Gallery</MudNavLink>
-	<MudNavLink Href="/news" Match="NavLinkMatch.Prefix">News</MudNavLink>
-
-	
+﻿
+<MudNavMenu>
+	<MudNavLink Href="/" Match="NavLinkMatch.All" ActiveClass="navlink-match">Home</MudNavLink>
+	<MudNavLink Href="/tours" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Tours</MudNavLink>
+	<MudNavLink Href="/calendar" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Tour Calendar</MudNavLink>
+	<MudNavLink Href="/about" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">About Me</MudNavLink>
+	<MudNavLink Href="/giftvoucher" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Gift Vouchers</MudNavLink>
+	<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Contact</MudNavLink>
+	<MudNavLink Href="/imagegallery" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Image Gallery</MudNavLink>
+	<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">News</MudNavLink>
+	<MudNavLink Href="/hire" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Hire A Local Guide</MudNavLink>
 </MudNavMenu>
+
+<style>
+	.navlink-match {
+		color: #f8d04d; /* Yellow/gold color for contrast */
+		font-weight: bold;
+		background-color: rgba(255, 255, 255, 0.1);
+		border-left: 3px solid #f8d04d;
+	}
+</style>
