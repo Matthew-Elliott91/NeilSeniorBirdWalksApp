@@ -1,5 +1,5 @@
-﻿@page "/tours"
-@page "/tours/location"
+﻿@page "/oldtours"
+@page "/oldtours/location"
 @using NeilSeniorBirdWalks.Models
 @inject NeilSeniorBirdWalks.Services.TourService TourService
 
@@ -26,7 +26,7 @@
 						</MudCardContent>
 						<MudCardActions>
 							<MudButton Variant="Variant.Filled" Color="Color.Primary" 
-							           Href="@($"/tours/location/{location.LocationCode}")">View Tours</MudButton>
+							           Href="@($"/oldtours/location/{location.LocationCode}")">View Tours</MudButton>
 						</MudCardActions>
 					</MudCard>
 				</MudItem>

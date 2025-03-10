@@ -1,4 +1,7 @@
 ﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject PageContentService DataService
+@implements IAsyncDisposable
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
     @if (Content != null)
@@ -7,7 +10,6 @@
             <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
             <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
 
-            
             <MudGrid>
                 <MudItem xs="12" md="6">
                     <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
@@ -24,7 +26,6 @@
 
             <MudDivider Class="my-6" />
 
-        
             @if (!string.IsNullOrEmpty(Content.SecondaryContent))
             {
                 <MudGrid>
@@ -44,7 +45,6 @@
                 <MudDivider Class="my-6" />
             }
 
-           
             @if (!string.IsNullOrEmpty(Content.TertiaryContent))
             {
                 <MudGrid>
@@ -74,5 +74,33 @@
 
     @code {
     [Parameter]
+    public string PageType { get; set; }
+
+    [Parameter]
     public PageContent Content { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(PageType) && Content == null)
+        {
+            Content = await DataService.GetPageContentAsync(PageType);
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(PageType) && Content == null)
+        {
+            Content = await DataService.GetPageContentAsync(PageType);
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    public virtual ValueTask DisposeAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
 }

@@ -1,5 +1,5 @@
-﻿@page "/tours/location/{location}"
-@page "/tours/location/{location}/{season}"
+﻿@page "/oldtours/location/{location}"
+@page "/oldtours/location/{location}/{season}"
 @using NeilSeniorBirdWalks.Models
 @inject NeilSeniorBirdWalks.Services.TourService TourService
 @inject NavigationManager NavigationManager
@@ -28,7 +28,7 @@
                             </MudCardContent>
                             <MudCardActions Class="d-flex justify-center">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                                           Href="@($"/tours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
+                                           Href="@($"/oldtours/location/{Location}/{season.SeasonCode}")">Select</MudButton>
                             </MudCardActions>
                         </MudCard>
                     </MudItem>
@@ -84,7 +84,7 @@
     private bool HasNavigatedBackFromSeason()
     {
         
-        return currentUrl.EndsWith($"/tours/location/{Location}") &&
+        return currentUrl.EndsWith($"/oldtours/location/{Location}") &&
                !currentUrl.Contains($"/{Location}/") &&
                !string.IsNullOrEmpty(Season);
     }
@@ -121,7 +121,7 @@
 
     private void HandleBackToSeasons()
     {
-        NavigationManager.NavigateTo($"/tours/location/{Location}");
+        NavigationManager.NavigateTo($"/oldtours/location/{Location}");
     }
 
     private string GetSeasonImage(Season season)
@@ -154,12 +154,12 @@
     private List<BreadcrumbItem> breadcrumbs => Season == null
         ? new List<BreadcrumbItem>
                 {
-                new ("Tours", "/tours"),
+                new ("Tours", "/oldtours"),
                 new (locationName ?? Location, null, true)
                 }
         : new List<BreadcrumbItem>
                 {
-                new ("Tours", "/tours"),
+                new ("Tours", "/oldtours"),
                 new (locationName ?? Location, $"/tours/location/{Location}"),
                 new (seasonName ?? Season, null, true)
                 };

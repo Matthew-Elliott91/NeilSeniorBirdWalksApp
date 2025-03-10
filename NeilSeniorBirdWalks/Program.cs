@@ -60,6 +60,7 @@ builder.Services.AddScoped<IContactService, ContactService>();
 //Mudblazor services
 builder.Services.AddMudServices();
 
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
