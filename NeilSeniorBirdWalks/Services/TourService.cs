@@ -23,42 +23,27 @@ namespace NeilSeniorBirdWalks.Services
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             var tour = await context.Tours
-                .Include(t => t.Location)
-                .Include(t => t.Season)
+                .Include(t => t.TourSeasons)  
+                .ThenInclude(ts => ts.Season)  
                 .Include(t => t.TourBirds)
                 .ThenInclude(tb => tb.Bird)
                 .FirstOrDefaultAsync(t =>
-                    t.Location.LocationCode.ToLower() == location.ToLower() &&
-                    t.Season.SeasonCode.ToLower() == season.ToLower());
+                    t.TourSeasons.Any(ts => ts.Season.SeasonCode.ToLower() == season.ToLower()));  
 
             return tour;
         }
+
 
         public async Task<List<Tour>> GetTourPricingAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.Tours
-                .Include (t => t.Location)
-                .Include(t => t.Season)
+                .Include(t => t.TourSeasons)  
+                .ThenInclude(ts => ts.Season)  
                 .Where(t => t.Price.HasValue)
                 .ToListAsync();
         }
 
-        public async Task<List<Location>> GetLocationsAsync()
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.Locations.ToListAsync();
-        }
-
-        public async Task<Location> GetLocationByCodeAsync(string locationCode)
-        {
-            if (string.IsNullOrEmpty(locationCode))
-                return null;
-
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.Locations
-                .FirstOrDefaultAsync(l => l.LocationCode.ToLower() == locationCode.ToLower());
-        }
 
         public async Task<List<Season>> GetSeasonsAsync()
         {

@@ -3,8 +3,6 @@
     public class Tour
     {
         public int TourId { get; set; }
-        public int LocationId { get; set; }
-        public int SeasonId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string InfoHeadline { get; set; }
@@ -14,8 +12,7 @@
         public int? Duration { get; set; }
 
         // Navigation properties
-        public Location Location { get; set; }
-        public Season Season { get; set; }
+        public ICollection<TourSeason> TourSeasons { get; set; }
         public ICollection<TourBird> TourBirds { get; set; }
         public ICollection<TourSchedule> TourSchedules { get; set; }
     }

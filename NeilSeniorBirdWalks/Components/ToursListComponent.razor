@@ -1,0 +1,125 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject TourScheduleService TourScheduleService
+
+
+    <MudText Typo="Typo.h3" Class="mb-4">Tour Schedules</MudText>
+    
+    @if (tourSchedules == null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudPaper Elevation="3" Class="pa-4 mb-3" Style="background-color: white">
+            <MudSelect T="int?" Label="Filter by Tour" 
+                      ValueChanged="@FilterByTour" 
+                      Clearable="true">
+                @foreach (var tourGroup in toursByIdLookup)
+                {
+                    <MudSelectItem T="int?" Value="@tourGroup.Key">@tourGroup.Value.Title</MudSelectItem>
+                }
+            </MudSelect>
+        </MudPaper>
+        
+        <MudTable Items="@filteredTourSchedules" 
+                 Hover="true" 
+                 Bordered="true"
+                 Striped="true"
+                 Loading="@(tourSchedules == null)"
+                 LoadingProgressColor="Color.Primary"
+                 Style="background-color: white">
+
+            <HeaderContent>
+                <MudTh>Image</MudTh>
+                <MudTh>Tour</MudTh>
+                <MudTh>Date & Time</MudTh>
+                <MudTh>Location</MudTh>
+                <MudTh>Available Spots</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudImage Src="@context.TourScheduleImgUrl" Width="100" Height="60" ObjectFit="ObjectFit.Cover" Class="rounded" />
+                </MudTd>
+                <MudTd>
+                    <MudText Typo="Typo.body1">@context.Tour?.Title</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText Typo="Typo.body2">@context.StartDateTime.ToString("MMM d, yyyy")</MudText>
+                    <MudText Typo="Typo.caption">@context.StartDateTime.ToString("h:mm tt") - @context.EndDateTime.ToString("h:mm tt")</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText Typo="Typo.body2">@(context.AvailableSpots?.ToString() ?? "Unlimited")</MudText>
+                </MudTd>
+                <MudTd>
+                    @if (context.IsCanceled)
+                    {
+                        <MudChip T="string" Color="Color.Error" Size="Size.Small">Canceled</MudChip>
+                    }
+                    else if (context.StartDateTime < DateTime.Now)
+                    {
+                        <MudChip T="string" Color="Color.Default" Size="Size.Small">Completed</MudChip>
+                    }
+                    else if (context.AvailableSpots <= 0)
+                    {
+                        <MudChip T="string" Color="Color.Warning" Size="Size.Small">Fully Booked</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Color="Color.Success" Size="Size.Small">Available</MudChip>
+                    }
+                </MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Filled" 
+                              Color="Color.Primary" 
+                              Size="Size.Small"
+                              Disabled="@(context.IsCanceled || context.StartDateTime < DateTime.Now || (context.AvailableSpots.HasValue && context.AvailableSpots <= 0))">
+                        Book
+                    </MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" 
+                                 Color="Color.Secondary" 
+                                 Size="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 5, 10, 15 }" />
+            </PagerContent>
+        </MudTable>
+    }
+
+
+@code {
+    private List<TourSchedule> tourSchedules;
+    private List<TourSchedule> filteredTourSchedules;
+    private Dictionary<int, Tour> toursByIdLookup = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        tourSchedules = await TourScheduleService.GetAllSchedulesAsync();
+        filteredTourSchedules = tourSchedules;
+        
+      
+        foreach (var schedule in tourSchedules)
+        {
+            if (schedule.Tour != null && !toursByIdLookup.ContainsKey(schedule.TourId))
+            {
+                toursByIdLookup.Add(schedule.TourId, schedule.Tour);
+            }
+        }
+    }
+    
+    private void FilterByTour(int? tourId)
+    {
+        if (tourId.HasValue)
+        {
+            filteredTourSchedules = tourSchedules.Where(t => t.TourId == tourId.Value).ToList();
+        }
+        else
+        {
+            filteredTourSchedules = tourSchedules;
+        }
+    }
+}
+

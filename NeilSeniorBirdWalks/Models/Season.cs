@@ -7,6 +7,6 @@
         public string SeasonName { get; set; }
         public string Description { get; set; }
 
-        public ICollection<Tour> Tours { get; set; }
+        public ICollection<TourSeason> TourSeasons { get; set; }
     }
 }

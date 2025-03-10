@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeilSeniorBirdWalks.Data;
 
@@ -11,9 +12,11 @@ using NeilSeniorBirdWalks.Data;
 namespace NeilSeniorBirdWalks.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310151246_UpdatedTourScheduleModel")]
+    partial class UpdatedTourScheduleModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,6 +340,47 @@ namespace NeilSeniorBirdWalks.Migrations
                     b.ToTable("ContactForms");
                 });
 
+            modelBuilder.Entity("NeilSeniorBirdWalks.Models.Location", b =>
+                {
+                    b.Property<int>("LocationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LocationId"));
+
+                    b.Property<string>("AutumnImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpringImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SummerImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WinterImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LocationId");
+
+                    b.ToTable("Locations");
+                });
+
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.PageContent", b =>
                 {
                     b.Property<int>("Id")
@@ -441,14 +485,25 @@ namespace NeilSeniorBirdWalks.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SeasonId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TourId");
+
+                    b.HasIndex("SeasonId");
+
+                    b.HasIndex("LocationId", "SeasonId")
+                        .IsUnique();
 
                     b.ToTable("Tours");
                 });
@@ -509,21 +564,6 @@ namespace NeilSeniorBirdWalks.Migrations
                     b.ToTable("TourSchedules");
                 });
 
-            modelBuilder.Entity("NeilSeniorBirdWalks.Models.TourSeason", b =>
-                {
-                    b.Property<int>("TourId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SeasonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TourId", "SeasonId");
-
-                    b.HasIndex("SeasonId");
-
-                    b.ToTable("TourSeasons");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -575,6 +615,25 @@ namespace NeilSeniorBirdWalks.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("NeilSeniorBirdWalks.Models.Tour", b =>
+                {
+                    b.HasOne("NeilSeniorBirdWalks.Models.Location", "Location")
+                        .WithMany("Tours")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeilSeniorBirdWalks.Models.Season", "Season")
+                        .WithMany("Tours")
+                        .HasForeignKey("SeasonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Season");
+                });
+
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.TourBird", b =>
                 {
                     b.HasOne("NeilSeniorBirdWalks.Models.Bird", "Bird")
@@ -605,33 +664,19 @@ namespace NeilSeniorBirdWalks.Migrations
                     b.Navigation("Tour");
                 });
 
-            modelBuilder.Entity("NeilSeniorBirdWalks.Models.TourSeason", b =>
-                {
-                    b.HasOne("NeilSeniorBirdWalks.Models.Season", "Season")
-                        .WithMany("TourSeasons")
-                        .HasForeignKey("SeasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NeilSeniorBirdWalks.Models.Tour", "Tour")
-                        .WithMany("TourSeasons")
-                        .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Season");
-
-                    b.Navigation("Tour");
-                });
-
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.Bird", b =>
                 {
                     b.Navigation("TourBirds");
                 });
 
+            modelBuilder.Entity("NeilSeniorBirdWalks.Models.Location", b =>
+                {
+                    b.Navigation("Tours");
+                });
+
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.Season", b =>
                 {
-                    b.Navigation("TourSeasons");
+                    b.Navigation("Tours");
                 });
 
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.Tour", b =>
@@ -639,8 +684,6 @@ namespace NeilSeniorBirdWalks.Migrations
                     b.Navigation("TourBirds");
 
                     b.Navigation("TourSchedules");
-
-                    b.Navigation("TourSeasons");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,14 +11,29 @@ namespace NeilSeniorBirdWalks.Data
 
             context.Database.Migrate();
 
-            // Seed Locations
-            if (!context.Locations.Any())
+            // Seed TourSchedules
+            if (!context.TourSchedules.Any())
             {
-                var northNorfolk = new Location { LocationCode = "northnorfolk", LocationName = "North Norfolk", Description = "Beautiful coastal area" };
-                var westNorfolk = new Location { LocationCode = "westnorfolk", LocationName = "West Norfolk", Description = "Inland marshes and fens" };
+                var tours = context.Tours.ToList();
+                var tourSchedules = new List<TourSchedule>();
+                var startDate = DateTime.Now.Date.AddDays(7); // Start scheduling a week from now
 
-                context.Locations.Add(northNorfolk);
-                context.Locations.Add(westNorfolk);
+                foreach (var tour in tours)
+                {
+                    // Create one schedule per tour
+                    tourSchedules.Add(new TourSchedule
+                    {
+                        TourId = tour.TourId,
+                        StartDateTime = startDate.AddHours(9), // 9:00 AM start
+                        EndDateTime = startDate.AddHours(9).AddMinutes(tour.Duration ?? 240), // Use tour duration or default to 4 hours
+                        AvailableSpots = 8, // Default to 8 spots available
+                        IsCanceled = false
+                    });
+
+                    startDate = startDate.AddDays(2); // Space tours two days apart
+                }
+
+                context.TourSchedules.AddRange(tourSchedules);
                 context.SaveChanges();
             }
 
@@ -59,82 +74,7 @@ namespace NeilSeniorBirdWalks.Data
             }
 
             // Seed Tours
-            if (!context.Tours.Any())
-            {
-                var tours = new Tour[]
-                {
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "northnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "spring").SeasonId,
-                        Title = "Spring North Norfolk Tour",
-                        Description = "Experience the beauty of North Norfolk during spring. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Spring Migration Special",
-                        InfoText = "Spring in North Norfolk brings vibrant wildflowers and the return of migratory birds. Perfect for spotting newly arrived species.",
-                        InfoImageUrl = "/images/tours/northnorfolk-spring.jpg",
-                        Price = 45.00m,
-                        Duration = 240
-                    },
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "northnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "autumn").SeasonId,
-                        Title = "Autumn North Norfolk Tour",
-                        Description = "Experience the beauty of North Norfolk during autumn. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Autumn Migration Spectacle",
-                        InfoText = "Autumn migration brings thousands of geese and ducks to North Norfolk's reserves. The evening murmuration displays are spectacular.",
-                        InfoImageUrl = "/images/tours/northnorfolk-autumn.jpg",
-                        Price = 50.00m,
-                        Duration = 240
-                    },
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "northnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "winter").SeasonId,
-                        Title = "Winter North Norfolk Tour",
-                        Description = "Experience the beauty of North Norfolk during winter. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Winter Coastal Specials",
-                        InfoText = "Winter transforms North Norfolk into a haven for northern visitors like Snow Buntings and Shore Larks along the beaches.",
-                        InfoImageUrl = "/images/tours/northnorfolk-winter.jpg",
-                        Price = 55.00m,
-                        Duration = 210
-                    },
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "westnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "spring").SeasonId,
-                        Title = "Spring West Norfolk Tour",
-                        Description = "Experience the beauty of West Norfolk during spring. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Spring Woodland Chorus",
-                        InfoText = "Spring in West Norfolk features dawn chorus walks and the chance to hear rare Nightingales in The Fens and woodlands.",
-                        InfoImageUrl = "/images/tours/westnorfolk-spring.jpg",
-                        Price = 45.00m,
-                        Duration = 240
-                    },
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "westnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "autumn").SeasonId,
-                        Title = "Autumn West Norfolk Tour",
-                        Description = "Experience the beauty of West Norfolk during autumn. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Autumn Swan Arrivals",
-                        InfoText = "Autumn in West Norfolk brings impressive gatherings of swans and other waterfowl to the Welney Wetland Centre.",
-                        InfoImageUrl = "/images/tours/westnorfolk-autumn.jpg",
-                        Price = 50.00m,
-                        Duration = 240
-                    },
-                    new Tour {
-                        LocationId = context.Locations.First(l => l.LocationCode == "westnorfolk").LocationId,
-                        SeasonId = context.Seasons.First(s => s.SeasonCode == "winter").SeasonId,
-                        Title = "Winter West Norfolk Tour",
-                        Description = "Experience the beauty of West Norfolk during winter. This guided tour takes you through the region's prime birdwatching spots.",
-                        InfoHeadline = "Winter Raptor Watching",
-                        InfoText = "Winter offers dramatic raptor displays across West Norfolk's open landscapes, with Hen Harriers and Short-eared Owls.",
-                        InfoImageUrl = "/images/tours/westnorfolk-winter.jpg",
-                        Price = 55.00m,
-                        Duration = 210
-                    }
-                };
-
-                context.Tours.AddRange(tours);
-                context.SaveChanges();
-            }
-
+           
 
             // Seed TourBirds with likelihood
             if (!context.TourBirds.Any())
@@ -275,5 +215,7 @@ namespace NeilSeniorBirdWalks.Data
                 context.SaveChanges();
             }
         }
+
+
     }
 }

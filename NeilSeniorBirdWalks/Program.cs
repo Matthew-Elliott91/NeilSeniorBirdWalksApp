@@ -56,6 +56,7 @@ builder.Services.AddScoped<TourService>();
 builder.Services.AddScoped<PageContentService>();
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddScoped<TourScheduleService>();
 
 //Mudblazor services
 builder.Services.AddMudServices();
