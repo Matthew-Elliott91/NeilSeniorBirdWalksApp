@@ -15,6 +15,7 @@ namespace NeilSeniorBirdWalks.Data
         public DbSet<PageContent> PageContents { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<ContactFormModel> ContactForms { get; set; }
+        public DbSet<TourSchedule> TourSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

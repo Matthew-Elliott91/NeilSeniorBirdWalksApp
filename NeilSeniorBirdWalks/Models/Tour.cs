@@ -13,8 +13,10 @@
         public decimal? Price { get; set; }
         public int? Duration { get; set; }
 
+        // Navigation properties
         public Location Location { get; set; }
         public Season Season { get; set; }
         public ICollection<TourBird> TourBirds { get; set; }
+        public ICollection<TourSchedule> TourSchedules { get; set; }
     }
 }
