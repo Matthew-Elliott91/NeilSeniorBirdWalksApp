@@ -1,53 +1,33 @@
-﻿<MudGrid>
-    <MudItem xs="12" sm="6">
-        <MudCard Elevation="3" Class="my-2" Style="background-color: white">
-            <MudCardContent>
-                <div class="d-flex justify-center align-center mb-3">
-                        <MudImage Src="/images/logo.svg" Alt="Logo" Width="100" Height="50" />
-                    <MudText Typo="Typo.h6">North Norfolk</MudText>
-                </div>
-                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consequat ex sed purus imperdiet, at aliquet justo viverra. Phasellus placerat ligula malesuada mi commodo ultrices. Vivamus viverra ac purus in eleifend. Proin at ex sem. Aliquam quis lacus ut ex dictum molestie. Mauris cursus pulvinar arcu ut facilisis. Duis ac lacinia dui, eget dictum mi. Fusce scelerisque aliquam mauris at bibendum. Etiam tincidunt blandit orci vitae mollis. Quisque a dapibus mauris.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-
-    <MudItem xs="12" sm="6">
-        <MudCard Elevation="3" Class="my-2" Style="background-color: white">
-            <MudCardContent>
-                <div class="d-flex align-center justify-center mb-3">
-	                <MudImage Src="/images/logo.svg" Alt="Logo" Width="100" Height="50" />
-                    <MudText Typo="Typo.h6">West Norfolk</MudText>
-                </div>
-                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consequat ex sed purus imperdiet, at aliquet justo viverra. Phasellus placerat ligula malesuada mi commodo ultrices. Vivamus viverra ac purus in eleifend. Proin at ex sem. Aliquam quis lacus ut ex dictum molestie. Mauris cursus pulvinar arcu ut facilisis. Duis ac lacinia dui, eget dictum mi. Fusce scelerisque aliquam mauris at bibendum. Etiam tincidunt blandit orci vitae mollis. Quisque a dapibus mauris.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-
-    <MudItem xs="12" sm="6">
-        <MudCard Elevation="3" Class="my-2" Style="background-color: white">
-            <MudCardContent>
-                <div class="d-flex justify-center align-center mb-3">
-	                <MudImage Src="/images/logo.svg" Alt="Logo" Width="100" Height="50" />
-                    <MudText Typo="Typo.h6">Tour 3</MudText>
-                </div>
-                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consequat ex sed purus imperdiet, at aliquet justo viverra. Phasellus placerat ligula malesuada mi commodo ultrices. Vivamus viverra ac purus in eleifend. Proin at ex sem. Aliquam quis lacus ut ex dictum molestie. Mauris cursus pulvinar arcu ut facilisis. Duis ac lacinia dui, eget dictum mi. Fusce scelerisque aliquam mauris at bibendum. Etiam tincidunt blandit orci vitae mollis. Quisque a dapibus mauris.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-
-    <MudItem xs="12" sm="6">
-        <MudCard Elevation="3" Class="my-2" Style="background-color: white">
-            <MudCardContent>
-                <div class="d-flex justify-center align-center mb-3">
-	                <MudImage Src="/images/logo.svg" Alt="Logo" Width="100" Height="50" />
-                    <MudText Typo="Typo.h6">Tour 4</MudText>
-                </div>
-                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consequat ex sed purus imperdiet, at aliquet justo viverra. Phasellus placerat ligula malesuada mi commodo ultrices. Vivamus viverra ac purus in eleifend. Proin at ex sem. Aliquam quis lacus ut ex dictum molestie. Mauris cursus pulvinar arcu ut facilisis. Duis ac lacinia dui, eget dictum mi. Fusce scelerisque aliquam mauris at bibendum. Etiam tincidunt blandit orci vitae mollis. Quisque a dapibus mauris.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
+﻿@inject TourService TourService
+<MudGrid>
+    @foreach (var tour in Tours)
+    {
+        <MudItem xs="12" sm="6">
+            <MudCard Elevation="3" Class="my-2" Style="background-color: white">
+                <MudCardContent>
+                    <div class="d-flex justify-center align-center mb-3">
+                        <MudImage style="height: 100px" Src="/images/logo.svg"
+                        Alt="Logo" />
+                        <MudText Typo="Typo.h6">@tour.Title</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2">@tour.Description</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
 </MudGrid>
 
 @code {
+    private List<Tour> Tours { get; set; } = new List<Tour>();
 
+    private async Task LoadToursAsync()
+    {
+        Tours = await TourService.GetAllToursAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadToursAsync();
+        
+    }
 }

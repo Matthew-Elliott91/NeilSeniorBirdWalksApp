@@ -74,7 +74,57 @@ namespace NeilSeniorBirdWalks.Data
             }
 
             // Seed Tours
-           
+            if (!context.Tours.Any())
+            {
+                var tours = new Tour[]
+                {
+        new Tour
+        {
+            Title = "North Norfolk",
+            Description = "Explore the beautiful coastal habitats of North Norfolk and its diverse bird species",
+            InfoHeadline = "Coastal Birding Experience",
+            InfoText = "Join us for a guided tour through North Norfolk's marshes, beaches, and nature reserves. Home to numerous wading birds and migratory species.",
+            InfoImageUrl = "/images/tours/north-norfolk.jpg",
+            Price = 45.00m,
+            Duration = 240 // minutes (4 hours)
+        },
+        new Tour
+        {
+            Title = "West Norfolk",
+            Description = "Discover the hidden woodland gems and wetland habitats of West Norfolk",
+            InfoHeadline = "Woodland and Wetland Birding",
+            InfoText = "West Norfolk offers a variety of habitats from ancient woodlands to managed wetlands, providing homes for woodpeckers, warblers and waterfowl.",
+            InfoImageUrl = "/images/tours/west-norfolk.jpg",
+            Price = 40.00m,
+            Duration = 180 // minutes (3 hours)
+        },
+        new Tour
+        {
+            Title = "Tour 3",
+            Description = "Bird watching in the heart of Norfolk's agricultural landscape",
+            InfoHeadline = "Farmland Birds Tour",
+            InfoText = "Explore the rich biodiversity supported by Norfolk's sustainable farming practices. See skylarks, yellowhammers, and maybe even rare birds of prey.",
+            InfoImageUrl = "/images/tours/tour-3.jpg",
+            Price = 35.00m,
+            Duration = 150 // minutes (2.5 hours)
+        },
+        new Tour
+        {
+            Title = "Tour 4",
+            Description = "Evening birding experience with focus on nocturnal species",
+            InfoHeadline = "Dusk to Dark Birding Adventure",
+            InfoText = "Experience the changing bird activity as day turns to night. Possibilities include owls, nightjars, and bats (not birds, but fascinating nonetheless!).",
+            InfoImageUrl = "/images/tours/tour-4.jpg",
+            Price = 50.00m,
+            Duration = 210 // minutes (3.5 hours)
+        }
+                };
+
+                context.Tours.AddRange(tours);
+                context.SaveChanges();
+            }
+
+
 
             // Seed TourBirds with likelihood
             if (!context.TourBirds.Any())

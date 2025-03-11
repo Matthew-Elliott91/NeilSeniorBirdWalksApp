@@ -15,35 +15,37 @@ namespace NeilSeniorBirdWalks.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<Tour> GetTourDetailsAsync(string location, string season)
+        public async Task<Tour> GetTourByIdAsync(int tourId)
         {
-            if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(season))
-                return null;
-
             await using var context = await _contextFactory.CreateDbContextAsync();
-
-            var tour = await context.Tours
-                .Include(t => t.TourSeasons)  
-                .ThenInclude(ts => ts.Season)  
+            return await context.Tours
+                .Include(t => t.TourSeasons)
+                .ThenInclude(ts => ts.Season)
                 .Include(t => t.TourBirds)
                 .ThenInclude(tb => tb.Bird)
-                .FirstOrDefaultAsync(t =>
-                    t.TourSeasons.Any(ts => ts.Season.SeasonCode.ToLower() == season.ToLower()));  
-
-            return tour;
+                .Include(t => t.TourSchedules)
+                .FirstOrDefaultAsync(t => t.TourId == tourId);
         }
 
+        public async Task<List<Tour>> GetAllToursAsync()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Tours
+                .Include(t => t.TourSeasons)
+                .ThenInclude(ts => ts.Season)
+                .Include(t => t.TourSchedules)
+                .ToListAsync();
+        }
 
         public async Task<List<Tour>> GetTourPricingAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.Tours
-                .Include(t => t.TourSeasons)  
-                .ThenInclude(ts => ts.Season)  
+                .Include(t => t.TourSeasons)
+                .ThenInclude(ts => ts.Season)
                 .Where(t => t.Price.HasValue)
                 .ToListAsync();
         }
-
 
         public async Task<List<Season>> GetSeasonsAsync()
         {
