@@ -3,64 +3,64 @@
 @inject PageContentService DataService
 @implements IAsyncDisposable
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+
     @if (Content != null)
     {
-        <MudPaper Elevation="3" Class="pa-6 mb-6" Style="background-color: white">
-            <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
-            <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
+    <MudPaper Elevation="3" Class="pa-6 mb-6" Style="background-color: white">
+        <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
+        <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
 
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                @if (!string.IsNullOrEmpty(Content.MainContentImage))
+                {
+                    <MudImage Src="@Content.MainContentImage" Alt="Main content image"
+                              Class="rounded-lg" Elevation="2"
+                              ObjectFit="ObjectFit.Cover" Width="400" Height="300" />
+                }
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-6" />
+
+        @if (!string.IsNullOrEmpty(Content.SecondaryContent))
+        {
             <MudGrid>
-                <MudItem xs="12" md="6">
-                    <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    @if (!string.IsNullOrEmpty(Content.MainContentImage))
+                <MudItem xs="12" md="6" Order="2" OrderMd="1">
+                    @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
                     {
-                        <MudImage Src="@Content.MainContentImage" Alt="Main content image"
+                        <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
                                   Class="rounded-lg" Elevation="2"
-                                  ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
+                                  ObjectFit="ObjectFit.Cover" Width="400" Height="300" />
                     }
+                </MudItem>
+                <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                    <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
                 </MudItem>
             </MudGrid>
 
             <MudDivider Class="my-6" />
+        }
 
-            @if (!string.IsNullOrEmpty(Content.SecondaryContent))
-            {
-                <MudGrid>
-                    <MudItem xs="12" md="6" Order="2" OrderMd="1">
-                        @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
-                        {
-                            <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
-                                      Class="rounded-lg" Elevation="2"
-                                      ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
-                        }
-                    </MudItem>
-                    <MudItem xs="12" md="6" Order="1" OrderMd="2">
-                        <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
-                    </MudItem>
-                </MudGrid>
-
-                <MudDivider Class="my-6" />
-            }
-
-            @if (!string.IsNullOrEmpty(Content.TertiaryContent))
-            {
-                <MudGrid>
-                    <MudItem xs="12" md="6">
-                        <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
-                    </MudItem>
-                    <MudItem xs="12" md="6">
-                        @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
-                        {
-                            <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
-                                      Class="rounded-lg" Elevation="2"
-                                      ObjectFit="ObjectFit.Cover" Width="100" Height="300" />
-                        }
-                    </MudItem>
-                </MudGrid>
-            }
+        @if (!string.IsNullOrEmpty(Content.TertiaryContent))
+        {
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+                    {
+                        <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
+                                  Class="rounded-lg" Elevation="2"
+                                  ObjectFit="ObjectFit.Cover" Width="400" Height="300" />
+                    }
+                </MudItem>
+            </MudGrid>
+        }
         </MudPaper>
     }
     else
@@ -70,7 +70,7 @@
         <MudSkeleton Width="90%" Height="20px" Class="mt-2" />
         <MudSkeleton Width="90%" Height="20px" Class="mt-1" />
     }
-    </MudContainer>
+   
 
     @code {
     [Parameter]

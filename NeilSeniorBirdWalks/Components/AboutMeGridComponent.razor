@@ -1,0 +1,117 @@
+﻿<MudPaper Class="pa-4 ma-2" Elevation="2" Style="background-color: white;">
+    <MudText Class="text-center py-4" Typo="Typo.h1">More About Me</MudText>
+    <MudGrid Class="">
+        @foreach (var index in Enumerable.Range(0, _Paragraph.Count))
+        {
+            <MudItem xs="12" sm="6" md="3" Class="@($"pa-4 position-relative {ShouldHaveBorder(index)} {ShouldHaveBottomBorder(index)}")">
+                <MudPaper Elevation="0" Class="pa-2" Style="background-color: white">
+                    <div class="d-flex flex-column align-center justify-center text-center" style="height: 100%;">
+                        <i class="@_Icons[index] display-1 mb-2"></i>
+                        <MudText Typo="Typo.h6" Class="mb-2">@_Subtitle[index]</MudText>
+                        <MudText>@_Paragraph[index]</MudText>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+</MudPaper>
+
+<style>
+    
+    .has-border::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 80px;
+        width: 1px;
+        background-color: var(--mud-palette-primary);
+    }
+
+   
+    .has-bottom-border::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 1px;
+        background-color: var(--mud-palette-primary);
+    }
+
+  
+    @@media (max-width: 599.98px) {
+       
+        .has-border::after {
+            display: none;
+        }
+       
+        .has-bottom-border::before {
+            display: block;
+        }
+    }
+
+    
+    @@media (min-width: 600px) {
+        
+        .has-border::after {
+            display: block;
+        }
+        
+        .has-bottom-border::before {
+            display: none;
+        }
+    }
+</style>
+
+@code {
+    private List<string> _Paragraph = new List<string>
+    {
+        "My Coffee and a great tune to start the day.",
+        "In 2024 I founded my own Wild Wedding Grove in the heart of the Caledonian Forest",
+        "Long walks along the coastline with my incredible wife business partner, Natalie, and our Keeshond Fenris.",
+        "Couples who plan to throw out tradition and let go of the rule book and instead want a relaxed, personal and awesome wedding celebration.",
+        "There is nothing more precious than time.",
+        "In Yorkshire but my home and life has been built in Norfolk.",
+        "The Mandalorian. This is the way.",
+        "I am a volunteer ranger for my local a RSPB project Plovers in Peril."
+    };
+
+    private List<string> _Subtitle = new List<string>
+    {
+        "I'm Obsessed With",
+        "I Plant a Tree For Every Booking",
+        "Nothing Makes Me Happier Than",
+        "I Love",
+        "I Believe",
+        "I Grew Up",
+        "I'm Addicted To",
+        "A Fun Fact About Me"
+    };
+
+    private List<string> _Icons = new List<string>
+    {
+        "bi bi-cup-hot-fill",
+        "bi bi-tree-fill",
+        "bi bi-person-walking",
+        "bi bi-balloon-heart-fill",
+        "bi bi-stopwatch-fill",
+        "bi bi-geo-alt-fill",
+        "bi bi-tv-fill",
+        "bi bi-feather"
+    };
+
+    // For right borders (desktop view)
+    private string ShouldHaveBorder(int index)
+    {
+        return (index + 1) % 4 != 0 ? "has-border" : "";
+    }
+
+    // For bottom borders (mobile view) - all items except the last one
+    private string ShouldHaveBottomBorder(int index)
+    {
+        return index < _Paragraph.Count - 1 ? "has-bottom-border" : "";
+    }
+}
