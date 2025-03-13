@@ -1,6 +1,114 @@
-﻿@page "/imagegallery"
-<h3>ImagesPage</h3>
+﻿@page "/gallery"
+@using BlobStorageLibrary.Services
+@using BlobStorageLibrary.Models
+@inject BlobStorageService BlobService
+
+<MudText Typo="Typo.h3" Class="mb-4">Image Gallery</MudText>
+
+<MudGrid>
+    @if (images == null)
+    {
+        <MudItem xs="12">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </MudItem>
+    }
+    else if (!images.Any())
+    {
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Info">No images found in storage.</MudAlert>
+        </MudItem>
+    }
+    else
+    {
+        @foreach (var image in images)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard>
+                    <MudCardMedia Image="@image.Uri" Height="200" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">@GetDisplayName(image.Name)</MudText>
+                        <MudText Typo="Typo.body2">@FormatSize(image.Size)</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                   OnClick="@(() => OpenImage(image.Uri))">View</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                   Href="@image.Uri" Target="_blank">Download</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
+
+@if (selectedImage != null)
+{
+    <MudDialog Open="dialogVisible" OnClose="CloseDialog">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@GetDisplayName(selectedImage.Name)</MudText>
+        </TitleContent>
+        <DialogContent>
+            <div style="text-align: center;">
+                <img src="@selectedImage.Uri" style="max-width: 100%; max-height: 80vh;" />
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Color="Color.Primary" OnClick="CloseDialog">Close</MudButton>
+            <MudButton Color="Color.Secondary" Href="@selectedImage.Uri" Target="_blank">Download</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
 
 @code {
+    private List<BlobImage> images;
+    private BlobImage selectedImage;
+    private bool dialogVisible;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadImagesAsync();
+    }
+
+    private async Task LoadImagesAsync()
+    {
+        // Load 50 images (or adjust as needed)
+        images = await BlobService.GetImagesWithMetaDataAsync(50);
+    }
+
+    private string GetDisplayName(string fullName)
+    {
+        // Clean up the filename for display
+        return Path.GetFileNameWithoutExtension(fullName);
+    }
+
+    private string FormatSize(long? sizeBytes)
+    {
+        if (!sizeBytes.HasValue)
+            return "Unknown size";
+
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = sizeBytes.Value;
+        int order = 0;
+
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private void OpenImage(string uri)
+    {
+        selectedImage = images.FirstOrDefault(i => i.Uri == uri);
+        dialogVisible = true;
+        StateHasChanged();
+    }
+
+    private void CloseDialog()
+    {
+        dialogVisible = false;
+        StateHasChanged();
+    }
 }
