@@ -1,69 +1,132 @@
 ﻿@inject NavigationManager NavigationManager
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner mb-2 d-flex px-0" Style="@($"overflow: hidden; background-image: url('{BackgroundImageUrl}');")">
-	<MudPaper Elevation="3" Class="header-content-box pa-4" Style="@(!DisplayContentBox ? "display: none;" : "")">
-		<MudGrid Class="header-content align-center text-center">
-			<MudItem xs="12" md="6">
-				<!-- First column - text and buttons -->
-				<MudGrid>
-					<MudItem xs="12">
-						<MudText Typo="Typo.h4" Color="Color.Primary" Class="mud-text-wrap">@Title</MudText>
-					</MudItem>
-					<MudItem xs="12">
-						<MudText Typo="Typo.h6" Class="mud-text-wrap">@Subtitle</MudText>
-					</MudItem>
-					@if (ShowButtons)
-					{
-						<MudItem xs="12" sm="4">
-							<MudButton @onclick="ViewTours" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-3" Style="color: var(--mud-palette-white);">View Tours</MudButton>
-						</MudItem>
-						<MudItem xs="12" sm="4">
-							<MudButton @onclick="AboutMe" Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="mt-3">About Me</MudButton>
-						</MudItem>
-						<MudItem xs="12" sm="4">
-							<MudButton @onclick="Calendar" Variant="Variant.Filled" Color="Color.Tertiary" FullWidth="true" Class="mt-3">Calendar</MudButton>
-						</MudItem>
-					}
-				</MudGrid>
-			</MudItem>
-			<MudItem xs="12" md="6" Class="d-flex justify-center align-center">
-				
-				<MudImage Src="@($"{ImageUrl}")" ObjectFit="ObjectFit.Cover" Fluid="true" Class="circle-image" Style="max-width: 450px; max-height: 450px;" />
-			</MudItem>
-		</MudGrid>
-	</MudPaper>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner d-flex mb-2"
+              Style="@($"overflow: hidden; background-image: url('{BackgroundImageUrl}');")">
+    <div class="content-container">
+        <div class="inner-content">
+            <MudText Typo="Typo.h1" Color="Color.Tertiary" Class="fw-bold text-shadow-strong mb-2">
+                @Title.ToUpper()
+            </MudText>
+
+            <MudText Typo="Typo.h2" Class="text-white text-shadow-strong mb-4">
+                @Subtitle.ToUpper()
+            </MudText>
+
+            @if (ShowButtons)
+            {
+                <div class="button-container">
+                    <MudButton @onclick="ViewTours" Variant="Variant.Filled" Color="Color.Primary"
+                               Class="my-2 mx-1" Style="color: var(--mud-palette-white);">
+                        View Tours
+                    </MudButton>
+                    <MudButton @onclick="AboutMe" Variant="Variant.Filled" Color="Color.Secondary"
+                               Class="my-2 mx-1">
+                        About Me
+                    </MudButton>
+                </div>
+            }
+        </div>
+    </div>
 </MudContainer>
 
+<style>
+    .header-banner {
+        min-height: 90vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        width: 100%;
+        position: relative;
+    }
+
+    .content-container {
+        padding: 2rem;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .inner-content {
+        max-width: 750px;
+        background-color: transparent;
+    }
+
+    .button-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .text-shadow-strong {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 3px rgba(0,0,0,0.8) !important;
+    }
+
+    /* Mobile styles */
+    @@media (max-width: 959.98px) {
+        .content-container
+
+    {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .inner-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .button-container .mud-button {
+            min-width: 200px;
+        }
+
+    }
+
+    /* Desktop styles */
+    @@media (min-width: 960px) {
+        .content-container
+
+    {
+        justify-content: flex-start;
+        padding: 2rem 0 0 2rem;
+    }
+
+    .button-container {
+        flex-direction: row;
+    }
+
+    }</style>
+
 @code {
-	[Parameter]
-	public string Title { get; set; } = "Explore, Discover, Soar – Birdwatching Adventures with Neil Senior!";
+    [Parameter]
+    public string Title { get; set; } = "Explore! Discover! Soar! Birdwatching Adventures with Neil Senior!";
 
-	[Parameter]
-	public string Subtitle { get; set; } = "Discover amazing content and features";
-	[Parameter]
-	public string ImageUrl { get; set; } = "/Images/Neil.jpg";
-	[Parameter]
-	public string BackgroundImageUrl { get; set; } = "/Images/HeaderImg.jpg";
-	[Parameter]
-	public bool ShowButtons { get; set; } = true;
-	[Parameter] 
-	public bool DisplayContentBox { get; set; } = true;
-	private void ViewTours()
-	{
-		NavigationManager.NavigateTo("/tours");
-	}
+    [Parameter]
+    public string Subtitle { get; set; } = "Discover amazing content and features";
+    [Parameter]
+    public string BackgroundImageUrl { get; set; } = "/Images/HeaderImg.jpg";
+    [Parameter]
+    public bool ShowButtons { get; set; } = true;
 
-	private void AboutMe()
-	{
-		NavigationManager.NavigateTo("/about");
-	}
+    private void ViewTours()
+    {
+        NavigationManager.NavigateTo("/tours");
+    }
 
-	private void Calendar()
-	{
-		NavigationManager.NavigateTo("/calendar");
-	}
+    private void AboutMe()
+    {
+        NavigationManager.NavigateTo("/about");
+    }
+
+    private void Calendar()
+    {
+        NavigationManager.NavigateTo("/calendar");
+    }
 }
-
-
-
-
