@@ -157,7 +157,7 @@ namespace NeilSeniorBirdWalks.Components.Layout
             },
             LayoutProperties = new LayoutProperties()
             {
-                AppbarHeight = "70px"
+                AppbarHeight = "80px"
             }
 
 
