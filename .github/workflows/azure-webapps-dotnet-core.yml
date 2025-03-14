@@ -38,57 +38,8 @@ jobs:
       - name: Build with dotnet
         run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release
 
-      - name: Install EF Core CLI
-        run: dotnet tool install --global dotnet-ef
-      
-      - name: Add dotnet-ef to PATH
-        run: echo "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        shell: pwsh
-        
-      - name: Create SQL directory
-        run: mkdir -p sql
-        shell: pwsh
-        
-      - name: Generate SQL Migration Script
-        run: |
-          # Create temp appsettings with connection string
-          $connectionString = "${{ secrets.DATABASE_CONNECTION_STRING }}"
-          $settings = @{ ConnectionStrings = @{ DefaultConnection = $connectionString } } | ConvertTo-Json
-          Set-Content -Path temp-appsettings.json -Value $settings
-          
-          # Debug connection string (safely)
-          if([string]::IsNullOrEmpty($Env:ConnectionStrings__DefaultConnection)) {
-            echo "ERROR: Environment variable ConnectionStrings__DefaultConnection is empty or null"
-          } else {
-            echo "Environment variable ConnectionStrings__DefaultConnection exists and is not empty"
-          }
-          
-          if(Test-Path temp-appsettings.json) {
-            echo "temp-appsettings.json created successfully"
-            Get-Content temp-appsettings.json | ForEach-Object { 
-              if($_ -match "DefaultConnection") { 
-                echo "Connection string found in config (value masked)" 
-              } else { 
-                echo $_ 
-              }
-            }
-          }
-          
-          # Run EF Core command with explicit connection string
-          dotnet ef migrations script --idempotent --output sql/migration-script.sql --project "${{ env.PROJECT_PATH }}" --context ApplicationDbContext --verbose
-        env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.DATABASE_CONNECTION_STRING }}
-        shell: pwsh
-
       - name: dotnet publish
         run: dotnet publish "${{ env.PROJECT_PATH }}" -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
-      - name: Upload migration script artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sql-scripts
-          path: sql/migration-script.sql
-          if-no-files-found: warn
 
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
@@ -111,21 +62,6 @@ jobs:
         with:
           name: blazor-app
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          
-      - name: Download SQL artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: sql-scripts
-          path: ./sql
-        continue-on-error: true
-
-      - name: Apply Database Migrations
-        uses: azure/sql-action@v1
-        with:
-          server-name: ${{ secrets.SQL_SERVER_NAME }}
-          connection-string: ${{ secrets.DATABASE_CONNECTION_STRING }}
-          sql-file: './sql/migration-script.sql'
-        continue-on-error: true
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
