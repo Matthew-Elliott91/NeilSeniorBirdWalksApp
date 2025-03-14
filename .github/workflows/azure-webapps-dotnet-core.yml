@@ -2,10 +2,11 @@
 name: Build and deploy Blazor Server app to Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: staging-neil-senior-bird-walks  # your Azure Web App name
-  AZURE_WEBAPP_PACKAGE_PATH: './publish'    # path where the web app is published
-  DOTNET_VERSION: '8.0.x'                   # .NET 8 for your project
-  PROJECT_PATH: 'NeilSeniorBirdWalks'       # path to your project
+  AZURE_WEBAPP_NAME: staging-neil-senior-bird-walks
+  AZURE_WEBAPP_PACKAGE_PATH: './publish'
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: 'NeilSeniorBirdWalks'
+  SQL_DATABASE_NAME: 'staging-neil-senior-bird-walk-database' # Add explicit database name
 
 on:
   push:
@@ -17,7 +18,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest   # Windows for SQL Server tooling support
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -38,8 +39,43 @@ jobs:
       - name: Build with dotnet
         run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release
 
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef
+      
+      - name: Add dotnet-ef to PATH
+        run: echo "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        shell: pwsh
+        
+      - name: Generate SQL Migration Script
+        run: |
+          # Create migrations output directory
+          mkdir -p sql
+          
+          # Generate complete migration script
+          dotnet ef migrations script --idempotent --output sql/migration-script.sql --project "${{ env.PROJECT_PATH }}" --context ApplicationDbContext
+          
+          # Create database verification script
+          @"
+          -- Verify we're in the correct database
+          IF DB_NAME() <> '${{ env.SQL_DATABASE_NAME }}'
+          BEGIN
+              RAISERROR('ERROR: Connected to incorrect database: %s', 16, 1, DB_NAME());
+              SET NOEXEC ON; -- Don't execute remaining script if wrong database
+          END
+          "@ | Out-File -FilePath sql/verify-database.sql -Encoding utf8
+          
+          # Combine verification and migration scripts
+          Get-Content sql/verify-database.sql, sql/migration-script.sql | Set-Content sql/complete-script.sql
+        shell: pwsh
+
       - name: dotnet publish
         run: dotnet publish "${{ env.PROJECT_PATH }}" -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Upload complete SQL script artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sql-scripts
+          path: sql/complete-script.sql
 
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
@@ -62,6 +98,20 @@ jobs:
         with:
           name: blazor-app
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          
+      - name: Download SQL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sql-scripts
+          path: ./sql
+
+      - name: Apply Database Migrations
+        uses: azure/sql-action@v1
+        with:
+          server-name: ${{ secrets.SQL_SERVER_NAME }}
+          database: ${{ env.SQL_DATABASE_NAME }} # Explicitly specify database name
+          connection-string: ${{ secrets.DATABASE_CONNECTION_STRING }}
+          sql-file: './sql/complete-script.sql'
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -70,3 +120,5 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+
