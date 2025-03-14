@@ -47,8 +47,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-var blobConnectionString = builder.Configuration["AzureBlobStorage:BlobConnectionString"];
-var containerName = builder.Configuration["AzureBlobStorage:ContainerName"];
+var blobConnectionString = builder.Configuration["BlobConnectionString"];
+var containerName = builder.Configuration["BlobContainerName"];
 builder.Services.AddSingleton(new BlobStorageService(blobConnectionString, containerName));
 
 // Update Custom Services to use DbContextFactory
