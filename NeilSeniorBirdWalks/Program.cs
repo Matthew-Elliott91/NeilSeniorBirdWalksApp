@@ -9,6 +9,7 @@ using NeilSeniorBirdWalks.Data;
 using MudBlazor;
 using MudBlazor.Services;
 using NeilSeniorBirdWalks.Services;
+using NeilSeniorBirdWalks.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -64,17 +66,25 @@ builder.Services.AddMudServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//Role initialization
+using (var scope = app.Services.CreateScope())
 {
-    app.UseMigrationsEndPoint();
+    var services = scope.ServiceProvider;
+    await RoleInitializer.InitializeAsync(services);
+
 }
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseMigrationsEndPoint();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 
 app.UseHttpsRedirection();
 
