@@ -8,6 +8,18 @@
 	<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Contact</MudNavLink>
 	<MudNavLink Href="/gallery" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Image Gallery</MudNavLink>
 	<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">News</MudNavLink>
+	<AuthorizeView>
+		<Authorized>
+			<MudNavGroup Title="Account">
+				<MudNavLink Href="/account/manage" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Manage</MudNavLink>
+				<MudNavLink Href="/account/manage/mytours" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">My Tours</MudNavLink>
+				<MudNavLink Href="/account/logout" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Logout</MudNavLink>
+			</MudNavGroup>
+		</Authorized>
+		<NotAuthorized>
+			<MudNavLink Href="/account/login" Match="NavLinkMatch.Prefix" ActiveClass="navlink-match">Login/Register</MudNavLink>
+		</NotAuthorized>
+	</AuthorizeView>
 	
 </MudNavMenu>
 

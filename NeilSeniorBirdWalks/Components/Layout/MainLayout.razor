@@ -21,9 +21,24 @@
 		<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Contact</MudText></MudNavLink>
 		<MudNavLink Href="/gallery" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Image Gallery</MudText></MudNavLink>
 		<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">News</MudText></MudNavLink>
-		<MudNavGroup Title="Account">
-			<MudNavLink Href="">Logout</MudNavLink>
-		</MudNavGroup>
+		<AuthorizeView>
+			<Authorized>
+				<MudMenu Direction="Direction.Bottom" ActivationEvent="MouseEvent.MouseOver" Class="d-none d-md-block" PopoverClass="popover-menu">
+					<ActivatorContent>
+						<MudText Typo="Typo.body1" Class="cursor-pointer">Manage Account</MudText>
+					</ActivatorContent>
+					<ChildContent>
+						<MudMenuItem Href="/account/manage" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary" Style="color:white">Manage</MudMenuItem>
+						<MudMenuItem Href="/account/manage/mytours" Icon="@Icons.Material.Filled.Event" IconColor="Color.Primary" Style="color:white">My Tours</MudMenuItem>
+						<MudMenuItem Href="/account/logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary" Style="color:white">Logout</MudMenuItem>
+					</ChildContent>
+					
+				</MudMenu>
+			</Authorized>
+			<NotAuthorized>
+				<MudNavLink Href="/account/login">Login/Register</MudNavLink>
+			</NotAuthorized>
+		</AuthorizeView>
 	</MudAppBar>
 	<MudDrawer  @bind-Open="_drawerOpen" Color="Color.Primary" >
 		<MyNavMenu/>
@@ -39,34 +54,21 @@
 				<MudStack Row="true" Spacing="2" Class="mt-2 mt-md-0">
 					<MudIconButton Icon="@Icons.Custom.Brands.Facebook" Color="Color.Primary" Href="https://facebook.com" Target="_blank" />
 					<MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Primary" Href="https://x.com/NeilSeniorLtd" Target="_blank" />
-					
+
 				</MudStack>
 			</MudContainer>
 		</MudPaper>
 	</MudContainer>
 </MudLayout>
 
+<style>
+	.popover-menu {
+		background-color: var(--mud-palette-tertiary) !important;
+	}
+</style>
+
 @code {
-	// //Theme Manager
-	// private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
-	// public bool _themeManagerOpen = false;
-
-	// void OpenThemeManager(bool value)
-	// {
-	// 	_themeManagerOpen = value;
-	// 	}
-
-	// void UpdateTheme(ThemeManagerTheme value)
-	// {
-	// 	_themeManager = value;
-	// 	StateHasChanged();
-	// 	}
-
-	// protected override void OnInitialized()
-	// {
-	// 	StateHasChanged();
-	// 	}
-
+	
 }
 
 	

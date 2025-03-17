@@ -14,6 +14,5 @@
 
         // Navigation properties
         public Tour Tour { get; set; }
-        public ICollection<GiftVoucher> GiftVouchers { get; set; }
     }
 }
