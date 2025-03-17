@@ -21,6 +21,9 @@
 		<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Contact</MudText></MudNavLink>
 		<MudNavLink Href="/gallery" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Image Gallery</MudText></MudNavLink>
 		<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">News</MudText></MudNavLink>
+		<MudNavGroup Title="Account">
+			<MudNavLink Href="">Logout</MudNavLink>
+		</MudNavGroup>
 	</MudAppBar>
 	<MudDrawer  @bind-Open="_drawerOpen" Color="Color.Primary" >
 		<MyNavMenu/>

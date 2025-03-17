@@ -1,0 +1,17 @@
+﻿@page "/account/logout"
+@using Microsoft.AspNetCore.Identity
+@using NeilSeniorBirdWalks.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<MudContainer Class="d-flex justify-center align-center" Style="height: 300px;">
+    <MudText>Logging out...</MudText>
+</MudContainer>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}
