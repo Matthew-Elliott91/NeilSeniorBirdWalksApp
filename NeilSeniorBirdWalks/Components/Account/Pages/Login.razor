@@ -5,22 +5,24 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using NeilSeniorBirdWalks.Data
+@using BlobStorageLibrary.Models
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject BlobStorageService BlobStorageService
 
 <PageTitle>Log in</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
+<MudGrid>
+   
+    <MudItem xs="12" md="6">
+        <h1>Log in to an existing account</h1>
         <section>
             <StatusMessage Message="@errorMessage" />
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
@@ -42,24 +44,58 @@
                 <div>
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
             </EditForm>
         </section>
-    </div>
-</div>
+    </MudItem>
+
+
+    <MudItem xs="12" md="6"Class="d-flex align-center justify-center">
+        @if (BlobImage != null)
+        {
+            <MudImage Src="@BlobImage.Uri" Alt="@BlobImage.Name"
+                      ObjectPosition="ObjectPosition.Center"
+                      ObjectFit="ObjectFit.Contain"
+                      Height="400" Fluid="true"></MudImage>
+        }
+        else
+        {
+            <p>No image available</p>
+        }
+    </MudItem>
+
+   
+    <MudItem xs="12" md="3">
+        <div class="d-flex flex-column gap-2">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       Href="Account/ForgotPassword"
+                       FullWidth="true">
+                Forgot your password?
+            </MudButton>
+
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       Href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))"
+                       FullWidth="true">
+                Register as a new user
+            </MudButton>
+
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       Href="Account/ResendEmailConfirmation"
+                       FullWidth="true">
+                Resend email confirmation
+            </MudButton>
+        </div>
+    </MudItem>
+</MudGrid>
+
+
+
 
 @code {
     private string? errorMessage;
+    private BlobImage? BlobImage { get; set; }
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -70,12 +106,19 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    private async Task LoadImageAsync()
+    {
+        var image = await BlobStorageService.GetImagesWithMetaDataAsync(1);
+        BlobImage = image.FirstOrDefault();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await LoadImageAsync();
         }
     }
 
@@ -105,6 +148,7 @@
             errorMessage = "Error: Invalid login attempt.";
         }
     }
+ 
 
     private sealed class InputModel
     {
