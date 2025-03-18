@@ -66,33 +66,32 @@
    
     <MudItem xs="12" md="3">
         <div class="d-flex flex-column gap-2">
-            <MudButton Variant="Variant.Outlined"
+            <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
                        Href="Account/ForgotPassword"
-                       FullWidth="true">
+                       FullWidth="true"
+                       Class="text-white">
                 Forgot your password?
             </MudButton>
 
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Secondary"
                        Href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))"
-                       FullWidth="true">
+                       FullWidth="true"
+                       Class="text-white">
                 Register as a new user
             </MudButton>
 
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Tertiary"
                        Href="Account/ResendEmailConfirmation"
-                       FullWidth="true">
+                       FullWidth="true"
+                       Class="text-white">
                 Resend email confirmation
             </MudButton>
         </div>
     </MudItem>
 </MudGrid>
-
-
-
-
 @code {
     private string? errorMessage;
     private BlobImage? BlobImage { get; set; }
