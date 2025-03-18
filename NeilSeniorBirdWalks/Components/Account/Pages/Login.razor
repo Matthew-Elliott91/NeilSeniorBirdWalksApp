@@ -105,10 +105,10 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    private async Task LoadImageAsync()
+    private async Task LoadRandomImageAsync()
     {
-        var image = await BlobStorageService.GetImagesWithMetaDataAsync(1);
-        BlobImage = image.FirstOrDefault();
+        BlobImage = await BlobStorageService.GetRandomImageAsync();
+      
     }
 
     protected override async Task OnInitializedAsync()
@@ -117,7 +117,7 @@
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            await LoadImageAsync();
+            await LoadRandomImageAsync();
         }
     }
 

@@ -55,5 +55,34 @@ namespace BlobStorageLibrary.Services
             }
             return images;
         }
+
+        public async Task<BlobImage> GetRandomImageAsync()
+        {
+            var containerClient = GetContainerClient();
+            var blobItems = new List<Azure.Storage.Blobs.Models.BlobItem>();
+
+            await foreach (var blobItem in containerClient.GetBlobsAsync())
+            {
+                blobItems.Add(blobItem);
+            }
+
+            if(blobItems.Count == 0)
+            {
+                return null;
+            }
+
+            var random = new Random();
+            var randomIndex = random.Next(0, blobItems.Count);
+            var randomBlobItem = blobItems[randomIndex];
+
+            var blobClient = containerClient.GetBlobClient(randomBlobItem.Name);
+            return new BlobImage
+            {
+                Name = randomBlobItem.Name,
+                Uri = blobClient.Uri.ToString(),
+                Size = randomBlobItem.Properties.ContentLength
+            };
+
+        }
     }
 }

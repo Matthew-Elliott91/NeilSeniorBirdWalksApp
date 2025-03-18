@@ -101,13 +101,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadImageAsync();
+        await LoadRandomImageAsync();
     }
 
-    private async Task LoadImageAsync()
+    private async Task LoadRandomImageAsync()
     {
-        var image = await BlobStorageService.GetImagesWithMetaDataAsync(1);
-        BlobImage = image.FirstOrDefault();
+        BlobImage = await BlobStorageService.GetRandomImageAsync();
+       
     }
 
     public async Task RegisterUser(EditContext editContext)
