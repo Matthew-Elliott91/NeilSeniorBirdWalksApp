@@ -1,0 +1,242 @@
+﻿@page "/tourscheduledetails/{TourScheduleId:int}"
+@using Microsoft.AspNetCore.Components.Authorization
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BookingService BookingService
+@inject NavigationManager NavigationManager
+@inject TourScheduleService TourScheduleService
+@inject ISnackbar Snackbar
+
+<PageTitle>Tour Schedule Details</PageTitle>
+
+@if (tourSchedule == null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudText>Loading tour information...</MudText>
+}
+else
+{
+   
+        <MudBreadcrumbs Items="_breadcrumbs"></MudBreadcrumbs>
+        
+        <MudGrid Class="mt-4">
+            <!-- Tour Information -->
+            <MudItem xs="12" md="8">
+                <MudCard Elevation="3">
+                    <MudCardMedia Image="@tourSchedule.Tour.InfoImageUrl" Height="300" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h4">@tourSchedule.Tour.Title</MudText>
+                        
+                        <MudDivider Class="my-3" />
+                        
+                        <MudText Typo="Typo.h5">@tourSchedule.Tour.InfoHeadline</MudText>
+                        <MudText Typo="Typo.body1" Class="my-3">@tourSchedule.Tour.InfoText</MudText>
+                        
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="About This Tour">
+                                <MudText>@tourSchedule.Tour.Description</MudText>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            
+            <!-- Tour Schedule Details Card -->
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="3" Class="h-100">
+                    <MudCardMedia Image="@tourSchedule.TourScheduleImgUrl" Height="200" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5" Class="mb-3">Schedule Details</MudText>
+                        
+                        <MudList T="string">
+                            <MudListItem T="string" Icon="@Icons.Material.Filled.CalendarToday">
+                                <MudText>Date: @tourSchedule.StartDateTime.ToString("D")</MudText>
+                            </MudListItem>
+                            <MudListItem T="string" Icon="@Icons.Material.Filled.AccessTime">
+                                <MudText>Time: @tourSchedule.StartDateTime.ToString("t") - @tourSchedule.EndDateTime.ToString("t")</MudText>
+                            </MudListItem>
+                            <MudListItem T="string" Icon="@Icons.Material.Filled.Person">
+                                <MudText>Available Spots: @tourSchedule.AvailableSpots</MudText>
+                            </MudListItem>
+                            @if (tourSchedule.Tour.Price.HasValue)
+                            {
+                                <MudListItem T="string" Icon="@Icons.Material.Filled.LocalOffer">
+                                    <MudText>Price: @tourSchedule.Tour.Price.Value.ToString("C")</MudText>
+                                </MudListItem>
+                            }
+                            @if (tourSchedule.Tour.Duration.HasValue)
+                            {
+                                <MudListItem T="string" Icon="@Icons.Material.Filled.Timer">
+                                    <MudText>Duration: @tourSchedule.Tour.Duration.Value minutes</MudText>
+                                </MudListItem>
+                            }
+                        </MudList>
+                        
+                        @if (!string.IsNullOrEmpty(tourSchedule.TourSchduleInfo))
+                        {
+                            <MudText Typo="Typo.body2" Class="mt-3">
+                                @tourSchedule.TourSchduleInfo
+                            </MudText>
+                        }
+                        
+                        @if (tourSchedule.IsCanceled)
+                        {
+                            <MudAlert Severity="Severity.Error" Class="mt-3">This tour has been canceled</MudAlert>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            
+            <!-- Booking Section -->
+            <MudItem xs="12" Class="mt-4">
+                <MudPaper Elevation="3" Class="pa-4">
+                    <MudText Typo="Typo.h5">Book This Tour</MudText>
+                    
+                    @if (tourSchedule.IsCanceled)
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-3">This tour has been canceled and cannot be booked.</MudAlert>
+                    }
+                    else if (tourSchedule.AvailableSpots <= 0)
+                    {
+                        <MudAlert Severity="Severity.Warning" Class="mt-3">This tour is fully booked.</MudAlert>
+                    }
+                    else if (tourSchedule.StartDateTime < DateTime.Now)
+                    {
+                        <MudAlert Severity="Severity.Warning" Class="mt-3">This tour has already started and cannot be booked.</MudAlert>
+                    }
+                    else
+                    {
+                        <AuthorizeView>
+                            <Authorized>
+                                <MudForm @bind-IsValid="@formIsValid" Class="mt-3">
+                                <MudNumericField T="int" @bind-Value="booking.NumberOfParticipants"
+                                                 Label="Number of Participants"
+                                                 Variant="Variant.Outlined"
+                                                 Min="1"
+                                                 Max="@(tourSchedule.AvailableSpots ?? 1)"
+                                                 Required="true"
+                                                 RequiredError="Please enter the number of participants" />
+                                    
+                                    <MudButton Variant="Variant.Filled" 
+                                               Color="Color.Primary" 
+                                               OnClick="HandleBookingAsync" 
+                                               Disabled="!formIsValid || isProcessing"
+                                               Class="mt-3">
+                                        @if (isProcessing)
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                            <MudText Class="ms-2">Processing</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText>Book Now</MudText>
+                                        }
+                                    </MudButton>
+                                </MudForm>
+                            </Authorized>
+                            <NotAuthorized>
+                                <MudAlert Severity="Severity.Info" Class="mt-3">
+                                    Please log in to book this tour.
+                                </MudAlert>
+                                <MudButton Variant="Variant.Filled" 
+                                           Color="Color.Primary" 
+                                           Href="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")"
+                                           Class="mt-3">
+                                    Log in to Book
+                                </MudButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    
+}
+
+
+
+@code {
+    [Parameter]
+    public int TourScheduleId { get; set; }
+
+    private TourSchedule tourSchedule;
+    private Booking booking = new Booking();
+    private bool isAuthenticated = false;
+    private bool isLoading = true;
+    private bool formIsValid;
+    private bool isProcessing;
+
+    private List<BreadcrumbItem> _breadcrumbs = new List<BreadcrumbItem>
+	{
+		new BreadcrumbItem("Home", href: "/"),
+		new BreadcrumbItem("Tours", href: "/tours"),
+		new BreadcrumbItem("Tour Details", href: null, disabled: true)
+	};
+
+    protected override async Task OnInitializedAsync()
+    {
+        // get the authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAuthenticated = user.Identity.IsAuthenticated;
+
+     
+        tourSchedule = await TourScheduleService.GetScheduleByIdAsync(TourScheduleId);
+
+        if (tourSchedule != null)
+        {
+            _breadcrumbs[2] = new BreadcrumbItem(tourSchedule.Tour.Title, href: null, disabled: true);
+            booking.TourScheduleId = TourScheduleId;
+
+            // If not authenticated, redirect to login
+            if (!isAuthenticated)
+            {
+                string returnUrl = Uri.EscapeDataString($"/tourscheduledetails/{TourScheduleId}");
+                NavigationManager.NavigateTo($"Account/Login?ReturnUrl={returnUrl}", forceLoad: false);
+                return; 
+            }
+
+         
+            booking.UserId = user.FindFirst(c => c.Type == "sub")?.Value ??
+                             user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            isLoading = false;
+        }
+    }
+
+
+
+    private async Task HandleBookingAsync()
+    {
+        if (!formIsValid || tourSchedule.AvailableSpots < booking.NumberOfParticipants)
+        {
+            return;
+        }
+        isProcessing = true;
+
+        try
+        {
+			//Create the booking
+			await BookingService.CreateBookingAsync(booking);
+			// Update the available spots
+			tourSchedule.AvailableSpots -= booking.NumberOfParticipants;
+			await TourScheduleService.UpdateScheduleAsync(tourSchedule);
+			//Show success message
+			Snackbar.Add("Booking successful", Severity.Success);
+			//Redirect to MyTours
+			NavigationManager.NavigateTo("/mytours");
+            
+            
+        }
+		catch (Exception ex)
+		{
+            Snackbar.Add($"Error booking tour: {ex.Message}", Severity.Error);
+		}
+		finally
+		{
+			isProcessing = false;
+		}
+    }
+}
+
