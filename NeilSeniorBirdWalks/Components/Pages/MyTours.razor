@@ -121,7 +121,6 @@
     {
         bookings = await BookingService.GetBookingsByUserIdAsync(userId);
     }
-
     private async Task OpenEditDialog(Booking booking)
     {
         var parameters = new DialogParameters
@@ -133,23 +132,26 @@
         var dialog = await DialogService.ShowAsync<EditBookingDialog>("Update Booking", parameters);
         var result = await dialog.Result;
 
-        if (!result.Canceled) 
+        if (!result.Canceled)
         {
             var newParticipantCount = (int)result.Data;
+            int originalCount = booking.NumberOfParticipants;
 
-            // Calculate the difference between old and new participant count
-            var participantDifference = newParticipantCount - booking.NumberOfParticipants;
-
-        
+            // Update booking
             booking.NumberOfParticipants = newParticipantCount;
-            await BookingService.UpdateBookingAsync(booking);
 
-          
-            booking.TourSchedule.AvailableSpots -= participantDifference;
-            await TourScheduleService.UpdateScheduleAsync(booking.TourSchedule);
+            try
+            {
+                // Use the enhanced service that properly handles spot adjustment
+                await BookingService.UpdateBookingAsync(booking, originalCount);
 
-            Snackbar.Add("Booking updated successfully!", Severity.Success);
-            await LoadBookings();
+                Snackbar.Add("Booking updated successfully!", Severity.Success);
+                await LoadBookings(); // Reload to get fresh data
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error updating booking: {ex.Message}", Severity.Error);
+            }
         }
     }
 
@@ -165,19 +167,24 @@
         var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Confirm Cancellation", parameters);
         var result = await dialog.Result;
 
-        if (!result.Canceled)  
+        if (!result.Canceled)
         {
-          
-            booking.TourSchedule.AvailableSpots += booking.NumberOfParticipants;
-            await TourScheduleService.UpdateScheduleAsync(booking.TourSchedule);
+            try
+            {
+                // Use the enhanced service that will properly handle returning spots
+                await BookingService.DeleteBookingAsync(booking.Id);
 
-            // Delete the booking
-            await BookingService.DeleteBookingAsync(booking.Id);
-
-            Snackbar.Add("Booking canceled successfully!", Severity.Success);
-            await LoadBookings();
+                Snackbar.Add("Booking canceled successfully!", Severity.Success);
+                await LoadBookings(); // Reload to get fresh data
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error canceling booking: {ex.Message}", Severity.Error);
+            }
         }
     }
+}
+    
 
 
 }

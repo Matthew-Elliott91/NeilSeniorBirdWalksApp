@@ -6,7 +6,7 @@
         public int TourId { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
-        public int? AvailableSpots { get; set; }
+        public int? AvailableSpots { get; set; } = 8;
         public bool IsCanceled { get; set; }
         public string TourScheduleImgUrl { get; set; } = "images/logo.svg";
         public string? TourSchduleInfo { get; set; }

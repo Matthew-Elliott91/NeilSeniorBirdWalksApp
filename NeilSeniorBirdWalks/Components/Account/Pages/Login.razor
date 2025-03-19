@@ -42,10 +42,18 @@
                     </label>
                 </div>
                 <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary mb-3">Log in</button>
                 </div>
             </EditForm>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Href="Account/register"
+                       FullWidth="true"
+                       Class="text-white">
+                Dont Have an Account? Click Here To Register!
+            </MudButton>
         </section>
+        
     </MudItem>
 
 
@@ -67,23 +75,14 @@
     <MudItem xs="12" md="3">
         <div class="d-flex flex-column gap-2">
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
+                       Color="Color.Secondary"
                        Href="Account/ForgotPassword"
                        FullWidth="true"
                        Class="text-white">
                 Forgot your password?
             </MudButton>
-
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Secondary"
-                       Href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))"
-                       FullWidth="true"
-                       Class="text-white">
-                Register as a new user
-            </MudButton>
-
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Tertiary"
+                       Color="Color.Primary"
                        Href="Account/ResendEmailConfirmation"
                        FullWidth="true"
                        Class="text-white">
@@ -147,7 +146,6 @@
             errorMessage = "Error: Invalid login attempt.";
         }
     }
- 
 
     private sealed class InputModel
     {

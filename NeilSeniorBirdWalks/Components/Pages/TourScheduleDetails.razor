@@ -241,39 +241,31 @@
         }
     }
 
-
-
     private async Task HandleBookingAsync()
     {
-        if (!formIsValid || tourSchedule.AvailableSpots < booking.NumberOfParticipants)
+        if (!formIsValid)
         {
             return;
         }
+
         isProcessing = true;
 
         try
         {
-			//Create the booking
-			await BookingService.CreateBookingAsync(booking);
-			
-			// Update the available spots
-			tourSchedule.AvailableSpots -= booking.NumberOfParticipants;
-			await TourScheduleService.UpdateScheduleAsync(tourSchedule);
-			//Show success message
-			Snackbar.Add("Booking successful", Severity.Success);
-			//Redirect to MyTours
-			NavigationManager.NavigateTo("/mytours");
             
-            
+            await BookingService.CreateBookingAsync(booking);
+
+            Snackbar.Add("Booking successful", Severity.Success);
+            NavigationManager.NavigateTo("/mytours");
         }
-		catch (Exception ex)
-		{
+        catch (Exception ex)
+        {
             Snackbar.Add($"Error booking tour: {ex.Message}", Severity.Error);
-		}
-		finally
-		{
-			isProcessing = false;
-		}
+        }
+        finally
+        {
+            isProcessing = false;
+        }
     }
 
     private void IncrementParticipants()
