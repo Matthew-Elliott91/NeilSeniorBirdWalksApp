@@ -10,29 +10,30 @@
 
 <PageTitle>Tour Schedule Details</PageTitle>
 
-@if (tourSchedule == null)
-{
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-    <MudText>Loading tour information...</MudText>
-}
-else
-{
-   
+<MudContainer>
+    @if (tourSchedule == null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        <MudText>Loading tour information...</MudText>
+    }
+    else
+    {
+
         <MudBreadcrumbs Items="_breadcrumbs"></MudBreadcrumbs>
-        
+
         <MudGrid Class="mt-4">
-           
+
             <MudItem xs="12" md="8">
                 <MudCard Elevation="3">
                     <MudCardMedia Image="@tourSchedule.Tour.InfoImageUrl" Height="300" />
                     <MudCardContent>
                         <MudText Typo="Typo.h4">@tourSchedule.Tour.Title</MudText>
-                        
+
                         <MudDivider Class="my-3" />
-                        
+
                         <MudText Typo="Typo.h5">@tourSchedule.Tour.InfoHeadline</MudText>
                         <MudText Typo="Typo.body1" Class="my-3">@tourSchedule.Tour.InfoText</MudText>
-                        
+
                         <MudExpansionPanels>
                             <MudExpansionPanel Text="About This Tour">
                                 <MudText>@tourSchedule.Tour.Description</MudText>
@@ -41,14 +42,14 @@ else
                     </MudCardContent>
                 </MudCard>
             </MudItem>
-            
-           
+
+
             <MudItem xs="12" md="4">
                 <MudCard Elevation="3" Class="h-100">
                     <MudCardMedia Image="@tourSchedule.TourScheduleImgUrl" Height="200" />
                     <MudCardContent>
                         <MudText Typo="Typo.h5" Class="mb-3">Schedule Details</MudText>
-                        
+
                         <MudList T="string">
                             <MudListItem T="string" Icon="@Icons.Material.Filled.CalendarToday">
                                 <MudText>Date: @tourSchedule.StartDateTime.ToString("D")</MudText>
@@ -72,14 +73,14 @@ else
                                 </MudListItem>
                             }
                         </MudList>
-                        
+
                         @if (!string.IsNullOrEmpty(tourSchedule.TourSchduleInfo))
                         {
                             <MudText Typo="Typo.body2" Class="mt-3">
                                 @tourSchedule.TourSchduleInfo
                             </MudText>
                         }
-                        
+
                         @if (tourSchedule.IsCanceled)
                         {
                             <MudAlert Severity="Severity.Error" Class="mt-3">This tour has been canceled</MudAlert>
@@ -87,12 +88,12 @@ else
                     </MudCardContent>
                 </MudCard>
             </MudItem>
-            
-           
+
+
             <MudItem xs="12" Class="mt-4">
                 <MudPaper Elevation="3" Class="pa-4">
                     <MudText Typo="Typo.h5">Book This Tour</MudText>
-                    
+
                     @if (tourSchedule.IsCanceled)
                     {
                         <MudAlert Severity="Severity.Error" Class="mt-3">This tour has been canceled and cannot be booked.</MudAlert>
@@ -105,44 +106,75 @@ else
                     {
                         <MudAlert Severity="Severity.Warning" Class="mt-3">This tour has already started and cannot be booked.</MudAlert>
                     }
+                    else if (userHasBooking)
+                    {
+                        <MudAlert Severity="Severity.Info" Class="mt-3">
+                            You have already booked this tour.
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/mytours" Class="ml-2">
+                                View My Bookings
+                            </MudButton>
+                        </MudAlert>
+                    }
                     else
                     {
                         <AuthorizeView>
                             <Authorized>
                                 <MudForm @bind-IsValid="@formIsValid" Class="mt-3">
-                                <MudNumericField T="int" @bind-Value="booking.NumberOfParticipants"
-                                                 Label="Number of Participants"
-                                                 Variant="Variant.Outlined"
-                                                 Min="1"
-                                                 Max="@(tourSchedule.AvailableSpots ?? 1)"
-                                                 Required="true"
-                                                 RequiredError="Please enter the number of participants" />
-                                    
-                                    <MudButton Variant="Variant.Filled" 
-                                               Color="Color.Primary" 
-                                               OnClick="HandleBookingAsync" 
-                                               Disabled="!formIsValid || isProcessing"
-                                               Class="mt-3">
-                                        @if (isProcessing)
-                                        {
-                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                            <MudText Class="ms-2">Processing</MudText>
-                                        }
-                                        else
-                                        {
-                                            <MudText>Book Now</MudText>
-                                        }
-                                    </MudButton>
+                                    <MudText Typo="Typo.subtitle1" Class="mb-2">How many people are you booking for?</MudText>
+
+                                    <div class="d-flex align-center">
+                                        <MudButton OnClick="() => DecrementParticipants()"
+                                        Disabled="booking.NumberOfParticipants <= 1"
+                                        Variant="Variant.Filled"
+                                        Color="Color.Secondary"
+                                        Size="Size.Medium">
+                                            <MudIcon Icon="@Icons.Material.Filled.Remove" />
+                                        </MudButton>
+
+                                        <MudText Typo="Typo.h5" Class="mx-4">@booking.NumberOfParticipants</MudText>
+
+                                        <MudButton OnClick="() => IncrementParticipants()"
+                                        Disabled="booking.NumberOfParticipants >= (tourSchedule.AvailableSpots ?? 1)"
+                                        Variant="Variant.Filled"
+                                        Color="Color.Secondary"
+                                        Size="Size.Medium">
+                                            <MudIcon Icon="@Icons.Material.Filled.Add" />
+                                        </MudButton>
+                                    </div>
+
+                                    <MudText Typo="Typo.caption" Class="mt-1">
+                                        Maximum @(tourSchedule.AvailableSpots ?? 1) spots available
+                                    </MudText>
+
+                                    <div class="d-flex justify-end mt-4">
+                                        <MudButton Variant="Variant.Filled"
+                                        Color="Color.Primary"
+                                        OnClick="HandleBookingAsync"
+                                        Disabled="isProcessing"
+                                        Size="Size.Large">
+                                            @if (isProcessing)
+                                            {
+                                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                                <MudText Class="ms-2">Processing</MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="mr-2" />
+                                                <MudText>Book Now</MudText>
+                                            }
+                                        </MudButton>
+                                    </div>
                                 </MudForm>
+
                             </Authorized>
                             <NotAuthorized>
                                 <MudAlert Severity="Severity.Info" Class="mt-3">
                                     Please log in to book this tour.
                                 </MudAlert>
-                                <MudButton Variant="Variant.Filled" 
-                                           Color="Color.Primary" 
-                                           Href="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")"
-                                           Class="mt-3">
+                                <MudButton Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                Href="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")"
+                                Class="mt-3">
                                     Log in to Book
                                 </MudButton>
                             </NotAuthorized>
@@ -151,9 +183,9 @@ else
                 </MudPaper>
             </MudItem>
         </MudGrid>
-    
-}
 
+    }
+</MudContainer>
 
 
 @code {
@@ -161,11 +193,12 @@ else
     public int TourScheduleId { get; set; }
 
     private TourSchedule tourSchedule;
-    private Booking booking = new Booking();
+    private Booking booking = new Booking { NumberOfParticipants = 1 };
     private bool isAuthenticated = false;
     private bool isLoading = true;
-    private bool formIsValid;
+    private bool formIsValid = true;
     private bool isProcessing;
+    private bool userHasBooking;
 
     private List<BreadcrumbItem> _breadcrumbs = new List<BreadcrumbItem>
 	{
@@ -201,6 +234,9 @@ else
             booking.UserId = user.FindFirst(c => c.Type == "sub")?.Value ??
                              user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+			// Check if the user has already booked this tour
+			userHasBooking = await BookingService.UserHasBookingAsync(booking.UserId, TourScheduleId);
+
             isLoading = false;
         }
     }
@@ -219,6 +255,7 @@ else
         {
 			//Create the booking
 			await BookingService.CreateBookingAsync(booking);
+			
 			// Update the available spots
 			tourSchedule.AvailableSpots -= booking.NumberOfParticipants;
 			await TourScheduleService.UpdateScheduleAsync(tourSchedule);
@@ -238,5 +275,22 @@ else
 			isProcessing = false;
 		}
     }
+
+    private void IncrementParticipants()
+    {
+        if (booking.NumberOfParticipants < (tourSchedule.AvailableSpots ?? 1))
+        {
+            booking.NumberOfParticipants++;
+        }
+    }
+
+    private void DecrementParticipants()
+    {
+        if (booking.NumberOfParticipants > 1)
+        {
+            booking.NumberOfParticipants--;
+        }
+    }
+
 }
 

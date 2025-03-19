@@ -39,5 +39,11 @@ namespace NeilSeniorBirdWalks.Services
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<bool> UserHasBookingAsync(string userId, int tourScheduleId)
+        {
+            return await _context.Bookings
+                .AnyAsync(b => b.UserId == userId && b.TourScheduleId == tourScheduleId);
+        }
     }
 }
