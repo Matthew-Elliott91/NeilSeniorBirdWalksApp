@@ -2,112 +2,116 @@
 @using NeilSeniorBirdWalks.Services
 @inject TourScheduleService TourScheduleService
 
-@if (tourSchedules == null)
-{
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-}
-else
-{
-    <MudPaper Elevation="3" Class="pa-4 mb-3" Style="background-color: white">
-        <div class="d-flex justify-center align-center flex-wrap gap-2">
-            <MudButton Variant="@(currentFilter == null ? Variant.Filled : Variant.Outlined)" 
-                      Color="Color.Primary" 
-                      OnClick="@(() => FilterByDateAndTour(null))">
-                <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="mr-2" />
-                By Date
-            </MudButton>
-            
-            @foreach (var tour in distinctTours)
-            {
-                var tourId = tour.Key;
-                var tourName = tour.Value;
-                <MudButton Variant="@(currentFilter == tourId ? Variant.Filled : Variant.Outlined)" 
-                          Color="Color.Secondary"
-                          OnClick="@(() => FilterByDateAndTour(tourId))">
-                    <MudIcon Icon="@Icons.Material.Filled.Map" Class="mr-2" />
-                    @tourName
+<MudContainer>
+    @if (tourSchedules == null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudPaper Elevation="3" Class="pa-4 mb-3" Style="background-color: white">
+            <div class="d-flex justify-center align-center flex-wrap gap-2">
+                <MudButton Variant="@(currentFilter == null ? Variant.Filled : Variant.Outlined)"
+                           Color="Color.Primary"
+                           OnClick="@(() => FilterByDateAndTour(null))">
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="mr-2" />
+                    By Date
                 </MudButton>
-            }
-        </div>
-    </MudPaper>
-    
-    <MudGrid>
-        @foreach (var schedule in currentPageItems)
-        {
-            <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="3" Class="mb-4" Style="background-color: white">
-                    <MudCardHeader>
-                        <CardHeaderAvatar>
-                            <MudAvatar Color="Color.Secondary">
-                                @(schedule.Tour?.Title?.Substring(0, 1) ?? "T")
-                            </MudAvatar>
-                        </CardHeaderAvatar>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">@schedule.Tour?.Title</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                @schedule.StartDateTime.ToString("MMM d, yyyy")
-                            </MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            @if (schedule.IsCanceled)
-                            {
-                                <MudChip T="string" Color="Color.Error" Size="Size.Small">Canceled</MudChip>
-                            }
-                            else if (schedule.StartDateTime < DateTime.Now)
-                            {
-                                <MudChip T="string" Color="Color.Default" Size="Size.Small">Completed</MudChip>
-                            }
-                            else if (schedule.AvailableSpots <= 0)
-                            {
-                                <MudChip T="string" Color="Color.Warning" Size="Size.Small">Fully Booked</MudChip>
-                            }
-                            else
-                            {
-                                <MudChip T="string" Color="Color.Success" Size="Size.Small">Available</MudChip>
-                            }
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardMedia Image="@schedule.TourScheduleImgUrl" Height="200" />
-                    <MudCardContent>
-                        <div class="d-flex flex-column">
-                            <MudText Typo="Typo.body2" Class="mb-2">
-                                <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" Class="mr-1" />
-                                @schedule.StartDateTime.ToString("h:mm tt") - @schedule.EndDateTime.ToString("h:mm tt")
-                            </MudText>
-                            <MudText Typo="Typo.body2">
-                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Class="mr-1" />
-                                @(schedule.AvailableSpots?.ToString() ?? "Unlimited") Spots Available
-                            </MudText>
-                        </div>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Filled" 
-                                  Color="Color.Primary" 
-                                  FullWidth="true"
-                                  Disabled="@(schedule.IsCanceled || schedule.StartDateTime < DateTime.Now || 
-                                           (schedule.AvailableSpots.HasValue && schedule.AvailableSpots <= 0))">
-                            Book Now
-                        </MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        }
-    </MudGrid>
 
-    @if (!currentPageItems.Any())
-    {
-        <MudPaper Elevation="0" Class="pa-6 text-center">
-            <MudText Typo="Typo.h6">No tours available for this selection</MudText>
+                @foreach (var tour in distinctTours)
+                {
+                    var tourId = tour.Key;
+                    var tourName = tour.Value;
+                    <MudButton Variant="@(currentFilter == tourId ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Secondary"
+                               OnClick="@(() => FilterByDateAndTour(tourId))">
+                        <MudIcon Icon="@Icons.Material.Filled.Map" Class="mr-2" />
+                        @tourName
+                    </MudButton>
+                }
+            </div>
         </MudPaper>
-    }
 
-    @if (filteredSchedules.Count > PageSize)
-    {
-        <MudPagination Count="@((int)Math.Ceiling(filteredSchedules.Count / (double)PageSize))" 
-                      SelectedChanged="@PageChanged" 
-                      Class="pa-4 d-flex justify-center" />
+        <MudGrid>
+            @foreach (var schedule in currentPageItems)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3" Class="mb-4" Style="background-color: white">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Secondary">
+                                    @(schedule.Tour?.Title?.Substring(0, 1) ?? "T")
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@schedule.Tour?.Title</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    @schedule.StartDateTime.ToString("MMM d, yyyy")
+                                </MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                @if (schedule.IsCanceled)
+                                {
+                                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Canceled</MudChip>
+                                }
+                                else if (schedule.StartDateTime < DateTime.Now)
+                                {
+                                    <MudChip T="string" Color="Color.Default" Size="Size.Small">Completed</MudChip>
+                                }
+                                else if (schedule.AvailableSpots <= 0)
+                                {
+                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Fully Booked</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Available</MudChip>
+                                }
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardMedia Image="@schedule.TourScheduleImgUrl" Height="200" />
+                        <MudCardContent>
+                            <div class="d-flex flex-column">
+                                <MudText Typo="Typo.body2" Class="mb-2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" Class="mr-1" />
+                                    @schedule.StartDateTime.ToString("h:mm tt") - @schedule.EndDateTime.ToString("h:mm tt")
+                                </MudText>
+                                <MudText Typo="Typo.body2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Class="mr-1" />
+                                    @(schedule.AvailableSpots?.ToString() ?? "Unlimited") Spots Available
+                                </MudText>
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       FullWidth="true"
+                                       Disabled="@(schedule.IsCanceled || schedule.StartDateTime < DateTime.Now ||
+                                           (schedule.AvailableSpots.HasValue && schedule.AvailableSpots <= 0))"
+                                       Href=@($"/tourscheduledetails/{schedule.Id}")>
+                                Book Now
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+
+        @if (!currentPageItems.Any())
+        {
+            <MudPaper Elevation="0" Class="pa-6 text-center">
+                <MudText Typo="Typo.h6">No tours available for this selection</MudText>
+            </MudPaper>
+        }
+
+        @if (filteredSchedules.Count > PageSize)
+        {
+            <MudPagination Count="@((int)Math.Ceiling(filteredSchedules.Count / (double)PageSize))"
+                           SelectedChanged="@PageChanged"
+                           Class="pa-4 d-flex justify-center" />
+        }
     }
-}
+</MudContainer>
+
 
 @code {
     private List<TourSchedule> tourSchedules;
