@@ -2,9 +2,13 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BookingService BookingService
+@inject TourScheduleService TourScheduleService
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>My Tours</PageTitle>
 
@@ -60,6 +64,18 @@
                                                Href="@($"/tourscheduledetails/{booking.TourScheduleId}")">
                                         View Details
                                     </MudButton>
+                                    <MudSpacer />
+                                    @if (!booking.TourSchedule.IsCanceled && booking.TourSchedule.StartDateTime > DateTime.Now.AddDays(1))
+                                    {
+                                        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Secondary" Edge="Edge.End">
+                                            <MudMenuItem OnClick="() => OpenEditDialog(booking)" Icon="@Icons.Material.Filled.Edit">
+                                                Update Participants
+                                            </MudMenuItem>
+                                            <MudMenuItem OnClick="() => OpenCancelDialog(booking)" Icon="@Icons.Material.Filled.Cancel">
+                                                Cancel Booking
+                                            </MudMenuItem>
+                                        </MudMenu>
+                                    }
                                 </MudCardActions>
                             </MudCard>
                         </MudItem>
@@ -73,7 +89,7 @@
                 <MudText Typo="Typo.h5" Class="mb-2">Authentication Required</MudText>
                 <MudText Class="mb-4">You must be logged in to view your booked tours.</MudText>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                           Link="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")">
+                           Href="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")">
                     Log in
                 </MudButton>
             </MudPaper>
@@ -105,4 +121,64 @@
     {
         bookings = await BookingService.GetBookingsByUserIdAsync(userId);
     }
+
+    private async Task OpenEditDialog(Booking booking)
+    {
+        var parameters = new DialogParameters
+            {
+                ["Booking"] = booking,
+                ["MaxParticipants"] = booking.TourSchedule.AvailableSpots + booking.NumberOfParticipants
+            };
+
+        var dialog = await DialogService.ShowAsync<EditBookingDialog>("Update Booking", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled) 
+        {
+            var newParticipantCount = (int)result.Data;
+
+            // Calculate the difference between old and new participant count
+            var participantDifference = newParticipantCount - booking.NumberOfParticipants;
+
+        
+            booking.NumberOfParticipants = newParticipantCount;
+            await BookingService.UpdateBookingAsync(booking);
+
+          
+            booking.TourSchedule.AvailableSpots -= participantDifference;
+            await TourScheduleService.UpdateScheduleAsync(booking.TourSchedule);
+
+            Snackbar.Add("Booking updated successfully!", Severity.Success);
+            await LoadBookings();
+        }
+    }
+
+    private async Task OpenCancelDialog(Booking booking)
+    {
+        var parameters = new DialogParameters
+            {
+                ["ContentText"] = $"Are you sure you want to cancel your booking for {booking.TourSchedule.Tour.Title} on {booking.TourSchedule.StartDateTime.ToString("D")}?",
+                ["ButtonText"] = "Cancel Booking",
+                ["Color"] = Color.Error
+            };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Confirm Cancellation", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)  
+        {
+          
+            booking.TourSchedule.AvailableSpots += booking.NumberOfParticipants;
+            await TourScheduleService.UpdateScheduleAsync(booking.TourSchedule);
+
+            // Delete the booking
+            await BookingService.DeleteBookingAsync(booking.Id);
+
+            Snackbar.Add("Booking canceled successfully!", Severity.Success);
+            await LoadBookings();
+        }
+    }
+
+
 }
+

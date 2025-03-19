@@ -30,6 +30,13 @@ namespace NeilSeniorBirdWalks.Services
             return booking;
         }
 
+        public async Task<Booking> UpdateBookingAsync(Booking booking)
+        {
+            _context.Bookings.Update(booking);
+            await _context.SaveChangesAsync();
+            return booking;
+        }
+
         public async Task DeleteBookingAsync(int bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);

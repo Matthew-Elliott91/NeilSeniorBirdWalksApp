@@ -1,0 +1,46 @@
+﻿@using NeilSeniorBirdWalks.Models
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Update number of participants for your booking:</MudText>
+        <MudNumericField T="int"
+                         @bind-Value="ParticipantCount"
+                         Label="Number of Participants"
+                         Variant="Variant.Outlined"
+                         Min="1"
+                         Max="@MaxParticipants"
+                         Required="true"
+                         Immediate="true"
+                         Class="mt-3" />
+        <MudText Typo="Typo.caption">Only @MaxParticipants spots left</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Booking Booking { get; set; }
+
+    [Parameter]
+    public int MaxParticipants { get; set; }
+
+    private int ParticipantCount { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ParticipantCount = Booking.NumberOfParticipants;
+    }
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(ParticipantCount));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
+
