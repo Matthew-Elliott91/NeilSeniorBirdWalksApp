@@ -1,6 +1,108 @@
 ﻿@page "/mytours"
-<h3>MyTours</h3>
+@using Microsoft.AspNetCore.Components.Authorization
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BookingService BookingService
+@inject NavigationManager NavigationManager
+
+<PageTitle>My Tours</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+    <MudText Typo="Typo.h3" Class="mb-4">My Tours</MudText>
+
+    <AuthorizeView>
+        <Authorized>
+            @if (isLoading)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                <MudText>Loading your tours...</MudText>
+            }
+            else if (bookings == null || !bookings.Any())
+            {
+                <MudPaper Elevation="2" Class="pa-4 mb-4">
+                    <MudText>You haven't booked any tours yet.</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/tours" Class="mt-3">
+                        Browse Available Tours
+                    </MudButton>
+                </MudPaper>
+            }
+            else
+            {
+                <MudGrid>
+                    @foreach (var booking in bookings)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="3" Class="h-100">
+                                <MudCardMedia Image="@booking.TourSchedule.TourScheduleImgUrl" Height="200" />
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h5" Class="mb-2">@booking.TourSchedule.Tour.Title</MudText>
+                                    <MudText Typo="Typo.body2">
+                                        <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" Class="mr-1" />
+                                        <strong>Date: </strong>@booking.TourSchedule.StartDateTime.ToString("D")
+                                    </MudText>
+                                    <MudText Typo="Typo.body2">
+                                        <MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="Size.Small" Class="mr-1" />
+                                        <strong>Time: </strong>@booking.TourSchedule.StartDateTime.ToString("t") - @booking.TourSchedule.EndDateTime.ToString("t")
+                                    </MudText>
+                                    <MudText Typo="Typo.body2">
+                                        <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Class="mr-1" />
+                                        <strong>Participants: </strong>@booking.NumberOfParticipants
+                                    </MudText>
+
+                                    @if (booking.TourSchedule.IsCanceled)
+                                    {
+                                        <MudAlert Severity="Severity.Error" Class="mt-3">This tour has been canceled</MudAlert>
+                                    }
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                               Link="@($"/tourschedule/{booking.TourScheduleId}")">
+                                        View Details
+                                    </MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <MudPaper Elevation="3" Class="pa-4 text-center">
+                <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Warning" Class="mb-3" />
+                <MudText Typo="Typo.h5" Class="mb-2">Authentication Required</MudText>
+                <MudText Class="mb-4">You must be logged in to view your booked tours.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                           Link="@($"Account/Login?ReturnUrl={Uri.EscapeDataString(NavigationManager.Uri)}")">
+                    Log in
+                </MudButton>
+            </MudPaper>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudContainer>
 
 @code {
+    private List<Booking> bookings;
+    private bool isLoading = true;
+    private string userId;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            userId = user.FindFirst(c => c.Type == "sub")?.Value ??
+                     user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            await LoadBookings();
+        }
+
+        isLoading = false;
+    }
+
+    private async Task LoadBookings()
+    {
+        bookings = await BookingService.GetBookingsByUserIdAsync(userId);
+    }
 }
