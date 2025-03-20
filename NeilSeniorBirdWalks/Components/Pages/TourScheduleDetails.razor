@@ -193,7 +193,8 @@
     public int TourScheduleId { get; set; }
 
     private TourSchedule tourSchedule;
-    private Booking booking = new Booking { NumberOfParticipants = 1 };
+	private Booking booking = new Booking { NumberOfParticipants = 1, UserId = string.Empty, TourScheduleId = 0 };
+
     private bool isAuthenticated = false;
     private bool isLoading = true;
     private bool formIsValid = true;
