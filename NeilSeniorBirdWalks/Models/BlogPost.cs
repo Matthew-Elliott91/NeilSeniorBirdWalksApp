@@ -1,19 +1,42 @@
-﻿namespace NeilSeniorBirdWalks.Models
+﻿using Microsoft.CodeAnalysis.Operations;
+using MudBlazor;
+using System.ComponentModel.DataAnnotations;
+
+namespace NeilSeniorBirdWalks.Models
 {
     public class BlogPost
     {
         public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Slug { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(200)]
+        public required string Title { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public required string Slug { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Today;
-        public string FeaturedImageUrl { get; set; } = string.Empty;
-        public string FirstParagraph { get; set; } = string.Empty;
-        public string FirstImageUrl { get; set; } = string.Empty;
-        public string SecondParagraph { get; set; } = string.Empty;
-        public string SecondImageUrl { get; set; } = string.Empty;
-        public string ThirdParagraph { get; set; } = string.Empty;
-        public string ThirdImageUrl { get; set; } = string.Empty;
-        public List<string> AdditionalImageUrls { get; set; } = new List<string>();
-        
+
+        [Url]
+        public required string FeaturedImageUrl { get; set; }
+
+        public List<ContentSection>? ContentSections { get; set; } = new List<ContentSection>();
+
+        public List<string>? AdditionalImageUrls { get; set; } = new List<string>();
+    }
+
+    public class ContentSection
+    {
+        public int Id { get; set; }
+        public int BlogPostId { get; set; }
+
+        public required string Text { get; set; }
+
+        [Url]
+        public required string ImageUrl { get; set; }
+
+        // Navigation properties
+        public BlogPost? BlogPost { get; set; }
     }
 }
