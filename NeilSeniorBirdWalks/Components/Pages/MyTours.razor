@@ -67,7 +67,7 @@
                                     <MudSpacer />
                                     @if (!booking.TourSchedule.IsCanceled && booking.TourSchedule.StartDateTime > DateTime.Now.AddDays(1))
                                     {
-                                        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Secondary" Edge="Edge.End">
+                                        <MudMenu Label="Edit Booking" Color="Color.Secondary" Edge="Edge.End">
                                             <MudMenuItem OnClick="() => OpenEditDialog(booking)" Icon="@Icons.Material.Filled.Edit">
                                                 Update Participants
                                             </MudMenuItem>
