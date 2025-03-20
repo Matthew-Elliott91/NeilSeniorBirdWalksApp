@@ -21,7 +21,7 @@ namespace NeilSeniorBirdWalks.Models
 
         [Required(ErrorMessage = "Please enter your message")]
         [MinLength(10, ErrorMessage = "Your message should be at least 10 characters long")]
-        public string Message { get; set; }
+        public  string Message { get; set; }
 
         public DateTime DateSubmitted { get; set; } = DateTime.Now;
     }
