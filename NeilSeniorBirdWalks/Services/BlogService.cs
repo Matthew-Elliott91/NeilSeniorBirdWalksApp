@@ -25,13 +25,16 @@ namespace NeilSeniorBirdWalks.Services
 
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.BlogPosts
+                .Include(b => b.ContentSections)
                 .FirstOrDefaultAsync(b => b.Slug.ToLower() == slug.ToLower());
         }
 
         public async Task<BlogPost?> GetBlogPostByIdAsync(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.BlogPosts.FindAsync(id);
+            return await context.BlogPosts
+                .Include(b => b.ContentSections)  
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<int> CreateBlogPostAsync(BlogPost blogPost)

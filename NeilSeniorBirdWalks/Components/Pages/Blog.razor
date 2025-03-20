@@ -4,11 +4,111 @@
 @inject BlogService BlogService
 @inject NavigationManager NavigationManager
 
-<PageTitle Title="News Post"></PageTitle>
+<PageTitle>News Post - @(blogPost?.Title ?? "Loading...")</PageTitle>
+
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-   
+    @if (blogPost == null && !loading)
+    {
+        <MudAlert Severity="Severity.Error">Sorry, this blog post was not found.</MudAlert>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => NavigationManager.NavigateTo("/news"))">
+            Back to News
+        </MudButton>
+    }
+    else if (loading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        <MudText>Loading...</MudText>
+    }
+    else
+    {
+        <MudText Typo="Typo.h3" Class="mb-4">@blogPost.Title</MudText>
+        <MudText Typo="Typo.subtitle1" Class="mb-4">Published on @blogPost.CreatedDate.ToString("MMMM dd, yyyy")</MudText>
+
+        @if (!string.IsNullOrEmpty(blogPost.FeaturedImageUrl))
+        {
+            <div class="mb-4">
+                <MudImage Src="@blogPost.FeaturedImageUrl" Alt="Featured image" Width="100" Class="rounded" />
+            </div>
+        }
+
+        @if (blogPost.ContentSections != null && blogPost.ContentSections.Any())
+        {
+            @foreach (var contentSection in blogPost.ContentSections.OrderBy(s => s.Id))
+            {
+                <MudPaper Class="pa-4 mb-4" Elevation="2">
+                    <div class="d-flex flex-column flex-md-row gap-4">
+                        @if (!string.IsNullOrEmpty(contentSection.ImageUrl))
+                        {
+                            <div class="flex-shrink-0" style="width: 300px;">
+                                <MudImage Src="@contentSection.ImageUrl" Alt="Section image" Width="100" Class="rounded" />
+                            </div>
+                        }
+                        <div class="flex-grow-1">
+                            <MudText Color="Color.Success">@contentSection.Text</MudText>
+                        </div>
+                    </div>
+                </MudPaper>
+            }
+        }
+
+        @if (blogPost.AdditionalImageUrls != null && blogPost.AdditionalImageUrls.Any())
+        {
+            <MudText Typo="Typo.h5" Class="mt-6 mb-3">Additional Images</MudText>
+            <MudGrid>
+                @foreach (var imageUrl in blogPost.AdditionalImageUrls)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard>
+                            <MudCardMedia Image="@imageUrl" Height="200" />
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+
+        <div class="mt-6">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => NavigationManager.NavigateTo("/news"))">
+                Back to News
+            </MudButton>
+        </div>
+    }
     </MudContainer>
 
     @code {
+    [Parameter]
+    public string Slug { get; set; }
 
+    private BlogPost blogPost;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBlogPost();
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Slug))
+        {
+            await LoadBlogPost();
+        }
+    }
+
+    private async Task LoadBlogPost()
+    {
+        loading = true;
+        try
+        {
+            blogPost = await BlogService.GetBlogPostBySlugAsync(Slug);
+        }
+        catch (Exception)
+        {
+            blogPost = null;
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}
