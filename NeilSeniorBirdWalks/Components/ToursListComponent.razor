@@ -12,8 +12,8 @@
         <MudPaper Elevation="3" Class="pa-4 mb-8" Style="background-color: white">
             <div class="d-flex justify-center align-center flex-wrap gap-2">
                 <MudButton Variant="@(currentFilter == null ? Variant.Filled : Variant.Outlined)"
-                           Color="Color.Primary"
-                           OnClick="@(() => FilterByDateAndTour(null))">
+                Color="Color.Primary"
+                OnClick="@(() => FilterByDateAndTour(null))">
                     <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="mr-2" />
                     By Date
                 </MudButton>
@@ -23,8 +23,8 @@
                     var tourId = tour.Key;
                     var tourName = tour.Value;
                     <MudButton Variant="@(currentFilter == tourId ? Variant.Filled : Variant.Outlined)"
-                               Color="Color.Secondary"
-                               OnClick="@(() => FilterByDateAndTour(tourId))">
+                    Color="Color.Secondary"
+                    OnClick="@(() => FilterByDateAndTour(tourId))">
                         <MudIcon Icon="@Icons.Material.Filled.Map" Class="mr-2" />
                         @tourName
                     </MudButton>
@@ -83,11 +83,11 @@
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       FullWidth="true"
-                                       Disabled="@(schedule.IsCanceled || schedule.StartDateTime < DateTime.Now ||
+                            Color="Color.Primary"
+                            FullWidth="true"
+                            Disabled="@(schedule.IsCanceled || schedule.StartDateTime < DateTime.Now ||
                                            (schedule.AvailableSpots.HasValue && schedule.AvailableSpots <= 0))"
-                                       Href=@($"/tourscheduledetails/{schedule.Id}")>
+                            Href=@($"/tourscheduledetails/{schedule.Id}")>
                                 Book Now
                             </MudButton>
                         </MudCardActions>
@@ -106,29 +106,31 @@
         @if (filteredSchedules.Count > PageSize)
         {
             <MudPagination Count="@((int)Math.Ceiling(filteredSchedules.Count / (double)PageSize))"
-                           SelectedChanged="@PageChanged"
-                           Class="pa-4 d-flex justify-center" />
+            SelectedChanged="@PageChanged"
+            Class="pa-4 d-flex justify-center" />
         }
     }
-</MudContainer>
+    </MudContainer>
 
 
-@code {
+    @code {
+
     private List<TourSchedule> tourSchedules;
     private List<TourSchedule> filteredSchedules = new();
     private Dictionary<int, string> distinctTours = new();
     private int? currentFilter = null;
     private int currentPage = 1;
     private int PageSize = 6;
-    
+
     private List<TourSchedule> currentPageItems => filteredSchedules
         .Skip((currentPage - 1) * PageSize)
         .Take(PageSize)
         .ToList();
-    
+
     protected override async Task OnInitializedAsync()
     {
-        tourSchedules = await TourScheduleService.GetAllSchedulesAsync();
+
+        tourSchedules = await TourScheduleService.GetUpcomingSchedulesAsync();
 
 		// Buttons for filtering by tour
 		foreach (var schedule in tourSchedules)

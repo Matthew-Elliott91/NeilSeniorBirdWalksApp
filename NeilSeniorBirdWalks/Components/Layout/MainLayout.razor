@@ -14,6 +14,24 @@
 		<MudLink Href="/">
 			<MudImage Src="/Images/Logo.svg" Alt="Neil Senior Logo" Fluid="false" Class="d-lg-block" Style="display: block; margin-left: auto; margin-right: auto;" />
 		</MudLink>
+		<AuthorizeView>
+			<Authorized>
+				<MudMenu ActivationEvent="MouseEvent.MouseOver" Class="@($"d-none d-md-block {IsOnAccountPage()}")" PopoverClass="popover-menu" A>
+					<ActivatorContent>
+						<MudText Typo="Typo.body1" Class="cursor-pointer text-nowrap">Manage Account</MudText>
+					</ActivatorContent>
+					<ChildContent>
+						<MudMenuItem Href="/account/manage" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary" Style="color:white">Manage</MudMenuItem>
+						<MudMenuItem Href="/mytours" Icon="@Icons.Material.Filled.Event" IconColor="Color.Primary" Style="color:white">My Tours</MudMenuItem>
+						<MudMenuItem Href="/account/logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary" Style="color:white">Logout</MudMenuItem>
+					</ChildContent>
+
+				</MudMenu>
+			</Authorized>
+			<NotAuthorized>
+				<MudNavLink Href="/account/login" class="d-none d-md-block">Login/Register</MudNavLink>
+			</NotAuthorized>
+		</AuthorizeView>
 		<MudNavLink Href="/tours" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Tours</MudText></MudNavLink>
 		<MudNavLink Href="/customtour" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Book A Custom Tour</MudText></MudNavLink>
 		<MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">About Me</MudText></MudNavLink>
@@ -21,24 +39,7 @@
 		<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Contact</MudText></MudNavLink>
 		<MudNavLink Href="/gallery" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Image Gallery</MudText></MudNavLink>
 		<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">News</MudText></MudNavLink>
-		<AuthorizeView>
-			<Authorized>
-				<MudMenu Direction="Direction.Bottom" ActivationEvent="MouseEvent.MouseOver" Class="d-none d-md-block" PopoverClass="popover-menu">
-					<ActivatorContent>
-						<MudText Typo="Typo.body1" Class="cursor-pointer">Manage Account</MudText>
-					</ActivatorContent>
-					<ChildContent>
-						<MudMenuItem Href="/account/manage" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary" Style="color:white">Manage</MudMenuItem>
-						<MudMenuItem Href="/mytours" Icon="@Icons.Material.Filled.Event" IconColor="Color.Primary" Style="color:white">My Tours</MudMenuItem>
-						<MudMenuItem Href="/account/logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary" Style="color:white">Logout</MudMenuItem>
-					</ChildContent>
-					
-				</MudMenu>
-			</Authorized>
-			<NotAuthorized>
-				<MudNavLink Href="/account/login" class="d-none d-md-block">Login/Register</MudNavLink>
-			</NotAuthorized>
-		</AuthorizeView>
+		
 	</MudAppBar>
 	<MudDrawer  @bind-Open="_drawerOpen" Color="Color.Primary" >
 		<MyNavMenu/>
@@ -68,6 +69,11 @@
 </style>
 
 @code {
+	private string IsOnAccountPage()
+	{
+		var currentUri = NavigationManager.Uri.ToLower();
+		return currentUri.Contains("/account/") || currentUri.Contains("/mytours") ? "navlink-match" : "";
+	}
 	
 }
 

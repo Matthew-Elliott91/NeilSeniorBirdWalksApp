@@ -10,6 +10,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using NeilSeniorBirdWalks.Services;
 using NeilSeniorBirdWalks.Models;
+using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +67,12 @@ builder.Services.AddScoped<BookingService>();
 
 //Mudblazor services
 builder.Services.AddMudServices();
+
+// Set default culture for the application
+
+var cultureInfo = new CultureInfo("en-GB");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 
 var app = builder.Build();
