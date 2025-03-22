@@ -65,7 +65,7 @@ builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<TourScheduleService>();
 builder.Services.AddScoped<BookingService>();
 
-//Mudblazor services
+
 builder.Services.AddMudServices();
 
 // Set default culture for the application

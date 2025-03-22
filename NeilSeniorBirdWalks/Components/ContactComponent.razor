@@ -86,12 +86,12 @@
             var result = await ContactService.SubmitContactFormAsync(contactForm);
             if (result)
             {
-                // Show snackbar instead of alert
+               
                 Snackbar.Add("Your message has been sent successfully. We will contact you soon.",
                     Severity.Success, config =>
                     {
                         config.ShowCloseIcon = true;
-                        config.VisibleStateDuration = 6000; // 6 seconds
+                        config.VisibleStateDuration = 6000; 
                     });
 
                 // Reset form

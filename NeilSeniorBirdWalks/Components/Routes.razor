@@ -1,11 +1,40 @@
 ﻿@using NeilSeniorBirdWalks.Components.Account.Shared
+@using Microsoft.AspNetCore.Components.Authorization
+
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <RedirectToLogin />
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <MudContainer Class="py-4 text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Error" Class="mb-3" />
+                        <MudText Typo="Typo.h5" Class="mb-2">Access Denied</MudText>
+                        <MudText Class="mb-4">You are not authorized to access this resource.</MudText>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/">Return to Home</MudButton>
+                    </MudContainer>
+                }
             </NotAuthorized>
+            <Authorizing>
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                <MudText>Authorizing...</MudText>
+            </Authorizing>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="typeof(Layout.MainLayout)">
+            <MudContainer Class="py-4 text-center">
+                <MudIcon Icon="@Icons.Material.Filled.QuestionMark" Size="Size.Large" Color="Color.Warning" Class="mb-3" />
+                <MudText Typo="Typo.h5" Class="mb-4">Page Not Found</MudText>
+                <MudText Class="mb-4">Sorry, there's nothing at this address.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/">Return to Home</MudButton>
+            </MudContainer>
+        </LayoutView>
+    </NotFound>
 </Router>

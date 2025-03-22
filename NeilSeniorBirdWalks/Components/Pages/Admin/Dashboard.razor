@@ -1,0 +1,19 @@
+﻿@page "/admin/dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BookingService BookingService
+@inject TourScheduleService TourScheduleService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Admin Dashboard</h3>
+
+@code {
+
+}
