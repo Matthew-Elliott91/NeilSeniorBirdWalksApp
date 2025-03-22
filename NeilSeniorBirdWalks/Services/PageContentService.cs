@@ -56,5 +56,29 @@ namespace NeilSeniorBirdWalks.Services
             context.PageContents.Remove(pageContent);
             return await context.SaveChangesAsync() > 0;
         }
+
+        public async Task UpdatePageContentAsync(PageContent updatedContent)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var content = await context.PageContents.FindAsync(updatedContent.Id);
+
+            if (content == null)
+            {
+                throw new KeyNotFoundException($"Page content with ID {updatedContent.Id} not found.");
+            }
+
+            // Update properties
+            content.Title = updatedContent.Title;
+            content.Subtitle = updatedContent.Subtitle;
+            content.MainContent = updatedContent.MainContent;
+            content.MainContentImage = updatedContent.MainContentImage;
+            content.SecondaryContent = updatedContent.SecondaryContent;
+            content.SecondaryContentImage = updatedContent.SecondaryContentImage;
+            content.TertiaryContent = updatedContent.TertiaryContent;
+            content.TertiaryContentImage = updatedContent.TertiaryContentImage;
+            content.IsPublished = updatedContent.IsPublished;
+
+            await context.SaveChangesAsync();
+        }
     }
 }

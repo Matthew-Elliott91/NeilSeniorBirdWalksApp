@@ -1,90 +1,274 @@
 ﻿@using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 @inject PageContentService DataService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
 @implements IAsyncDisposable
 
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <MudPaper Elevation="0" Class="mb-2">
+            @if (isEditMode)
+            {
+                <MudButton Color="Color.Primary"
+                           OnClick="SaveChanges"
+                           StartIcon="@Icons.Material.Filled.Save"
+                           Variant="Variant.Filled"
+                           Class="mr-2">
+                    Save Changes
+                </MudButton>
+                <MudButton Color="Color.Default"
+                           OnClick="CancelEdits"
+                           StartIcon="@Icons.Material.Filled.Cancel">
+                    Cancel
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Color="Color.Primary"
+                           OnClick="@(() => isEditMode = true)"
+                           StartIcon="@Icons.Material.Filled.Edit"
+                           Variant="Variant.Outlined">
+                    Edit Content
+                </MudButton>
+            }
+        </MudPaper>
+    </Authorized>
+</AuthorizeView>
 
-    @if (Content != null)
-    {
+@if (Content != null)
+{
     <MudPaper Elevation="3" Class="pa-6 mb-6" Style="background-color: white">
-        <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
-        <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                @if (isEditMode)
+                {
+                    <MudTextField @bind-Value="editableContent.Title" Label="Title" Variant="Variant.Outlined"
+                                  Class="mb-3" Immediate="true" />
+                    <MudTextField @bind-Value="editableContent.Subtitle" Label="Subtitle" Variant="Variant.Outlined"
+                                  Class="mb-3" />
+                }
+                else
+                {
+                    <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
+                    <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
+                }
+            </Authorized>
+            <NotAuthorized>
+                <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
+                <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
+            </NotAuthorized>
+        </AuthorizeView>
 
         <MudGrid>
             <MudItem xs="12" md="6">
-                <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+                <AuthorizeView Roles="Admin">
+                    <Authorized>
+                        @if (isEditMode)
+                        {
+                            <MudTextField @bind-Value="editableContent.MainContent"
+                                          Label="Main Content"
+                                          Lines="10"
+                                          Variant="Variant.Outlined"
+                                          Class="mb-3" />
+                        }
+                        else
+                        {
+                            <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+                        }
+                    </Authorized>
+                    <NotAuthorized>
+                        <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+                    </NotAuthorized>
+                </AuthorizeView>
             </MudItem>
             <MudItem xs="12" md="6">
-                @if (!string.IsNullOrEmpty(Content.MainContentImage))
-                {
-                    <MudImage Src="@Content.MainContentImage" Alt="Main content image"
-                              Class="rounded-lg" Elevation="2"
-                              ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
-                }
+                <AuthorizeView Roles="Admin">
+                        
+                    <NotAuthorized>
+                        @if (!string.IsNullOrEmpty(Content.MainContentImage))
+                        {
+                            <MudImage Src="@Content.MainContentImage" Alt="Main content image"
+                                      Class="rounded-lg" Elevation="2"
+                                      ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                        }
+                    </NotAuthorized>
+                </AuthorizeView>
             </MudItem>
         </MudGrid>
 
         <MudDivider Class="my-6" />
 
-        @if (!string.IsNullOrEmpty(Content.SecondaryContent))
-        {
-            <MudGrid>
-                <MudItem xs="12" md="6" Order="2" OrderMd="1">
-                    @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
+     
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                @if (isEditMode)
+                {
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="editableContent.SecondaryContent"
+                                          Label="Secondary Content"
+                                          Lines="8"
+                                          Variant="Variant.Outlined"
+                                          Class="mb-3" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="editableContent.SecondaryContentImage"
+                                          Label="Secondary Image URL"
+                                          Variant="Variant.Outlined"
+                                          Class="mb-3" />
+                            @if (!string.IsNullOrEmpty(editableContent.SecondaryContentImage))
+                            {
+                                <MudImage Src="@editableContent.SecondaryContentImage" Alt="Secondary content image preview"
+                                          Class="rounded-lg mt-2" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+                else
+                {
+                    @if (!string.IsNullOrEmpty(Content.SecondaryContent))
                     {
-                        <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
-                                  Class="rounded-lg" Elevation="2"
-                                  ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                        <MudGrid>
+                            <MudItem xs="12" md="6" Order="2" OrderMd="1">
+                                @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
+                                {
+                                    <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
+                                              Class="rounded-lg" Elevation="2"
+                                              ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                                }
+                            </MudItem>
+                            <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                                <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                            </MudItem>
+                        </MudGrid>
                     }
-                </MudItem>
-                <MudItem xs="12" md="6" Order="1" OrderMd="2">
-                    <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
-                </MudItem>
-            </MudGrid>
+                }
+            </Authorized>
+            <NotAuthorized>
+                @if (!string.IsNullOrEmpty(Content.SecondaryContent))
+                {
+                    <MudGrid>
+                        <MudItem xs="12" md="6" Order="2" OrderMd="1">
+                            @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
+                            {
+                                <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
+                                          Class="rounded-lg" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                            }
+                        </MudItem>
+                        <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                            <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                        </MudItem>
+                    </MudGrid>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
 
-            <MudDivider Class="my-6" />
-        }
+        <MudDivider Class="my-6" />
 
-        @if (!string.IsNullOrEmpty(Content.TertiaryContent))
-        {
-            <MudGrid>
-                <MudItem xs="12" md="6">
-                    <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+        
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                @if (isEditMode)
+                {
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="editableContent.TertiaryContent"
+                                          Label="Tertiary Content"
+                                          Lines="8"
+                                          Variant="Variant.Outlined"
+                                          Class="mb-3" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="editableContent.TertiaryContentImage"
+                                          Label="Tertiary Image URL"
+                                          Variant="Variant.Outlined"
+                                          Class="mb-3" />
+                            @if (!string.IsNullOrEmpty(editableContent.TertiaryContentImage))
+                            {
+                                <MudImage Src="@editableContent.TertiaryContentImage" Alt="Tertiary content image preview"
+                                          Class="rounded-lg mt-2" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+                else
+                {
+                    @if (!string.IsNullOrEmpty(Content.TertiaryContent))
                     {
-                        <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
-                                  Class="rounded-lg" Elevation="2"
-                                  ObjectFit="ObjectFit.Cover" Height="400"
-                                  Fluid="true"/>
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+                                {
+                                    <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
+                                              Class="rounded-lg" Elevation="2"
+                                              ObjectFit="ObjectFit.Cover" Height="400"
+                                              Fluid="true" />
+                                }
+                            </MudItem>
+                        </MudGrid>
                     }
-                </MudItem>
-            </MudGrid>
-        }
-        </MudPaper>
-    }
-    else
-    {
-        <MudSkeleton Width="100%" Height="200px" />
-        <MudSkeleton Width="60%" Height="30px" Class="mt-4" />
-        <MudSkeleton Width="90%" Height="20px" Class="mt-2" />
-        <MudSkeleton Width="90%" Height="20px" Class="mt-1" />
-    }
-   
+                }
+            </Authorized>
+            <NotAuthorized>
+                @if (!string.IsNullOrEmpty(Content.TertiaryContent))
+                {
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+                            {
+                                <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
+                                          Class="rounded-lg" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="400"
+                                          Fluid="true" />
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudPaper>
+}
+else
+{
+    <MudSkeleton Width="100%" Height="200px" />
+    <MudSkeleton Width="60%" Height="30px" Class="mt-4" />
+    <MudSkeleton Width="90%" Height="20px" Class="mt-2" />
+    <MudSkeleton Width="90%" Height="20px" Class="mt-1" />
+}
 
-    @code {
+@code {
     [Parameter]
     public string PageType { get; set; }
 
     [Parameter]
     public PageContent Content { get; set; }
 
+    private bool isEditMode = false;
+    private PageContent editableContent = new();
+
     protected override async Task OnInitializedAsync()
     {
         if (!string.IsNullOrEmpty(PageType) && Content == null)
         {
             Content = await DataService.GetPageContentAsync(PageType);
+        }
+
+        if (Content != null)
+        {
+           
+            CopyContentToEditable();
         }
 
         await base.OnInitializedAsync();
@@ -95,9 +279,66 @@
         if (!string.IsNullOrEmpty(PageType) && Content == null)
         {
             Content = await DataService.GetPageContentAsync(PageType);
+            if (Content != null)
+            {
+                CopyContentToEditable();
+            }
         }
 
         await base.OnParametersSetAsync();
+    }
+
+    private void CopyContentToEditable()
+    {
+        editableContent = new PageContent
+            {
+                Id = Content.Id,
+                PageType = Content.PageType,
+                Title = Content.Title,
+                Subtitle = Content.Subtitle,
+                MainContent = Content.MainContent,
+                MainContentImage = Content.MainContentImage,
+                SecondaryContent = Content.SecondaryContent,
+                SecondaryContentImage = Content.SecondaryContentImage,
+                TertiaryContent = Content.TertiaryContent,
+                TertiaryContentImage = Content.TertiaryContentImage,
+                IsPublished = Content.IsPublished
+            };
+    }
+
+    // Switching from edit mode to view mode - save changes
+    private async Task OnEditToggled(bool toggled)
+    {
+        if (!toggled) 
+        {
+            await SaveChanges();
+        }
+
+        isEditMode = toggled;
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            await DataService.UpdatePageContentAsync(editableContent);
+            Content = editableContent;
+            CopyContentToEditable(); 
+            isEditMode = false;
+            Snackbar.Add("Content successfully updated", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save changes: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void CancelEdits()
+    {
+        
+        CopyContentToEditable();
+        isEditMode = false;
+        Snackbar.Add("Edits cancelled", Severity.Info);
     }
 
     public virtual ValueTask DisposeAsync()

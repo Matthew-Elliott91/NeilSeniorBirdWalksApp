@@ -25,4 +25,8 @@
     <ProjectReference Include="..\BlobStorageLibrary\BlobStorageLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\Uploads\" />
+  </ItemGroup>
+
 </Project>
