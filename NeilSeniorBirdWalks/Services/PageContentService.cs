@@ -68,15 +68,14 @@ namespace NeilSeniorBirdWalks.Services
             }
 
             // Update properties
-            content.Title = updatedContent.Title;
-            content.Subtitle = updatedContent.Subtitle;
-            content.MainContent = updatedContent.MainContent;
-            content.MainContentImage = updatedContent.MainContentImage;
-            content.SecondaryContent = updatedContent.SecondaryContent;
-            content.SecondaryContentImage = updatedContent.SecondaryContentImage;
-            content.TertiaryContent = updatedContent.TertiaryContent;
-            content.TertiaryContentImage = updatedContent.TertiaryContentImage;
-            content.IsPublished = updatedContent.IsPublished;
+            var properties = typeof(PageContent).GetProperties()
+                .Where(p => p.Name != "Id" && p.Name != "PageType");
+
+            foreach (var property in properties)
+            {
+                property.SetValue(content, property.GetValue(updatedContent));
+            }
+
 
             await context.SaveChangesAsync();
         }

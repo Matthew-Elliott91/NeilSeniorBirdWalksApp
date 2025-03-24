@@ -137,16 +137,16 @@
             var newParticipantCount = (int)result.Data;
             int originalCount = booking.NumberOfParticipants;
 
-            // Update booking
+           
             booking.NumberOfParticipants = newParticipantCount;
 
             try
             {
-                // Use the enhanced service that properly handles spot adjustment
+                
                 await BookingService.UpdateBookingAsync(booking, originalCount);
 
                 Snackbar.Add("Booking updated successfully!", Severity.Success);
-                await LoadBookings(); // Reload to get fresh data
+                await LoadBookings(); 
             }
             catch (Exception ex)
             {
