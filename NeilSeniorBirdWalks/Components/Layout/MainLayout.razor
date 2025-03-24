@@ -14,31 +14,101 @@
 		<MudLink Href="/">
 			<MudImage Src="/Images/Logo.svg" Alt="Neil Senior Logo" Fluid="false" Class="d-lg-block" Style="display: block; margin-left: auto; margin-right: auto;" />
 		</MudLink>
+		<AuthorizeView Roles="Admin">
+			<Authorized>
+				<MudNavLink Href="/admin/dashboard"
+							Icon="@Icons.Material.Filled.AdminPanelSettings"
+							IconColor="Color.Primary"
+							Style="color:white">
+					Admin
+				</MudNavLink>
+			</Authorized>
+		</AuthorizeView>
+
 		<AuthorizeView>
 			<Authorized>
-				<MudMenu ActivationEvent="MouseEvent.MouseOver" Class="@($"d-none d-md-block {IsOnAccountPage()}")" PopoverClass="popover-menu" A>
+				<MudMenu ActivationEvent="MouseEvent.MouseOver"
+						 Class="@($"d-none d-md-block {IsOnAccountPage()}")"
+						 PopoverClass="popover-menu">
 					<ActivatorContent>
-						<MudText Typo="Typo.body1" Class="cursor-pointer text-nowrap">Manage Account</MudText>
+						<div class="d-flex align-center cursor-pointer">
+							<MudIcon Icon="@Icons.Material.Filled.AccountCircle"
+									 Color="Color.Primary"
+									 Class="mr-2" />
+							<MudText Typo="Typo.body1" Class="text-nowrap">Manage Account</MudText>
+						</div>
 					</ActivatorContent>
 					<ChildContent>
 						<MudMenuItem Href="/account/manage" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary" Style="color:white">Manage</MudMenuItem>
 						<MudMenuItem Href="/mytours" Icon="@Icons.Material.Filled.Event" IconColor="Color.Primary" Style="color:white">My Tours</MudMenuItem>
 						<MudMenuItem Href="/account/logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary" Style="color:white">Logout</MudMenuItem>
 					</ChildContent>
-
 				</MudMenu>
+
 			</Authorized>
 			<NotAuthorized>
-				<MudNavLink Href="/account/login" class="d-none d-md-block">Login/Register</MudNavLink>
+				<MudNavLink Href="/account/login"
+							Icon="@Icons.Material.Filled.Login"
+							IconColor="Color.Primary"
+							class="d-none d-md-block">Login/Register</MudNavLink>
 			</NotAuthorized>
 		</AuthorizeView>
-		<MudNavLink Href="/tours" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Tours</MudText></MudNavLink>
-		<MudNavLink Href="/customtour" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Book A Custom Tour</MudText></MudNavLink>
-		<MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">About Me</MudText></MudNavLink>
-		@* <MudNavLink Href="/giftvoucher" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Gift Vouchers</MudText></MudNavLink> *@
-		<MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Contact</MudText></MudNavLink>
-		<MudNavLink Href="/gallery" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">Image Gallery</MudText></MudNavLink>
-		<MudNavLink Href="/news" Match="NavLinkMatch.Prefix" Class="d-none d-md-block" ActiveClass="navlink-match"><MudText Class="text-center" Typo="Typo.body2">News</MudText></MudNavLink>
+		<MudNavLink Href="/tours"
+					Icon="@Icons.Material.Filled.Map"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">Tours</MudText>
+		</MudNavLink>
+		<MudNavLink Href="/customtour"
+					Icon="@Icons.Material.Filled.Create"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">Custom Tour</MudText>
+		</MudNavLink>
+		<MudNavLink Href="/about"
+					Icon="@Icons.Material.Filled.Person"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">About Me</MudText>
+		</MudNavLink>
+		@* <MudNavLink Href="/giftvoucher" 
+             Icon="@Icons.Material.Filled.CardGiftcard" 
+             IconColor="Color.Primary"
+             Match="NavLinkMatch.Prefix" 
+             Class="d-none d-md-block" 
+             ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">Gift Vouchers</MudText>
+		</MudNavLink> *@
+		<MudNavLink Href="/contact"
+					Icon="@Icons.Material.Filled.Email"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">Contact</MudText>
+		</MudNavLink>
+		<MudNavLink Href="/gallery"
+					Icon="@Icons.Material.Filled.PhotoLibrary"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">Image Gallery</MudText>
+		</MudNavLink>
+		<MudNavLink Href="/news"
+					Icon="@Icons.Material.Filled.Newspaper"
+					IconColor="Color.Primary"
+					Match="NavLinkMatch.Prefix"
+					Class="d-none d-md-block"
+					ActiveClass="navlink-match">
+			<MudText Class="text-center" Typo="Typo.body2">News</MudText>
+		</MudNavLink>
 		
 	</MudAppBar>
 	<MudDrawer  @bind-Open="_drawerOpen" Color="Color.Primary" >
