@@ -1,0 +1,33 @@
+﻿@using NeilSeniorBirdWalks.Data;
+@using NeilSeniorBirdWalks.Models;
+@using NeilSeniorBirdWalks.Services;
+@inject IContactService ContactService
+<h3>ContactMessageList</h3>
+
+<MudTable Items="@contactForms" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Striped="true">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh>Subject</MudTh>
+        <MudTh>Message</MudTh>
+        <MudTh>Date</MudTh>
+        <MudTh>Read</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Phone">@context.Name</MudTd>
+        <MudTd DataLabel="Subject">@context.Subject</MudTd>
+        <MudTd DataLabel="Message">@context.Message</MudTd>
+        <MudTd DataLabel="Date">@context.DateSubmitted</MudTd>
+        <MudTd DataLabel="Read">@context.IsRead</MudTd>
+    </RowTemplate>
+</MudTable>
+@code {
+	private List<ContactFormModel> contactForms = new List<ContactFormModel>();
+    protected override async Task OnInitializedAsync()
+	{
+		contactForms = await ContactService.GetAllContactFormsAsync();
+	}
+}

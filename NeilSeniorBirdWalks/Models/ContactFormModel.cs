@@ -24,5 +24,7 @@ namespace NeilSeniorBirdWalks.Models
         public  string Message { get; set; }
 
         public DateTime DateSubmitted { get; set; } = DateTime.Now;
+
+        public bool IsRead { get; set; } = false;
     }
 }
