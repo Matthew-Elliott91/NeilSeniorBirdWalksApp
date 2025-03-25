@@ -13,6 +13,16 @@ namespace NeilSeniorBirdWalks.Services
             _context = context;
         }
 
+        public async Task<List<Booking>> GetAllBookingsAsync()
+        {
+            return await _context.Bookings
+                .Include(b => b.TourSchedule)
+                .ThenInclude(ts => ts.Tour)
+                .OrderByDescending(b => b.TourSchedule.StartDateTime)
+                .ToListAsync();
+        }
+
+
         public async Task<List<Booking>> GetBookingsByUserIdAsync(string userId) 
         {
             return await _context.Bookings

@@ -1,5 +1,7 @@
-﻿@page "/admin/contact" 
-<h3>Contact</h3>
+﻿@page "/admin/contact"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
 <MudContainer>
 	<ContactMessageList></ContactMessageList>
 </MudContainer>

@@ -10,6 +10,7 @@ namespace NeilSeniorBirdWalks.Services
         Task<bool> SubmitContactFormAsync(ContactFormModel submittedContactForm);
         Task<List<ContactFormModel>> GetAllContactFormsAsync();
         Task<bool> UpdateContactFormReadStatusAsync(int id, bool isRead);
+        Task<bool> DeleteContactFormAsync(int id);
     }
     public class ContactService : IContactService
     {
@@ -57,6 +58,24 @@ namespace NeilSeniorBirdWalks.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating contact form read status");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteContactFormAsync(int id)
+        {
+            try
+            {
+                var contactForm = await _context.ContactForms.FindAsync(id);
+                if (contactForm == null)
+                    return false;
+                _context.ContactForms.Remove(contactForm);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting contact form");
                 return false;
             }
         }

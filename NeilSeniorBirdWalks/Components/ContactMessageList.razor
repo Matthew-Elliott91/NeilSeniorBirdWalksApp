@@ -2,6 +2,7 @@
 @using NeilSeniorBirdWalks.Models;
 @using NeilSeniorBirdWalks.Services;
 @inject IContactService ContactService
+@inject IDialogService DialogService
 
 
 <MudTable Items="@contactForms" Filter="@FilterFunc" SortLabel="Sort By" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Striped="true" RowStyleFunc="@RowStyleFunc">
@@ -71,6 +72,18 @@
 		{
 			contact.IsRead = !contact.IsRead;
 			await ContactService.UpdateContactFormReadStatusAsync(contact.Id, contact.IsRead);
+			StateHasChanged();
+		}
+
+		var parameters = new DialogParameters { ["Contact"] = contact };
+		var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium };
+		var dialog = await DialogService.ShowAsync<ContactDetailsDialog>("Message Details", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			// Refresh the list after deletion
+			contactForms = await ContactService.GetAllContactFormsAsync();
 			StateHasChanged();
 		}
 		

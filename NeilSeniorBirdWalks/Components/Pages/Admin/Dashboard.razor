@@ -12,10 +12,171 @@
 @inject IDialogService DialogService
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Admin Dashboard</h3>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h3" Class="mb-4">Admin Dashboard</MudText>
 
+    <MudGrid>
+        <!-- Quick Stats Cards -->
+        <MudItem xs="12" md="6" lg="3">
+            <MudPaper Elevation="2" Class="pa-4 mud-height-full">
+                <MudStack>
+                    <MudText Typo="Typo.h6">Upcoming Tours</MudText>
+                    <MudText Typo="Typo.h4">@upcomingToursCount</MudText>
+                    <MudText Typo="Typo.body2">Next 7 days</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
 
+        <MudItem xs="12" md="6" lg="3">
+            <MudPaper Elevation="2" Class="pa-4 mud-height-full">
+                <MudStack>
+                    <MudText Typo="Typo.h6">Bookings</MudText>
+                    <MudText Typo="Typo.h4">@bookingsCount</MudText>
+                    <MudText Typo="Typo.body2">Total Bookings</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="3">
+            <MudPaper Elevation="2" Class="pa-4 mud-height-full">
+                <MudStack>
+                    <MudText Typo="Typo.h6">Messages</MudText>
+                    <MudText Typo="Typo.h4">@unreadMessagesCount</MudText>
+                    <MudText Typo="Typo.body2">Unread Messages</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="3">
+            <MudPaper Elevation="2" Class="pa-4 mud-height-full">
+                <MudStack>
+                    <MudText Typo="Typo.h6">Tours</MudText>
+                    <MudText Typo="Typo.h4">@toursCount</MudText>
+                    <MudText Typo="Typo.body2">Active Tours</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Admin Nav Cards -->
+        <MudItem xs="12">
+            <MudText Typo="Typo.h5" Class="mb-4 mt-4">Quick Actions</MudText>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Contact Messages</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.Email" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>View and manage contact form messages from visitors</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/admin/contact"))">
+                        View Messages
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Tour Schedule</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Manage upcoming tour schedules and availability</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Manage Tours</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Bookings</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.Book" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>View and manage customer bookings</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">View Bookings</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Blog</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.Description" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Write and manage blog content</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Manage Blog</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
 @code {
+    private int upcomingToursCount = 0;
+    private int bookingsCount = 0;
+    private int unreadMessagesCount = 0;
+    private int toursCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load dashboard statistics
+        try
+        {
+            var today = DateTime.Today;
+            var nextWeek = today.AddDays(7);
+
+            // Get upcoming tours count
+            var upcomingTours = await TourScheduleService.GetUpcomingSchedulesAsync();
+            upcomingToursCount = upcomingTours.Count(); // Add parentheses to call the method
+
+            // Get bookings count
+            var bookings = await BookingService.GetAllBookingsAsync();
+            bookingsCount = bookings.Count(); // Add parentheses to call the method
+
+            // You would need to implement these services
+            // Get unread messages count - sample placeholder
+            unreadMessagesCount = 5; // Replace with actual count from your service
+
+            // Get active tours count - sample placeholder
+            toursCount = 8; // Replace with actual count from your service
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Error loading dashboard data", Severity.Error);
+        }
+    }
+
 
 }
