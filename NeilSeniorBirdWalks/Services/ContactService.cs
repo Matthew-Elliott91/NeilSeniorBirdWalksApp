@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using NeilSeniorBirdWalks.Data;
 using NeilSeniorBirdWalks.Models;
 
@@ -8,6 +9,7 @@ namespace NeilSeniorBirdWalks.Services
     {
         Task<bool> SubmitContactFormAsync(ContactFormModel submittedContactForm);
         Task<List<ContactFormModel>> GetAllContactFormsAsync();
+        Task<bool> UpdateContactFormReadStatusAsync(int id, bool isRead);
     }
     public class ContactService : IContactService
     {
@@ -39,5 +41,25 @@ namespace NeilSeniorBirdWalks.Services
         {
             return await _context.ContactForms.ToListAsync();
         }
+
+        public async Task<bool> UpdateContactFormReadStatusAsync(int id, bool isRead)
+        {
+            try
+            {
+                
+                var contactForm = await _context.ContactForms.FindAsync(id);
+                if (contactForm == null)
+                    return false;
+                contactForm.IsRead = isRead;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating contact form read status");
+                return false;
+            }
+        }
+
     }
 }
