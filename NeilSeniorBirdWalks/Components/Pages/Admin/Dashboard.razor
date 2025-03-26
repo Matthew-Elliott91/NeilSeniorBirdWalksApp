@@ -8,6 +8,7 @@
 @inject BookingService BookingService
 @inject TourScheduleService TourScheduleService
 @inject NavigationManager NavigationManager
+@inject IContactService ContactService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @attribute [Authorize(Roles = "Admin")]
@@ -16,7 +17,7 @@
     <MudText Typo="Typo.h3" Class="mb-4">Admin Dashboard</MudText>
 
     <MudGrid>
-        <!-- Quick Stats Cards -->
+       
         <MudItem xs="12" md="6" lg="3">
             <MudPaper Elevation="2" Class="pa-4 mud-height-full">
                 <MudStack>
@@ -57,31 +58,9 @@
             </MudPaper>
         </MudItem>
 
-        <!-- Admin Nav Cards -->
+       
         <MudItem xs="12">
             <MudText Typo="Typo.h5" Class="mb-4 mt-4">Quick Actions</MudText>
-        </MudItem>
-
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCard Elevation="2" Class="mud-height-full">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Contact Messages</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIcon Icon="@Icons.Material.Filled.Email" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>View and manage contact form messages from visitors</MudText>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => NavigationManager.NavigateTo("/admin/contact"))">
-                        View Messages
-                    </MudButton>
-                </MudCardActions>
-            </MudCard>
         </MudItem>
 
         <MudItem xs="12" sm="6" md="4" lg="3">
@@ -126,6 +105,28 @@
             <MudCard Elevation="2" Class="mud-height-full">
                 <MudCardHeader>
                     <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Contact Messages</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.Email" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>View and manage contact form messages from visitors</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/admin/contact"))">
+                        View Messages
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
                         <MudText Typo="Typo.h6">Blog</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
@@ -148,6 +149,7 @@
     private int bookingsCount = 0;
     private int unreadMessagesCount = 0;
     private int toursCount = 0;
+	
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,20 +159,18 @@
             var today = DateTime.Today;
             var nextWeek = today.AddDays(7);
 
-            // Get upcoming tours count
+         
             var upcomingTours = await TourScheduleService.GetUpcomingSchedulesAsync();
-            upcomingToursCount = upcomingTours.Count(); // Add parentheses to call the method
+            upcomingToursCount = upcomingTours.Count(); 
 
-            // Get bookings count
             var bookings = await BookingService.GetAllBookingsAsync();
-            bookingsCount = bookings.Count(); // Add parentheses to call the method
+            bookingsCount = bookings.Count();
 
-            // You would need to implement these services
-            // Get unread messages count - sample placeholder
-            unreadMessagesCount = 5; // Replace with actual count from your service
+			var unreadMessages = await ContactService.GetUnreadMessagesAsync();
+			unreadMessagesCount = unreadMessages.Count();
 
-            // Get active tours count - sample placeholder
-            toursCount = 8; // Replace with actual count from your service
+
+			toursCount = 8;
         }
         catch (Exception)
         {

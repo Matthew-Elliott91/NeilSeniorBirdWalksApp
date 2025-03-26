@@ -11,6 +11,7 @@ namespace NeilSeniorBirdWalks.Services
         Task<List<ContactFormModel>> GetAllContactFormsAsync();
         Task<bool> UpdateContactFormReadStatusAsync(int id, bool isRead);
         Task<bool> DeleteContactFormAsync(int id);
+        Task<IEnumerable<ContactFormModel>> GetUnreadMessagesAsync();
     }
     public class ContactService : IContactService
     {
@@ -79,6 +80,12 @@ namespace NeilSeniorBirdWalks.Services
                 return false;
             }
         }
+
+        public async Task<IEnumerable<ContactFormModel>> GetUnreadMessagesAsync()
+        {
+            var unreadMessages = await _context.ContactForms.Where(x => x.IsRead == false).ToListAsync();
+            return unreadMessages;
+        } 
 
     }
 }
