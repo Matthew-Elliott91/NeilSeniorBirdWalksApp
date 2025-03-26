@@ -1,0 +1,37 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject TourScheduleService TourScheduleService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudCard Elevation="3" Class="mb-3">
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudText Typo="Typo.h6">Edit Tour Schedules</MudText>
+		</CardHeaderContent>
+		<CardHeaderActions>
+			<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddDialog"></MudButton>
+		</CardHeaderActions>
+	</MudCardHeader>
+	<MudCardContent>
+		@if (schedules == null)
+		{
+			<MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+		} 
+		else
+		{
+			<MudTextField Label="Search" Variant="Variant.Filled" Outlined="true" @bind-Value="searchString" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+		}
+	</MudCardContent>
+</MudCard>
+
+@code {
+	private List<TourSchedule> schedules = new List<TourSchedule>();
+	private TourSchedule selectedTourSchedule = new TourSchedule();
+	private string searchString = string.Empty;
+
+	private async Task OpenAddDialog()
+	{
+		
+	}
+}

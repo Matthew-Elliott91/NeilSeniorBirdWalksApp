@@ -23,7 +23,7 @@
                 <MudStack>
                     <MudText Typo="Typo.h6">Upcoming Tours</MudText>
                     <MudText Typo="Typo.h4">@upcomingToursCount</MudText>
-                    <MudText Typo="Typo.body2">Next 7 days</MudText>
+                    <MudText Typo="Typo.body2">Next 14 days</MudText>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -77,7 +77,7 @@
                     <MudText>Manage upcoming tour schedules and availability</MudText>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Manage Tours</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/admin/edittourschedules">Manage Tours</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -157,10 +157,10 @@
         try
         {
             var today = DateTime.Today;
-            var nextWeek = today.AddDays(7);
+            var nextWeek = today.AddDays(14);
 
-         
-            var upcomingTours = await TourScheduleService.GetUpcomingSchedulesAsync();
+
+            var upcomingTours = await TourScheduleService.GetNextTwoWeeksOfSchedulesAsync();
             upcomingToursCount = upcomingTours.Count(); 
 
             var bookings = await BookingService.GetAllBookingsAsync();

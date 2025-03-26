@@ -28,6 +28,15 @@ namespace NeilSeniorBirdWalks.Services
                 .ToListAsync();
         }
 
+        public async Task<List<TourSchedule>> GetNextTwoWeeksOfSchedulesAsync()
+        {
+            return await _context.TourSchedules
+                .Include(ts => ts.Tour)
+                .Where(ts => ts.StartDateTime >= DateTime.Now && ts.StartDateTime <= DateTime.Now.AddDays(14))
+                .OrderBy(ts => ts.StartDateTime)
+                .ToListAsync();
+        }
+
         public async Task<List<TourSchedule>> GetSchedulesByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _context.TourSchedules
