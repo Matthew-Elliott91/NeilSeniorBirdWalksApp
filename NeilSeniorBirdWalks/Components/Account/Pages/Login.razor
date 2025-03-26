@@ -6,7 +6,7 @@
 @using Microsoft.AspNetCore.Identity
 @using NeilSeniorBirdWalks.Data
 @using BlobStorageLibrary.Models
-
+@using MudBlazor.StaticInput
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
@@ -31,8 +31,16 @@
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
+                    <MudStaticTextField @bind-Value="Input.Password"
+                                        InputType="InputType.Password"
+                                        Adornment="Adornment.End"
+                                        AdornmentIcon="@Icons.Material.Outlined.VisibilityOff"
+                                        AdornmentClickFunction="showPassword"
+                                        Class="form-control"
+                                        Placeholder="Password"
+                                        AutoComplete="current-password"
+                                        AriaRequired="true" />
+                   
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
                 <div class="checkbox mb-3">
@@ -53,9 +61,8 @@
                 Dont Have an Account? Click Here To Register!
             </MudButton>
         </section>
-        
-    </MudItem>
 
+	</MudItem>
 
     <MudItem xs="12" md="6"Class="d-flex align-center justify-center">
         @if (BlobImage != null)
@@ -91,6 +98,22 @@
         </div>
     </MudItem>
 </MudGrid>
+<script>
+    let timeoutId;
+
+    function showPassword(inputElement, button) {
+        if (inputElement.type === 'password') {
+            inputElement.type = 'text';
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function () {
+                inputElement.type = 'password';
+            }, 5000);
+        } else {
+            inputElement.type = 'password';
+            clearTimeout(timeoutId);
+        }
+    }
+</script>
 @code {
     private string? errorMessage;
     private BlobImage? BlobImage { get; set; }
