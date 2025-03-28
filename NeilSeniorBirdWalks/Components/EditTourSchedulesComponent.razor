@@ -7,10 +7,10 @@
 <MudCard Elevation="3" Class="mb-3">
 	<MudCardHeader>
 		<CardHeaderContent>
-			<MudText Typo="Typo.h6">Edit Tour Schedules</MudText>
+			<MudText Typo="Typo.h6">Tour Schedules</MudText>
 		</CardHeaderContent>
 		<CardHeaderActions>
-			<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddDialog"></MudButton>
+			<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => OpenAddDialog())"></MudButton>
 		</CardHeaderActions>
 	</MudCardHeader>
 	<MudCardContent>
@@ -20,7 +20,39 @@
 		} 
 		else
 		{
-			<MudTextField Label="Search" Variant="Variant.Filled" Outlined="true" @bind-Value="searchString" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+			<MudTextField Label="Search" Variant="Variant.Filled" @bind-Value="searchString" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+
+			<MudTable Items="@schedules" Dense="true" Bordered="true" Striped="true" Filter="FilterFunc" @bind-SelectedItem="selectedTourSchedule">
+				<ToolBarContent>
+					<MudText Typo="Typo.h6">Manage Tour Schedules</MudText>
+					<MudSpacer />
+				</ToolBarContent>
+				<HeaderContent>
+					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(t => t.Tour.Title)">Tour Type</MudTableSortLabel></MudTh>
+					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.StartDateTime)">Start Date</MudTableSortLabel></MudTh>
+					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.EndDateTime)">EndDate</MudTableSortLabel></MudTh>
+					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.Tour.Price)">Price</MudTableSortLabel></MudTh>
+					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.AvailableSpots)"></MudTableSortLabel></MudTh>
+					<MudTh>Actions</MudTh>
+				</HeaderContent>
+				<RowTemplate>
+					<MudTd DataLabel="Tour">@context.Tour.Title</MudTd>
+					<MudTd DataLabel="Start Date">@context.StartDateTime.ToString("g")</MudTd>
+					<MudTd DataLabel="End Date">@context.EndDateTime.ToString("g")</MudTd>
+
+					<MudTd DataLabel="Available">@context.AvailableSpots</MudTd>
+					<MudTd>
+						<MudIconButton Icon="@Icons.Material.Filled.Edit"
+						Color="Color.Primary"
+						Size="Size.Small"
+						OnClick="@(() => OpenEditDialog(context))" />
+						<MudIconButton Icon="@Icons.Material.Filled.Delete"
+						Color="Color.Error"
+						Size="Size.Small"
+						OnClick="@(() => OpenDeleteDialog(context))" />
+					</MudTd>
+				</RowTemplate>
+			</MudTable>
 		}
 	</MudCardContent>
 </MudCard>
@@ -32,6 +64,27 @@
 
 	private async Task OpenAddDialog()
 	{
-		
+
+	}
+
+	private bool FilterFunc(TourSchedule schedule)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+
+		return schedule.Tour.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+			|| schedule.StartDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase)
+			|| schedule.EndDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase);
+
+	}
+
+	private async Task OpenEditDialog(TourSchedule schedule)
+	{
+		// Implementation for opening edit dialog
+	}
+
+	private async Task OpenDeleteDialog(TourSchedule schedule)
+	{
+		// Implementation for opening delete dialog
 	}
 }

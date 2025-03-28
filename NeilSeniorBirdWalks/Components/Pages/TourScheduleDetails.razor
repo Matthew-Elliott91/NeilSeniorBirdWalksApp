@@ -61,12 +61,11 @@
                             <MudListItem T="string" Icon="@Icons.Material.Filled.Person">
                                 <MudText>Available Spots: @tourSchedule.AvailableSpots</MudText>
                             </MudListItem>
-                            @if (tourSchedule.Tour.Price.HasValue)
-                            {
+                            
                                 <MudListItem T="string" Icon="@Icons.Material.Filled.LocalOffer">
-                                    <MudText>Price: @tourSchedule.Tour.Price.Value.ToString("C")</MudText>
+                                    <MudText>Price: @tourSchedule.Tour.Price.ToString("C")</MudText>
                                 </MudListItem>
-                            }
+                            
                             @if (tourSchedule.Tour.Duration.HasValue)
                             {
                                 <MudListItem T="string" Icon="@Icons.Material.Filled.Timer">

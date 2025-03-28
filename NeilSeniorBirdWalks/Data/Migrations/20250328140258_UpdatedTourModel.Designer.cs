@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeilSeniorBirdWalks.Data;
 
@@ -11,9 +12,11 @@ using NeilSeniorBirdWalks.Data;
 namespace NeilSeniorBirdWalks.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328140258_UpdatedTourModel")]
+    partial class UpdatedTourModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,7 +287,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 1,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 3, 28, 14, 5, 33, 911, DateTimeKind.Utc).AddTicks(3818),
+                            CreatedDate = new DateTime(2025, 3, 28, 14, 2, 57, 723, DateTimeKind.Utc).AddTicks(122),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "first-blog-post",
                             Title = "First Blog Post"
@@ -293,7 +296,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 2,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 3, 28, 14, 5, 33, 911, DateTimeKind.Utc).AddTicks(3821),
+                            CreatedDate = new DateTime(2025, 3, 28, 14, 2, 57, 723, DateTimeKind.Utc).AddTicks(127),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "second-blog-post",
                             Title = "Second Blog Post"
@@ -302,7 +305,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 3,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 3, 28, 14, 5, 33, 911, DateTimeKind.Utc).AddTicks(3824),
+                            CreatedDate = new DateTime(2025, 3, 28, 14, 2, 57, 723, DateTimeKind.Utc).AddTicks(129),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "third-blog-post",
                             Title = "Third Blog Post"
