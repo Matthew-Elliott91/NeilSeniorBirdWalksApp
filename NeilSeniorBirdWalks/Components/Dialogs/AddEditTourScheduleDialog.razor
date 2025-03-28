@@ -1,0 +1,53 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using MudBlazor
+@inject IDialogService DialogService
+@inject TourService TourService
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@($"{(IsEdit ? "Edit" : "Add")} Tour Schedule")</MudText>
+        <MudForm @ref="form" @bind-IsValid="isValid">
+            <MudSelect Label="Tour Type" @bind-Value="TourSchedule.TourId" Required="true">
+                @foreach (var tour in tours)
+                {
+                    <MudSelectItem Value="@tour.TourId">@tour.Title</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField Label="Start Date" @bind-Value="TourSchedule.StartDateTime" Required="true" />
+            <MudTextField Label="End Date" @bind-Value="TourSchedule.EndDateTime" Required="true" />
+            <MudTextField Label="Available Spots" @bind-Value="TourSchedule.AvailableSpots" Required="true" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Disabled="!isValid">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public TourSchedule TourSchedule { get; set; } = new TourSchedule();
+    [Parameter] public bool IsEdit { get; set; }
+
+    private MudForm form;
+    private bool isValid;
+    private List<Tour> tours = new List<Tour>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tours = await TourService.GetAllToursAsync();
+    }
+
+    private void Save()
+    {
+        if (isValid)
+        {
+            MudDialog.Close(DialogResult.Ok(TourSchedule));
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

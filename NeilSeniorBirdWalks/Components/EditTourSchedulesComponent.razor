@@ -1,90 +1,133 @@
 ﻿@using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
 @inject TourScheduleService TourScheduleService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
 <MudCard Elevation="3" Class="mb-3">
-	<MudCardHeader>
-		<CardHeaderContent>
-			<MudText Typo="Typo.h6">Tour Schedules</MudText>
-		</CardHeaderContent>
-		<CardHeaderActions>
-			<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => OpenAddDialog())"></MudButton>
-		</CardHeaderActions>
-	</MudCardHeader>
-	<MudCardContent>
-		@if (schedules == null)
-		{
-			<MudProgressCircular Indeterminate="true" Color="Color.Primary" />
-		} 
-		else
-		{
-			<MudTextField Label="Search" Variant="Variant.Filled" @bind-Value="searchString" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Tour Schedules</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddDialog">Add</MudButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (schedules == null)
+        {
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+        }
+        else
+        {
+            <MudTextField Label="Search" Variant="Variant.Filled" @bind-Value="searchString" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
 
-			<MudTable Items="@schedules" Dense="true" Bordered="true" Striped="true" Filter="FilterFunc" @bind-SelectedItem="selectedTourSchedule">
-				<ToolBarContent>
-					<MudText Typo="Typo.h6">Manage Tour Schedules</MudText>
-					<MudSpacer />
-				</ToolBarContent>
-				<HeaderContent>
-					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(t => t.Tour.Title)">Tour Type</MudTableSortLabel></MudTh>
-					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.StartDateTime)">Start Date</MudTableSortLabel></MudTh>
-					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.EndDateTime)">EndDate</MudTableSortLabel></MudTh>
-					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.Tour.Price)">Price</MudTableSortLabel></MudTh>
-					<MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.AvailableSpots)"></MudTableSortLabel></MudTh>
-					<MudTh>Actions</MudTh>
-				</HeaderContent>
-				<RowTemplate>
-					<MudTd DataLabel="Tour">@context.Tour.Title</MudTd>
-					<MudTd DataLabel="Start Date">@context.StartDateTime.ToString("g")</MudTd>
-					<MudTd DataLabel="End Date">@context.EndDateTime.ToString("g")</MudTd>
-
-					<MudTd DataLabel="Available">@context.AvailableSpots</MudTd>
-					<MudTd>
-						<MudIconButton Icon="@Icons.Material.Filled.Edit"
-						Color="Color.Primary"
-						Size="Size.Small"
-						OnClick="@(() => OpenEditDialog(context))" />
-						<MudIconButton Icon="@Icons.Material.Filled.Delete"
-						Color="Color.Error"
-						Size="Size.Small"
-						OnClick="@(() => OpenDeleteDialog(context))" />
-					</MudTd>
-				</RowTemplate>
-			</MudTable>
-		}
-	</MudCardContent>
+            <MudTable Items="@schedules" Dense="true" Bordered="true" Striped="true" Filter="FilterFunc" @bind-SelectedItem="selectedTourSchedule">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Manage Tour Schedules</MudText>
+                    <MudSpacer />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(t => t.Tour.Title)">Tour Type</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.StartDateTime)">Start Date</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.EndDateTime)">End Date</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.Tour.Price)">Price</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel T="TourSchedule" SortBy="@(ts => ts.AvailableSpots)">Available Spots</MudTableSortLabel></MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Tour">@context.Tour.Title</MudTd>
+                    <MudTd DataLabel="Start Date">@context.StartDateTime.ToString("g")</MudTd>
+                    <MudTd DataLabel="End Date">@context.EndDateTime.ToString("g")</MudTd>
+                    <MudTd DataLabel="Price">@context.Tour.Price.ToString("C")</MudTd>
+                    <MudTd DataLabel="Available">@context.AvailableSpots</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Color="Color.Primary"
+                                       Size="Size.Small"
+                                       OnClick="@(() => OpenEditDialog(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       OnClick="@(() => OpenDeleteDialog(context))" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </MudCardContent>
 </MudCard>
 
 @code {
-	private List<TourSchedule> schedules = new List<TourSchedule>();
-	private TourSchedule selectedTourSchedule = new TourSchedule();
-	private string searchString = string.Empty;
+    private List<TourSchedule> schedules = new List<TourSchedule>();
+    private TourSchedule selectedTourSchedule = new TourSchedule();
+    private string searchString = string.Empty;
 
-	private async Task OpenAddDialog()
-	{
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            schedules = await TourScheduleService.GetAllSchedulesAsync();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Error loading tour schedules", Severity.Error);
+        }
+    }
 
-	}
+    private bool FilterFunc(TourSchedule schedule)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
 
-	private bool FilterFunc(TourSchedule schedule)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
+        return schedule.Tour.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || schedule.StartDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || schedule.EndDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || schedule.Tour.Price.ToString("C").Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
 
-		return schedule.Tour.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-			|| schedule.StartDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase)
-			|| schedule.EndDateTime.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    private async Task OpenAddDialog()
+    {
+        var parameters = new DialogParameters { ["TourSchedule"] = new TourSchedule { Tour = new Tour() }, ["IsEdit"] = false };
+        var dialog = DialogService.Show<AddEditTourScheduleDialog>("Add Tour Schedule", parameters);
+        var result = await dialog.Result;
 
-	}
+        if (!result.Canceled)
+        {
+            schedules = await TourScheduleService.GetAllSchedulesAsync();
+            Snackbar.Add("Tour schedule added successfully", Severity.Success);
+        }
+    }
 
-	private async Task OpenEditDialog(TourSchedule schedule)
-	{
-		// Implementation for opening edit dialog
-	}
+    private async Task OpenEditDialog(TourSchedule schedule)
+    {
+        var parameters = new DialogParameters { ["TourSchedule"] = schedule, ["IsEdit"] = true };
+        var dialog = DialogService.Show<AddEditTourScheduleDialog>("Edit Tour Schedule", parameters);
+        var result = await dialog.Result;
 
-	private async Task OpenDeleteDialog(TourSchedule schedule)
-	{
-		// Implementation for opening delete dialog
-	}
+        if (!result.Canceled)
+        {
+            schedules = await TourScheduleService.GetAllSchedulesAsync();
+            Snackbar.Add("Tour schedule updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task OpenDeleteDialog(TourSchedule schedule)
+    {
+        var parameters = new DialogParameters
+            {
+                ["ContentText"] = $"Are you sure you want to delete the schedule for {schedule.Tour.Title}?",
+                ["ButtonText"] = "Delete",
+                ["Color"] = Color.Error
+            };
+        var dialog = DialogService.Show<ConfirmationDialog>("Delete Tour Schedule", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await TourScheduleService.DeleteScheduleAsync(schedule.Id);
+            schedules = await TourScheduleService.GetAllSchedulesAsync();
+            Snackbar.Add("Tour schedule deleted successfully", Severity.Success);
+        }
+    }
 }
