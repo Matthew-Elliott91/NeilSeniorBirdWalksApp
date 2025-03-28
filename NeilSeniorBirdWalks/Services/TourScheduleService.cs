@@ -63,6 +63,12 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<TourSchedule> CreateScheduleAsync(TourSchedule schedule)
         {
+            
+            if (schedule.Id != 0)
+            {
+                schedule.Id = 0;
+            }
+            schedule.Tour = null;
             _context.TourSchedules.Add(schedule);
             await _context.SaveChangesAsync();
             return schedule;

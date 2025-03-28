@@ -88,16 +88,36 @@
 
     private async Task OpenAddDialog()
     {
-        var parameters = new DialogParameters { ["TourSchedule"] = new TourSchedule { Tour = new Tour() }, ["IsEdit"] = false };
+        var parameters = new DialogParameters { ["TourSchedule"] = new TourSchedule(), ["IsEdit"] = false };
         var dialog = DialogService.Show<AddEditTourScheduleDialog>("Add Tour Schedule", parameters);
         var result = await dialog.Result;
 
         if (!result.Canceled)
         {
-            schedules = await TourScheduleService.GetAllSchedulesAsync();
-            Snackbar.Add("Tour schedule added successfully", Severity.Success);
+            try
+            {
+                
+                var newTourSchedule = result.Data as TourSchedule;
+
+                if (newTourSchedule != null)
+                {
+                    
+                    await TourScheduleService.CreateScheduleAsync(newTourSchedule);
+                    schedules = await TourScheduleService.GetAllSchedulesAsync();
+                    Snackbar.Add("Tour schedule added successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Error: Tour schedule data is invalid", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error adding tour schedule: {ex.Message}", Severity.Error);
+            }
         }
     }
+
 
     private async Task OpenEditDialog(TourSchedule schedule)
     {

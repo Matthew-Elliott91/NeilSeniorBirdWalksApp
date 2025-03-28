@@ -7,15 +7,20 @@
     <DialogContent>
         <MudText Typo="Typo.h6">@($"{(IsEdit ? "Edit" : "Add")} Tour Schedule")</MudText>
         <MudForm @ref="form" @bind-IsValid="isValid">
-            <MudSelect Label="Tour Type" @bind-Value="TourSchedule.TourId" Required="true">
+            <MudSelect Label="Tour Type" @bind-Value="selectedTourId" Required="true" HelperText="Select the tour type" Class="mt-3">
                 @foreach (var tour in tours)
                 {
                     <MudSelectItem Value="@tour.TourId">@tour.Title</MudSelectItem>
                 }
             </MudSelect>
-            <MudTextField Label="Start Date" @bind-Value="TourSchedule.StartDateTime" Required="true" />
-            <MudTextField Label="End Date" @bind-Value="TourSchedule.EndDateTime" Required="true" />
-            <MudTextField Label="Available Spots" @bind-Value="TourSchedule.AvailableSpots" Required="true" />
+
+            <MudDatePicker Label="Start Date" @bind-Date="startDate" Required="true" HelperText="Select the start date" Class="mt-3" />
+            <MudTimePicker Label="Start Time" @bind-Time="startTime" Required="true" HelperText="Select the start time" Class="mt-3" />
+
+            <MudDatePicker Label="End Date" @bind-Date="endDate" Required="true" HelperText="Select the end date" Class="mt-3" />
+            <MudTimePicker Label="End Time" @bind-Time="endTime" Required="true" HelperText="Select the end time" Class="mt-3" />
+
+            <MudNumericField Label="Available Spots" @bind-Value="TourSchedule.AvailableSpots" Required="true" Min="1" HelperText="Number of available spots" Class="mt-3" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -32,17 +37,76 @@
     private MudForm form;
     private bool isValid;
     private List<Tour> tours = new List<Tour>();
+    private int selectedTourId;
+    private DateTime? startDate;
+    private TimeSpan? startTime;
+    private DateTime? endDate;
+    private TimeSpan? endTime;
 
     protected override async Task OnInitializedAsync()
     {
-        tours = await TourService.GetAllToursAsync();
+        try
+        {
+            tours = await TourService.GetAllToursAsync();
+
+            if (IsEdit)
+            {
+                
+                selectedTourId = TourSchedule.TourId;
+                startDate = TourSchedule.StartDateTime.Date;
+                startTime = TourSchedule.StartDateTime.TimeOfDay;
+                endDate = TourSchedule.EndDateTime.Date;
+                endTime = TourSchedule.EndDateTime.TimeOfDay;
+            }
+            else
+            {
+                
+                TourSchedule = new TourSchedule
+                    {
+                        StartDateTime = DateTime.Now.Date.AddHours(9), 
+                        EndDateTime = DateTime.Now.Date.AddHours(12),  
+                        AvailableSpots = 8,
+                        IsCanceled = false,
+                        TourScheduleImgUrl = "images/logo.svg" 
+                    };
+
+                startDate = TourSchedule.StartDateTime.Date;
+                startTime = TourSchedule.StartDateTime.TimeOfDay;
+                endDate = TourSchedule.EndDateTime.Date;
+                endTime = TourSchedule.EndDateTime.TimeOfDay;
+
+               
+                if (tours.Any())
+                {
+                    selectedTourId = tours.First().TourId;
+                    TourSchedule.TourId = selectedTourId;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing dialog: {ex.Message}");
+        }
     }
 
     private void Save()
     {
-        if (isValid)
+        try
         {
-            MudDialog.Close(DialogResult.Ok(TourSchedule));
+            if (isValid && startDate.HasValue && startTime.HasValue && endDate.HasValue && endTime.HasValue)
+            {
+                
+                TourSchedule.TourId = selectedTourId;
+                TourSchedule.StartDateTime = startDate.Value.Date.Add(startTime.Value);
+                TourSchedule.EndDateTime = endDate.Value.Date.Add(endTime.Value);
+
+               
+                MudDialog.Close(DialogResult.Ok(TourSchedule));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving dialog: {ex.Message}");
         }
     }
 
