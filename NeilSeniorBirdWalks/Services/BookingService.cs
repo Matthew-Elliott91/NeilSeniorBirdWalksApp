@@ -18,6 +18,7 @@ namespace NeilSeniorBirdWalks.Services
             return await _context.Bookings
                 .Include(b => b.TourSchedule)
                 .ThenInclude(ts => ts.Tour)
+                .Include(b => b.User)
                 .OrderByDescending(b => b.TourSchedule.StartDateTime)
                 .ToListAsync();
         }

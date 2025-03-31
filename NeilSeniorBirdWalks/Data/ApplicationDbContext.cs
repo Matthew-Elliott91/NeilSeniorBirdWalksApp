@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NeilSeniorBirdWalks.Models;
@@ -25,6 +26,11 @@ namespace NeilSeniorBirdWalks.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Booking>()
+                    .HasOne(b => b.User)
+                    .WithMany()
+                    .HasForeignKey(b => b.UserId);
 
             modelBuilder.Entity<TourSeason>()
                 .HasKey(ts => new { ts.TourId, ts.SeasonId });

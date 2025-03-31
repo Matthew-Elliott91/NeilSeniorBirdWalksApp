@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using NeilSeniorBirdWalks.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace NeilSeniorBirdWalks.Models
 {
@@ -28,6 +30,7 @@ namespace NeilSeniorBirdWalks.Models
         // Navigation Properties
 
         public TourSchedule? TourSchedule { get; set; }
+        public ApplicationUser? User { get; set; }
 
     }
 }

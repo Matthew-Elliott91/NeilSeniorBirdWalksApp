@@ -1,28 +1,128 @@
-﻿@inject BookingService BookingService;
+﻿@using NeilSeniorBirdWalks.Components.Dialogs
+@inject BookingService BookingService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<MudTable Items="AllBookings" Hover="true" Striped="true" Bordered="true">
+<MudTable Items="AllBookings" Hover="true" Striped="true" Bordered="true" Filter="@FilterFunc">
 	<ToolBarContent>
 		<MudText Typo="Typo.h4">Bookings</MudText>
-		<MudSpacer/>
+		<MudSpacer />
 		<MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mt-0"></MudTextField>
 	</ToolBarContent>
 	<HeaderContent>
-		<MudTh>BookingID</MudTh>
-		<MudTh>User Email</MudTh>
-		<MudTh>Tour Schedule</MudTh>
-		<MudTh>Booking Date</MudTh>
-		<MudTh>Participants</MudTh>
+		<MudTh><MudTableSortLabel T="Booking" SortBy="@(b => b.Id)">BookingID</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Booking" SortBy="@(b => b.TourSchedule.Title)">Title</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Booking" SortBy="@(b => b.User.Email)">User Email</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Booking" SortBy="@(b => b.BookingDate)">Booking Date</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Booking" SortBy="@(b => b.NumberOfParticipants)">Participants</MudTableSortLabel></MudTh>
 		<MudTh>Actions</MudTh>
 	</HeaderContent>
+	<RowTemplate>
+		<MudTd DataLabel="ID">@context.Id</MudTd>
+		<MudTd DataLabel="Title">@(context.TourSchedule?.Title ?? "N/A")</MudTd>
+		<MudTd DataLabel="User Email">@(context.User?.Email ?? "N/A")</MudTd>
+		<MudTd DataLabel="Booking Date">@context.BookingDate.ToString("g")</MudTd>
+		<MudTd DataLabel="Participants">@context.NumberOfParticipants</MudTd>
+		<MudTd>
+			<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+					   OnClick="@(() => EditBooking(context))">Edit</MudButton>
+			<MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
+					   OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+		</MudTd>
+	</RowTemplate>
+	<PagerContent>
+		<MudTablePager />
+	</PagerContent>
 </MudTable>
 
 @code {
 	private string searchString = "";
-	private List<Booking> AllBookings { get; set; }
+	private List<Booking> AllBookings { get; set; } = new();
+
 	protected override async Task OnInitializedAsync()
 	{
 		AllBookings = await BookingService.GetAllBookingsAsync();
+	}
+
+	private bool FilterFunc(Booking booking)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+
+		return booking.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+			|| (booking.TourSchedule?.Title?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (booking.User?.Email?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| booking.BookingDate.ToString("g").Contains(searchString, StringComparison.OrdinalIgnoreCase)
+			|| booking.NumberOfParticipants.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private async Task EditBooking(Booking booking)
+	{
+		
+		var bookingCopy = new Booking
+			{
+				Id = booking.Id,
+				UserId = booking.UserId,
+				TourScheduleId = booking.TourScheduleId,
+				BookingDate = booking.BookingDate,
+				NumberOfParticipants = booking.NumberOfParticipants,
+				User = booking.User,
+				TourSchedule = booking.TourSchedule
+			};
+
+		var parameters = new DialogParameters
+			{
+				["Booking"] = bookingCopy
+			};
+
+		var dialog = DialogService.Show<EditBookingDialog>("Edit Booking", parameters);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			try
+			{
+				var data = result.Data as dynamic;
+				var updatedBooking = data.Booking as Booking;
+				var originalParticipantCount = (int)data.OriginalParticipantCount;
+
+				await BookingService.UpdateBookingAsync(updatedBooking, originalParticipantCount);
+				AllBookings = await BookingService.GetAllBookingsAsync();
+				Snackbar.Add("Booking updated successfully", Severity.Success);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Error updating booking: {ex.Message}", Severity.Error);
+			}
+		}
+	}
 
 
+	private async Task OpenDeleteDialog(Booking booking)
+	{
+		var parameters = new DialogParameters
+			{
+				["ContentText"] = $"Are you sure you want to delete booking {booking.Id} for {booking.User?.Email ?? "unknown user"}?",
+				["ButtonText"] = "Delete",
+				["Color"] = Color.Error
+			};
+
+		var dialog = DialogService.Show<ConfirmationDialog>("Delete Booking", parameters);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			try
+			{
+				await BookingService.DeleteBookingAsync(booking.Id);
+				AllBookings = await BookingService.GetAllBookingsAsync();
+				Snackbar.Add("Booking deleted successfully", Severity.Success);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Error deleting booking: {ex.Message}", Severity.Error);
+			}
+		}
 	}
 }
+
