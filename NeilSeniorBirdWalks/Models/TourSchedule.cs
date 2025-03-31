@@ -12,6 +12,9 @@
         public string? TourSchduleInfo { get; set; }
 
 
+        //Calculate Title Property
+        public string Title => Tour?.Title + " - " + StartDateTime.ToString("d MMM yyyy");
+
         // Navigation properties
         public Tour Tour { get; set; }
         public ICollection<Booking> Bookings { get; set; }

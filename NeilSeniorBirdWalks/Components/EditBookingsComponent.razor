@@ -1,7 +1,23 @@
 ﻿@inject BookingService BookingService;
 
+<MudTable Items="AllBookings" Hover="true" Striped="true" Bordered="true">
+	<ToolBarContent>
+		<MudText Typo="Typo.h4">Bookings</MudText>
+		<MudSpacer/>
+		<MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mt-0"></MudTextField>
+	</ToolBarContent>
+	<HeaderContent>
+		<MudTh>BookingID</MudTh>
+		<MudTh>User Email</MudTh>
+		<MudTh>Tour Schedule</MudTh>
+		<MudTh>Booking Date</MudTh>
+		<MudTh>Participants</MudTh>
+		<MudTh>Actions</MudTh>
+	</HeaderContent>
+</MudTable>
 
 @code {
+	private string searchString = "";
 	private List<Booking> AllBookings { get; set; }
 	protected override async Task OnInitializedAsync()
 	{
