@@ -1,0 +1,12 @@
+﻿@inject BookingService BookingService;
+
+
+@code {
+	private List<Booking> AllBookings { get; set; }
+	protected override async Task OnInitializedAsync()
+	{
+		AllBookings = await BookingService.GetAllBookingsAsync();
+
+
+	}
+}

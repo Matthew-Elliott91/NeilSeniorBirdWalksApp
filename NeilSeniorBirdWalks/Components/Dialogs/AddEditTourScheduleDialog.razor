@@ -5,7 +5,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.h6">@($"{(IsEdit ? "Edit" : "Add")} Tour Schedule")</MudText>
+        
         <MudForm @ref="form" @bind-IsValid="isValid">
             <MudSelect Label="Tour Type" @bind-Value="selectedTourId" Required="true" HelperText="Select the tour type" Class="mt-3">
                 @foreach (var tour in tours)
