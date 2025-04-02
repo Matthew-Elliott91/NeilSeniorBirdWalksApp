@@ -16,6 +16,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject BlobStorageService BlobStorageService
+@inject IServiceProvider ServiceProvider
 
 <PageTitle>Register</PageTitle>
 
@@ -35,6 +36,45 @@
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.FirstName" class="form-control" aria-required="true" placeholder="First Name" />
+                    <label for="firstName">First Name</label>
+                    <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.LastName" class="form-control" aria-required="true" placeholder="Last Name" />
+                    <label for="lastName">Last Name</label>
+                    <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.AddressLine1" class="form-control" aria-required="true" placeholder="Address Line 1" />
+                    <label for="addressLine1">Address Line 1</label>
+                    <ValidationMessage For="() => Input.AddressLine1" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.AddressLine2" class="form-control" placeholder="Address Line 2" />
+                    <label for="addressLine2">Address Line 2</label>
+                    <ValidationMessage For="() => Input.AddressLine2" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.City" class="form-control" aria-required="true" placeholder="City" />
+                    <label for="city">City</label>
+                    <ValidationMessage For="() => Input.City" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.County" class="form-control" aria-required="true" placeholder="County" />
+                    <label for="county">County</label>
+                    <ValidationMessage For="() => Input.County" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Postcode" class="form-control" aria-required="true" placeholder="Postcode" />
+                    <label for="postcode">Postcode</label>
+                    <ValidationMessage For="() => Input.Postcode" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
                     <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
                     <label for="password">Password</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
@@ -44,6 +84,7 @@
                     <label for="confirm-password">Confirm Password</label>
                     <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
                 </div>
+
                 <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
             </EditForm>
         </section>
@@ -53,9 +94,9 @@
         @if (BlobImage != null)
         {
             <MudImage Src="@BlobImage.Uri" Alt="@BlobImage.Name"
-                      ObjectPosition="ObjectPosition.Center"
-                      ObjectFit="ObjectFit.Contain"
-                      Height="400" Fluid="true"></MudImage>
+            ObjectPosition="ObjectPosition.Center"
+            ObjectFit="ObjectFit.Contain"
+            Height="400" Fluid="true"></MudImage>
         }
         else
         {
@@ -66,18 +107,18 @@
     <MudItem xs="12" md="3">
         <div class="d-flex flex-column gap-2">
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Href="Account/Login"
-                       FullWidth="true"
-                       Class="text-white">
+            Color="Color.Primary"
+            Href="Account/Login"
+            FullWidth="true"
+            Class="text-white">
                 Already have an account? Log in
             </MudButton>
 
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Secondary"
-                       Href="Account/ResendEmailConfirmation"
-                       FullWidth="true"
-                       Class="text-white">
+            Color="Color.Secondary"
+            Href="Account/ResendEmailConfirmation"
+            FullWidth="true"
+            Class="text-white">
                 Resend email confirmation
             </MudButton>
         </div>
@@ -85,6 +126,7 @@
 </MudGrid>
 
 @code {
+
     private IEnumerable<IdentityError>? identityErrors;
     private BlobImage? BlobImage { get; set; }
 
@@ -107,7 +149,7 @@
     private async Task LoadRandomImageAsync()
     {
         BlobImage = await BlobStorageService.GetRandomImageAsync();
-       
+
     }
 
     public async Task RegisterUser(EditContext editContext)
@@ -126,6 +168,28 @@
         }
 
         Logger.LogInformation("User created a new account with password.");
+
+		// Added new Customer object to the database
+		var customer = new Customer
+        {
+				FirstName = Input.FirstName,
+				LastName = Input.LastName,
+                Address = new Address
+                {
+                    AddressLine1 = Input.AddressLine1,
+                    AddressLine2 = Input.AddressLine2,
+                    City = Input.City,
+                    County = Input.County,
+                    Postcode = Input.Postcode,                },
+
+				UserId = await UserManager.GetUserIdAsync(user)
+
+		};
+        using var scope = ServiceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Customers.Add(customer);
+        await dbContext.SaveChangesAsync();
+
 
         var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
@@ -170,21 +234,56 @@
     }
 
     private sealed class InputModel
-    {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; } = "";
+{
+    [Required]
+    [EmailAddress]
+    [Display(Name = "Email")]
+    public string Email { get; set; } = "";
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; } = "";
+    [Required]
+    [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+    [Display(Name = "First Name")]
+    public string FirstName { get; set; } = "";
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; } = "";
-    }
+    [Required]
+    [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+    [Display(Name = "Last Name")]
+    public string LastName { get; set; } = "";
+
+    [Required]
+    [StringLength(100, ErrorMessage = "Address line 1 must be less than 100 characters")]
+    [Display(Name = "Address Line 1")]
+    public string AddressLine1 { get; set; } = "";
+
+    [StringLength(100, ErrorMessage = "Address line 2 must be less than 100 characters")]
+    [Display(Name = "Address Line 2")]
+    public string AddressLine2 { get; set; } = "";
+
+    [Required]
+    [StringLength(50, ErrorMessage = "City must be less than 50 characters")]
+    [Display(Name = "City")]
+    public string City { get; set; } = "";
+
+    [Required]
+    [StringLength(50, ErrorMessage = "County must be less than 50 characters")]
+    [Display(Name = "County")]
+    public string County { get; set; } = "";
+
+    [Required]
+    [StringLength(10, ErrorMessage = "Postcode must be less than 10 characters")]
+    [Display(Name = "Postcode")]
+    public string Postcode { get; set; } = "";
+
+    [Required]
+    [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+    [DataType(DataType.Password)]
+    [Display(Name = "Password")]
+    public string Password { get; set; } = "";
+
+    [DataType(DataType.Password)]
+    [Display(Name = "Confirm password")]
+    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+    public string ConfirmPassword { get; set; } = "";
+}
+
 }

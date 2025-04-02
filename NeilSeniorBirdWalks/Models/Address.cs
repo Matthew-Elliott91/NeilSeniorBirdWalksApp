@@ -4,6 +4,7 @@ namespace NeilSeniorBirdWalks.Models
 {
     public class Address
     {
+        public int Id { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "First Line of Address must be less than 100 characters")]
         [Display(Name = "First Line of Address")]
@@ -29,8 +30,7 @@ namespace NeilSeniorBirdWalks.Models
             get => _postcode;
             set => _postcode = value?.Replace(" ", "").ToUpper() ?? string.Empty;
         }
-        [Required]
-        [StringLength(50, ErrorMessage = "Country must be less than 50 characters")]
-        public string Country { get; set; } = string.Empty;
+        
+        
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeilSeniorBirdWalks.Data;
 
@@ -11,9 +12,11 @@ using NeilSeniorBirdWalks.Data;
 namespace NeilSeniorBirdWalks.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402124837_CreatedCustomerAdressModelEditedInputModelonRegistertwo")]
+    partial class CreatedCustomerAdressModelEditedInputModelonRegistertwo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,6 +223,44 @@ namespace NeilSeniorBirdWalks.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("NeilSeniorBirdWalks.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddressLine1")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AddressLine2")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("County")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Postcode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.Bird", b =>
                 {
                     b.Property<int>("BirdId")
@@ -284,7 +325,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 1,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 2, 13, 5, 16, 12, DateTimeKind.Utc).AddTicks(1510),
+                            CreatedDate = new DateTime(2025, 4, 2, 12, 48, 37, 169, DateTimeKind.Utc).AddTicks(7146),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "first-blog-post",
                             Title = "First Blog Post"
@@ -293,7 +334,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 2,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 2, 13, 5, 16, 12, DateTimeKind.Utc).AddTicks(1514),
+                            CreatedDate = new DateTime(2025, 4, 2, 12, 48, 37, 169, DateTimeKind.Utc).AddTicks(7150),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "second-blog-post",
                             Title = "Second Blog Post"
@@ -302,7 +343,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 3,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 2, 13, 5, 16, 12, DateTimeKind.Utc).AddTicks(1517),
+                            CreatedDate = new DateTime(2025, 4, 2, 12, 48, 37, 169, DateTimeKind.Utc).AddTicks(7154),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "third-blog-post",
                             Title = "Third Blog Post"
@@ -456,6 +497,9 @@ namespace NeilSeniorBirdWalks.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -471,6 +515,8 @@ namespace NeilSeniorBirdWalks.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -753,60 +799,19 @@ namespace NeilSeniorBirdWalks.Migrations
 
             modelBuilder.Entity("NeilSeniorBirdWalks.Models.Customer", b =>
                 {
+                    b.HasOne("NeilSeniorBirdWalks.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("NeilSeniorBirdWalks.Data.ApplicationUser", "User")
                         .WithOne("Customer")
                         .HasForeignKey("NeilSeniorBirdWalks.Models.Customer", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("NeilSeniorBirdWalks.Models.Address", "Address", b1 =>
-                        {
-                            b1.Property<int>("CustomerId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("AddressLine1")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("AddressLine1");
-
-                            b1.Property<string>("AddressLine2")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("AddressLine2");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("City");
-
-                            b1.Property<string>("County")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("County");
-
-                            b1.Property<int>("Id")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Postcode")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("nvarchar(10)")
-                                .HasColumnName("Postcode");
-
-                            b1.HasKey("CustomerId");
-
-                            b1.ToTable("Customers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CustomerId");
-                        });
-
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
 
                     b.Navigation("User");
                 });

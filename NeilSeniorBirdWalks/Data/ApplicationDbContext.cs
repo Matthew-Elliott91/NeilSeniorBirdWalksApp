@@ -22,10 +22,23 @@ namespace NeilSeniorBirdWalks.Data
         public DbSet<ContactFormModel> ContactForms { get; set; }
         public DbSet<TourSchedule> TourSchedules { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customer>()
+             .OwnsOne(c => c.Address, a =>
+             {
+                 a.Property(p => p.AddressLine1).HasColumnName("AddressLine1");
+                 a.Property(p => p.AddressLine2).HasColumnName("AddressLine2");
+                 a.Property(p => p.City).HasColumnName("City");
+                 a.Property(p => p.County).HasColumnName("County");
+                 a.Property(p => p.Postcode).HasColumnName("Postcode");
+         
+             });
 
             modelBuilder.Entity<Booking>()
                     .HasOne(b => b.User)
