@@ -1,5 +1,62 @@
-﻿
+﻿@using NeilSeniorBirdWalks.Components.Dialogs;
+@inject CustomerService CustomerService;
+@inject IDialogService DialogService;
+@inject ISnackbar Snackbar;
+
+<MudTable Items="AllCustomers" Hover="true" Striped="true" Bordered="true" Filter="@FilterFunc">
+	<ToolBarContent>
+		<MudText Typo="Typo.h4">Customers</MudText>
+		<MudSpacer />
+		<MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mt-0"></MudTextField>
+	</ToolBarContent>
+	<HeaderContent>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.Id)">CustomerID</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.User?.Email)">Email</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.FirstName)">First Name</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.LastName)">Last Name</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.User?.Email)">Phone Number</MudTableSortLabel></MudTh>
+		<MudTh>Actions</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd DataLabel="ID">@context.Id</MudTd>
+		<MudTd DataLabel="Email">@(context.User?.Email ?? "N/A")</MudTd>
+		<MudTd DataLabel="First Name">@context.FirstName</MudTd>
+		<MudTd DataLabel="Last Name">@context.LastName</MudTd>
+		<MudTd DataLabel="Phone Number">@context.User?.PhoneNumber</MudTd>
+		<MudTd>
+			<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+			OnClick="@(() => OpenEditDialog(context))">Edit</MudButton>
+			<MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
+			OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+		</MudTd>
+	</RowTemplate>
+</MudTable>
+
 
 @code {
+	private List<Customer> AllCustomers { get; set; } = new();
+	private string searchString = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		AllCustomers = await CustomerService.GetAllCustomersAsync();
+	}
+
+	private bool FilterFunc(Customer customer)
+	{
+		return true;
+	}
+
+	private async Task OpenEditDialog(Customer customer)
+	{
+		// Code to edit a customer
+	}
+
+	private async Task OpenDeleteDialog(Customer customer)
+	{
+		
+	}
+
+	
 
 }
