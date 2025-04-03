@@ -41,9 +41,9 @@
 		</MudTd>
 		<MudTd>
 			<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
-					   OnClick="@(() => OpenEditDialog(context))">Edit</MudButton>
+			OnClick="@(() => OpenCustomerBookingsDialog(context))">View Bookings</MudButton>
 			<MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
-					   OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+			OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
 		</MudTd>
 	</RowTemplate>
 </MudTable>
@@ -52,6 +52,7 @@
 @code {
 	private List<Customer> AllCustomers { get; set; } = new();
 	private string searchString = "";
+	private Customer? selectedCustomer;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -74,9 +75,14 @@
 	}
 
 
-	private async Task OpenEditDialog(Customer customer)
+	private async Task OpenCustomerBookingsDialog(Customer customer)
 	{
-		// Code to edit a customer
+		var parameters = new DialogParameters
+			{
+				["Customer"] = customer
+			};
+		var dialog = DialogService.Show<CustomerBookingsDialog>("Customer Bookings", parameters);
+
 	}
 
 	private async Task OpenDeleteDialog(Customer customer)

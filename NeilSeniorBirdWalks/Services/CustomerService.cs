@@ -62,5 +62,20 @@ namespace NeilSeniorBirdWalks.Services
             }
         }
 
+        public async Task<List<Booking>> GetBookingsByCustomerIdAsync(int customerId)
+        {
+           var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            if (customer == null || string.IsNullOrEmpty(customer.UserId))
+            {
+                return new List<Booking>();
+            }
+            return await _context.Bookings
+                .Include(b => b.TourSchedule)
+                .Where(b => b.UserId == customer.UserId)
+                .ToListAsync();
+        }
+
     }
 }
