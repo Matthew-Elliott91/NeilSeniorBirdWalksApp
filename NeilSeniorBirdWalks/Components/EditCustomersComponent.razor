@@ -14,7 +14,8 @@
 		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.User?.Email)">Email</MudTableSortLabel></MudTh>
 		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.FirstName)">First Name</MudTableSortLabel></MudTh>
 		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.LastName)">Last Name</MudTableSortLabel></MudTh>
-		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.User?.Email)">Phone Number</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.User?.PhoneNumber)">Phone Number</MudTableSortLabel></MudTh>
+		<MudTh><MudTableSortLabel T="Customer" SortBy="@(c => c.Address)">Address</MudTableSortLabel></MudTh>
 		<MudTh>Actions</MudTh>
 	</HeaderContent>
 	<RowTemplate>
@@ -23,11 +24,26 @@
 		<MudTd DataLabel="First Name">@context.FirstName</MudTd>
 		<MudTd DataLabel="Last Name">@context.LastName</MudTd>
 		<MudTd DataLabel="Phone Number">@context.User?.PhoneNumber</MudTd>
+		<MudTd DataLabel="Address">
+			@if (context.Address != null)
+			{
+				<div>
+					@context.Address.AddressLine1<br />
+					@context.Address.AddressLine2<br />
+					@context.Address.City<br />
+					@context.Address.Postcode<br />
+				</div>
+			}
+			else
+			{
+				<span>No address available</span>
+			}
+		</MudTd>
 		<MudTd>
 			<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
-			OnClick="@(() => OpenEditDialog(context))">Edit</MudButton>
+					   OnClick="@(() => OpenEditDialog(context))">Edit</MudButton>
 			<MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
-			OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+					   OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
 		</MudTd>
 	</RowTemplate>
 </MudTable>
@@ -44,8 +60,19 @@
 
 	private bool FilterFunc(Customer customer)
 	{
-		return true;
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+
+		return customer.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+			|| (customer.User?.Email?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.FirstName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.LastName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.User?.PhoneNumber?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.Address?.AddressLine1?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.Address?.City?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+			|| (customer.Address?.Postcode?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false);
 	}
+
 
 	private async Task OpenEditDialog(Customer customer)
 	{
@@ -54,7 +81,26 @@
 
 	private async Task OpenDeleteDialog(Customer customer)
 	{
-		
+		var parameters = new DialogParameters
+		{
+				["ContentText"] = $"Are you sure you want to delete customer {customer.FirstName} {customer.LastName}?",
+				["ButtonText"] = "Delete",
+				["Color"] = Color.Error
+				
+		};
+		var dialog = DialogService.Show<ConfirmationDialog>("Delete Customer", parameters);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			await CustomerService.DeleteCustomerAsync(customer.Id);
+			Snackbar.Add("Customer deleted successfully", Severity.Success);
+			AllCustomers = await CustomerService.GetAllCustomersAsync();
+		}
+		else
+		{
+			Snackbar.Add("Customer deletion cancelled", Severity.Warning);
+		}
 	}
 
 	

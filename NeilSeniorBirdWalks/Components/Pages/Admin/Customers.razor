@@ -1,9 +1,9 @@
-﻿@page "/admin/contact"
+﻿@page "/admin/customers"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 
 <MudContainer Class="mt-4">
-	<ContactMessageList></ContactMessageList>
+	<EditCustomersComponent></EditCustomersComponent>
 </MudContainer>
 
 @code {
