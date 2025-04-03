@@ -1,0 +1,65 @@
+﻿@using MudBlazor
+@using System.Collections.Generic
+@inject TourService TourService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Tour Management</MudText>
+    
+    @if (isLoading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (tours == null || !tours.Any())
+    {
+        <MudAlert Severity="Severity.Info">No tours available.</MudAlert>
+    }
+    else
+    {
+        <MudTable Items="@tours" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading" 
+                 LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Tour Name</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>Schedule Count</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Tour Name">@context.Title</MudTd>
+                <MudTd DataLabel="Description">
+                    <MudText Typo="Typo.body2" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;">
+                        @context.Description
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="Schedule Count">@(context.TourSchedules?.Count ?? 0)</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    private List<Tour> tours;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadToursAsync();
+    }
+
+    private async Task LoadToursAsync()
+    {
+        try
+        {
+            isLoading = true;
+            tours = await TourService.GetAllToursAsync();
+        }
+        catch (Exception ex)
+        {
+            // Add proper error handling here
+            Console.WriteLine($"Error loading tours: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

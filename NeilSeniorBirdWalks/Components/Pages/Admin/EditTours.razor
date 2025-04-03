@@ -1,0 +1,11 @@
+﻿@page "/admin/edittours"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+<MudContainer Class="mt-4">
+	<EditToursAdminComponent></EditToursAdminComponent>
+</MudContainer>
+
+@code {
+
+}
