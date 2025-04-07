@@ -37,6 +37,17 @@ namespace NeilSeniorBirdWalks.Services
                 .ToListAsync();
         }
 
+        public async Task DeleteTourAsync(int tourId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var tour = await context.Tours.FindAsync(tourId);
+            if (tour != null)
+            {
+                context.Tours.Remove(tour);
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task<List<Season>> GetSeasonsAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

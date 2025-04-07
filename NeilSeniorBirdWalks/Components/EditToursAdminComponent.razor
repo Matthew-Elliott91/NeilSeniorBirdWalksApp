@@ -1,10 +1,12 @@
-﻿@using MudBlazor
+﻿@using NeilSeniorBirdWalks.Components.Dialogs
 @using System.Collections.Generic
 @inject TourService TourService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <MudText Typo="Typo.h4" Class="mb-4">Tour Management</MudText>
-    
+
     @if (isLoading)
     {
         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
@@ -16,7 +18,7 @@
     else
     {
         <MudTable Items="@tours" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading" 
-                 LoadingProgressColor="Color.Info">
+        LoadingProgressColor="Color.Info">
             <HeaderContent>
                 <MudTh>Tour Name</MudTh>
                 <MudTh>Description</MudTh>
@@ -30,12 +32,18 @@
                     </MudText>
                 </MudTd>
                 <MudTd DataLabel="Schedule Count">@(context.TourSchedules?.Count ?? 0)</MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                               OnClick="@(() => OpenEditDialog(context))">Edit Tour</MudButton>
+                    <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
+                               OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+                </MudTd>
             </RowTemplate>
         </MudTable>
     }
-</MudContainer>
+    </MudContainer>
 
-@code {
+    @code {
     private List<Tour> tours;
     private bool isLoading = true;
 
@@ -53,7 +61,7 @@
         }
         catch (Exception ex)
         {
-            // Add proper error handling here
+
             Console.WriteLine($"Error loading tours: {ex.Message}");
         }
         finally
@@ -62,4 +70,39 @@
             StateHasChanged();
         }
     }
+
+    private async Task OpenEditDialog(Tour tour)
+    {
+
+
+    }
+
+    private async Task OpenDeleteDialog(Tour tour)
+    {
+        var parameters = new DialogParameters
+        {
+				["ContentTExt"] = $"Are you sure you want to delete the tour '{tour.Title}'?",
+				["ButtonText"] = "Delete",
+				["Color"] = Color.Error
+		};
+
+        var dialog = DialogService.Show<ConfirmationDialog>("Delete Tour", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await TourService.DeleteTourAsync(tour.TourId);
+            await LoadToursAsync();
+            Snackbar.Add($"Tour '{tour.Title}' deleted successfully.", Severity.Success);
+		}
+		else
+		{
+			Snackbar.Add("Tour deletion cancelled.", Severity.Warning);
+        }
+
+        
+
+
+
+	}
 }
