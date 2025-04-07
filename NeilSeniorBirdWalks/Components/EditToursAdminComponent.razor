@@ -34,16 +34,16 @@
                 <MudTd DataLabel="Schedule Count">@(context.TourSchedules?.Count ?? 0)</MudTd>
                 <MudTd>
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
-                               OnClick="@(() => OpenEditDialog(context))">Edit Tour</MudButton>
+                    OnClick="@(() => OpenEditDialog(context))">Edit Tour</MudButton>
                     <MudButton Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="ml-2"
-                               OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
+                    OnClick="@(() => OpenDeleteDialog(context))">Delete</MudButton>
                 </MudTd>
             </RowTemplate>
         </MudTable>
     }
-    </MudContainer>
+</MudContainer>
 
-    @code {
+@code {
     private List<Tour> tours;
     private bool isLoading = true;
 
@@ -73,18 +73,35 @@
 
     private async Task OpenEditDialog(Tour tour)
     {
+		var tourCopy = new Tour
+			{
+				TourId = tour.TourId,
+				Title = tour.Title,
+				Description = tour.Description,
+				Duration = tour.Duration,
+				Price = tour.Price
+			};
 
+        var options = new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var parameters = new DialogParameters { ["Tour"] = tourCopy };
+        var dialog = DialogService.Show<EditTourAdminDialog>("Edit Tour", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadToursAsync(); 
+        }
 
     }
 
     private async Task OpenDeleteDialog(Tour tour)
     {
         var parameters = new DialogParameters
-        {
-				["ContentTExt"] = $"Are you sure you want to delete the tour '{tour.Title}'?",
-				["ButtonText"] = "Delete",
-				["Color"] = Color.Error
-		};
+            {
+                ["ContentTExt"] = $"Are you sure you want to delete the tour '{tour.Title}'?",
+                ["ButtonText"] = "Delete",
+                ["Color"] = Color.Error
+            };
 
         var dialog = DialogService.Show<ConfirmationDialog>("Delete Tour", parameters);
         var result = await dialog.Result;
@@ -94,15 +111,16 @@
             await TourService.DeleteTourAsync(tour.TourId);
             await LoadToursAsync();
             Snackbar.Add($"Tour '{tour.Title}' deleted successfully.", Severity.Success);
-		}
-		else
-		{
-			Snackbar.Add("Tour deletion cancelled.", Severity.Warning);
         }
+        else
+        {
+            Snackbar.Add("Tour deletion cancelled.", Severity.Warning);
+        }
+    }
 
+}
         
 
 
 
-	}
-}
+	

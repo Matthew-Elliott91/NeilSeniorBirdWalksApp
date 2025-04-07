@@ -1,0 +1,81 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using MudBlazor
+@inject TourService TourService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Class="mb-3">Edit Tour</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@Tour" @ref="form" Style="min-width: 650px;">
+            <MudTextField @bind-Value="Tour.Title"
+                          Label="Tour Name"
+                          Required="true"
+                          RequiredError="Tour name is required"
+                          Class="wide-field" />
+
+            <MudTextField @bind-Value="Tour.Description"
+                          Label="Description"
+                          Lines="5"
+                          Class="mt-3 wide-field" />
+
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="Tour.Duration"
+                                  Label="Duration (minutes)"
+                                  InputType="InputType.Number"
+                                  Class="mt-3" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="Tour.Price"
+                                  Label="Price"
+                                  InputType="InputType.Number"
+                                  Class="mt-3"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.CurrencyPound" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .mud-dialog-width-full {
+        max-width: 800px !important;
+    }
+
+    .wide-field {
+        width: 100%;
+    }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public Tour Tour { get; set; } = new Tour();
+    private MudForm form = null!;
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await TourService.EditTourAsync(Tour);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

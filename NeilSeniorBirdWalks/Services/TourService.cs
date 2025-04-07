@@ -48,6 +48,13 @@ namespace NeilSeniorBirdWalks.Services
             }
         }
 
+        public async Task EditTourAsync(Tour tour)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.Tours.Update(tour);
+            await context.SaveChangesAsync();
+        }
+
         public async Task<List<Season>> GetSeasonsAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
