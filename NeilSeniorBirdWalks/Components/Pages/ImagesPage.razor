@@ -23,21 +23,14 @@
             @foreach (var image in images)
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MudCard>
-                        <MudCardMedia Image="@image.Uri" Height="200" />
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">@GetDisplayName(image.Name)</MudText>
-                            <MudText Typo="Typo.body2">@FormatSize(image.Size)</MudText>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                       OnClick="@(() => OpenImage(image.Uri))">View</MudButton>
-                            <MudButton Variant="Variant.Text" Color="Color.Secondary"
-                                       Href="@image.Uri" Target="_blank">Download</MudButton>
-                        </MudCardActions>
-                    </MudCard>
+                    <MudImage Src="@image.Uri"
+                              Fluid="true"                             
+                              ObjectFit="ObjectFit.Cover"
+                              Elevation="3"
+                              Class="rounded-lg ma-2" />
                 </MudItem>
             }
+
         }
     </MudGrid>
 
