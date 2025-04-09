@@ -1,7 +1,10 @@
 ﻿@page "/gallery"
 @using BlobStorageLibrary.Services
 @using BlobStorageLibrary.Models
+@using NeilSeniorBirdWalks.Components.Dialogs
 @inject BlobStorageService BlobService
+@inject IDialogService DialogService
+
 <PageTitle>Gallery</PageTitle>
 <HeaderImage BackgroundImageUrl="images/gallery-header.jpg" Title="Talon-ted Shots: Avian Artistry" Subtitle="Take A Gander At Our Image Gallery" ShowButtons="true"></HeaderImage>
 <MudContainer>
@@ -24,40 +27,20 @@
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
                     <MudImage Src="@image.Uri"
-                              Fluid="true"                             
+                              Fluid="true"
                               ObjectFit="ObjectFit.Cover"
                               Elevation="3"
-                              Class="rounded-lg ma-2" />
+                              Style="cursor: pointer;"
+                              Class="rounded-lg ma-2"
+                              @onclick="() => OpenImageDialog(image)" />
                 </MudItem>
             }
-
         }
     </MudGrid>
-
-    @if (selectedImage != null)
-    {
-        <MudDialog Open="dialogVisible" OnClose="CloseDialog">
-            <TitleContent>
-                <MudText Typo="Typo.h6">@GetDisplayName(selectedImage.Name)</MudText>
-            </TitleContent>
-            <DialogContent>
-                <div style="text-align: center;">
-                    <img src="@selectedImage.Uri" style="max-width: 100%; max-height: 80vh;" />
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <MudButton Color="Color.Primary" OnClick="CloseDialog">Close</MudButton>
-                <MudButton Color="Color.Secondary" Href="@selectedImage.Uri" Target="_blank">Download</MudButton>
-            </DialogActions>
-        </MudDialog>
-    }
 </MudContainer>
-
 
 @code {
     private List<BlobImage> images;
-    private BlobImage selectedImage;
-    private bool dialogVisible;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,10 +53,20 @@
         images = await BlobService.GetImagesWithMetaDataAsync(50);
     }
 
-    private string GetDisplayName(string fullName)
+    private void OpenImageDialog(BlobImage image)
     {
-        // Clean up the filename for display
-        return Path.GetFileNameWithoutExtension(fullName);
+        var parameters = new DialogParameters
+        {
+            { "Image", image }
+        };
+
+        DialogService.Show<ViewImageFromGalleryDialog>("Image Viewer", parameters, new DialogOptions
+            {
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true,
+                CloseButton = true,
+                CloseOnEscapeKey = true
+            });
     }
 
     private string FormatSize(long? sizeBytes)
@@ -92,18 +85,5 @@
         }
 
         return $"{len:0.##} {sizes[order]}";
-    }
-
-    private void OpenImage(string uri)
-    {
-        selectedImage = images.FirstOrDefault(i => i.Uri == uri);
-        dialogVisible = true;
-        StateHasChanged();
-    }
-
-    private void CloseDialog()
-    {
-        dialogVisible = false;
-        StateHasChanged();
     }
 }

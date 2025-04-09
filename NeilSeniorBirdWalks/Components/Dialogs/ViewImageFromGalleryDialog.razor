@@ -1,0 +1,33 @@
+﻿@using BlobStorageLibrary.Models
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@GetDisplayName(Image.Name)</MudText>
+    </TitleContent>
+    <DialogContent>
+        <div style="text-align: center;">
+            <MudImage Src="@Image.Uri"
+                      Style="max-width: 100%; max-height: 80vh;"
+                      ObjectFit="ObjectFit.Contain"
+                      Alt="@GetDisplayName(Image.Name)" />
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Cancel">Close</MudButton>
+        <MudButton Color="Color.Secondary" Href="@Image.Uri" Target="_blank">Download</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public BlobImage Image { get; set; } = default!;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private string GetDisplayName(string fullName)
+    {
+        // Clean up the filename for display
+        return Path.GetFileNameWithoutExtension(fullName);
+    }
+}
