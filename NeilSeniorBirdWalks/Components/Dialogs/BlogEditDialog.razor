@@ -1,0 +1,105 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@inject BlogService BlogService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@(IsNew ? "Add New Blog Post" : "Edit Blog Post")</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="@BlogPost">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="BlogPost.Title" Label="Title" Required="true"
+                                  RequiredError="Title is required" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="BlogPost.Slug" Label="Slug" HelperText="Leave empty to auto-generate from title" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDatePicker @bind-Value="BlogPost.CreatedDate" Label="Date Created" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="BlogPost.FeaturedImageUrl" Label="Featured Image URL" Required="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle1">Content Sections</MudText>
+                    <MudButton Color="Color.Primary" OnClick="AddContentSection" Size="Size.Small" Class="mb-2">Add Section</MudButton>
+
+                    @foreach (var section in BlogPost.ContentSections)
+                    {
+                        <MudCard Class="mb-3">
+                            <MudCardContent>
+                                <MudTextField @bind-Value="section.Text" Label="Section Text" Lines="3" />
+                                <MudTextField @bind-Value="section.ImageUrl" Label="Section Image URL" Class="mt-2" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                               OnClick="@(() => RemoveContentSection(section))" />
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public BlogPost BlogPost { get; set; } = new BlogPost
+        {
+            Title = "",
+            Slug = "",
+            FeaturedImageUrl = "",
+            ContentSections = new List<ContentSection>(),
+            AdditionalImageUrls = new List<string>()
+        };
+
+    [Parameter] public bool IsNew { get; set; }
+
+    private MudForm form;
+
+    protected override void OnInitialized()
+    {
+        // Initialize collections if they are null
+        if (BlogPost.ContentSections == null)
+            BlogPost.ContentSections = new List<ContentSection>();
+            
+        if (BlogPost.AdditionalImageUrls == null)
+            BlogPost.AdditionalImageUrls = new List<string>();
+    }
+
+    private void AddContentSection()
+    {
+        BlogPost.ContentSections.Add(new ContentSection
+        {
+            Text = "",
+            ImageUrl = ""
+        });
+        StateHasChanged();
+    }
+
+    private void RemoveContentSection(ContentSection section)
+    {
+        BlogPost.ContentSections.Remove(section);
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        await form.Validate();
+        if (!form.IsValid) return;
+
+        MudDialog.Close(DialogResult.Ok(BlogPost));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
