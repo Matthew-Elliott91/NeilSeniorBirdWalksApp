@@ -65,6 +65,7 @@ builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<TourScheduleService>();
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<FileService>();
 
 
 builder.Services.AddMudServices();

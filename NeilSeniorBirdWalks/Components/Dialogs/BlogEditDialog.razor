@@ -1,7 +1,9 @@
 ﻿@using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
 @inject BlogService BlogService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <TitleContent>
@@ -21,7 +23,19 @@
                     <MudDatePicker @bind-Value="BlogPost.CreatedDate" Label="Date Created" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="BlogPost.FeaturedImageUrl" Label="Featured Image URL" Required="true" />
+                    <div class="d-flex align-center gap-2">
+                        <MudTextField @bind-Value="BlogPost.FeaturedImageUrl" Label="Featured Image URL" Required="true" Class="flex-grow-1" />
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="SelectFeaturedImage"
+                                   StartIcon="@Icons.Material.Filled.Image">Select</MudButton>
+                    </div>
+                    @{
+                        var featuredImageUrl = BlogPost.FeaturedImageUrl;
+                    }
+                    @if (!string.IsNullOrEmpty(featuredImageUrl))
+                    {
+                        <MudImage Src="@featuredImageUrl" Alt="Featured image preview" Class="mt-2"
+                                  Width="200" Height="120" ObjectFit="ObjectFit.Cover" />
+                    }
                 </MudItem>
 
                 <MudItem xs="12">
@@ -33,7 +47,20 @@
                         <MudCard Class="mb-3">
                             <MudCardContent>
                                 <MudTextField @bind-Value="section.Text" Label="Section Text" Lines="3" />
-                                <MudTextField @bind-Value="section.ImageUrl" Label="Section Image URL" Class="mt-2" />
+                                <div class="d-flex align-center gap-2 mt-2">
+                                    <MudTextField @bind-Value="section.ImageUrl" Label="Section Image URL" Class="flex-grow-1" />
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                               OnClick="@(() => SelectSectionImage(section))"
+                                               StartIcon="@Icons.Material.Filled.Image">Select</MudButton>
+                                </div>
+                                @{
+                                    var imageUrl = section.ImageUrl;
+                                }
+                                @if (!string.IsNullOrEmpty(imageUrl))
+                                {
+                                    <MudImage Src="@imageUrl" Alt="Section image preview" Class="mt-2"
+                                              Width="200" Height="120" ObjectFit="ObjectFit.Cover" />
+                                }
                             </MudCardContent>
                             <MudCardActions>
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
@@ -41,6 +68,7 @@
                             </MudCardActions>
                         </MudCard>
                     }
+
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -55,13 +83,13 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter]
     public BlogPost BlogPost { get; set; } = new BlogPost
-        {
-            Title = "",
-            Slug = "",
-            FeaturedImageUrl = "",
-            ContentSections = new List<ContentSection>(),
-            AdditionalImageUrls = new List<string>()
-        };
+    {
+        Title = "",
+        Slug = "",
+        FeaturedImageUrl = "",
+        ContentSections = new List<ContentSection>(),
+        AdditionalImageUrls = new List<string>()
+    };
 
     [Parameter] public bool IsNew { get; set; }
 
@@ -69,7 +97,7 @@
 
     protected override void OnInitialized()
     {
-        // Initialize collections if they are null
+        
         if (BlogPost.ContentSections == null)
             BlogPost.ContentSections = new List<ContentSection>();
             
@@ -102,4 +130,41 @@
     }
 
     private void Cancel() => MudDialog.Cancel();
+    
+   
+    private async Task SelectFeaturedImage()
+    {
+        var options = new DialogOptions 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Featured Image", options);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is string imageUrl)
+        {
+            BlogPost.FeaturedImageUrl = imageUrl;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task SelectSectionImage(ContentSection section)
+    {
+        var options = new DialogOptions 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Section Image", options);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is string imageUrl)
+        {
+            section.ImageUrl = imageUrl;
+            StateHasChanged();
+        }
+    }
 }

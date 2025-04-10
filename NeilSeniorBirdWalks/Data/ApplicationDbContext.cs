@@ -23,7 +23,8 @@ namespace NeilSeniorBirdWalks.Data
         public DbSet<TourSchedule> TourSchedules { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        
+        public DbSet<ImageFileInfo> ImageFiles { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
