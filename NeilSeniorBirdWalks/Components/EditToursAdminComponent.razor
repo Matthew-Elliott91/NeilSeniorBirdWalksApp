@@ -73,14 +73,17 @@
 
     private async Task OpenEditDialog(Tour tour)
     {
-		var tourCopy = new Tour
-			{
-				TourId = tour.TourId,
-				Title = tour.Title,
-				Description = tour.Description,
-				Duration = tour.Duration,
-				Price = tour.Price
-			};
+        var tourCopy = new Tour
+            {
+                TourId = tour.TourId,
+                Title = tour.Title,
+                Description = tour.Description,
+                InfoHeadline = tour.InfoHeadline,
+                InfoText = tour.InfoText,
+                InfoImageUrl = tour.InfoImageUrl,
+                Duration = tour.Duration,
+                Price = tour.Price
+            };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true };
         var parameters = new DialogParameters { ["Tour"] = tourCopy };
@@ -89,10 +92,10 @@
 
         if (!result.Canceled)
         {
-            await LoadToursAsync(); 
+            await LoadToursAsync();
         }
-
     }
+
 
     private async Task OpenDeleteDialog(Tour tour)
     {

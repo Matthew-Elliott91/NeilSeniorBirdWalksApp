@@ -6,19 +6,9 @@ namespace NeilSeniorBirdWalks.Models
     {
         public int TourId { get; set; }
 
-        private string _title;
-
         [Required(ErrorMessage = "Title is required")]
         [StringLength(100, ErrorMessage = "Title cannot be longer than 100 characters")]
-        public string Title
-        {
-            get => _title;
-            set
-            {
-                _title = value;
-                InfoImageUrl = $"images/tours/{_title}.jpg";
-            }
-        }
+        public string Title { get; set; }
 
         [Required(ErrorMessage = "Description is required")]
         [StringLength(1000, ErrorMessage = "Description cannot be longer than 1000 characters")]
@@ -31,7 +21,7 @@ namespace NeilSeniorBirdWalks.Models
         public string InfoText { get; set; }
 
         [Url(ErrorMessage = "Invalid URL format")]
-        public string InfoImageUrl { get; private set; }
+        public string InfoImageUrl { get; set; } = "images/tours/default.jpg";
 
         [Required(ErrorMessage = "Price is required")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value")]
@@ -47,4 +37,3 @@ namespace NeilSeniorBirdWalks.Models
         public ICollection<TourSchedule> TourSchedules { get; set; }
     }
 }
-

@@ -1,4 +1,5 @@
 ﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Components.Dialogs
 @using MudBlazor
 @inject TourService TourService
 @inject IDialogService DialogService
@@ -21,7 +22,37 @@
                           Lines="5"
                           Class="mt-3 wide-field" />
 
+            <MudTextField @bind-Value="Tour.InfoHeadline"
+                          Label="Info Headline"
+                          Required="true"
+                          RequiredError="Info Headline is required"
+                          Class="mt-3 wide-field" />
+
+            <MudTextField @bind-Value="Tour.InfoText"
+                          Label="Info Text"
+                          Lines="3"
+                          Class="mt-3 wide-field" />
+
             <MudGrid>
+                <MudItem xs="12">
+                    <div class="d-flex align-center gap-2 mt-3">
+                        <MudTextField @bind-Value="Tour.InfoImageUrl"
+                                      Label="Tour Image URL"
+                                      Class="flex-grow-1" />
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   OnClick="SelectTourImage"
+                                   StartIcon="@Icons.Material.Filled.Image">Select</MudButton>
+                    </div>
+                    @{
+                        var imageUrl = Tour.InfoImageUrl;
+                    }
+                    @if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        <MudImage Src="@imageUrl" Alt="Tour image preview" Class="mt-2"
+                                  Width="200" Height="120" ObjectFit="ObjectFit.Cover" />
+                    }
+                </MudItem>
                 <MudItem xs="6">
                     <MudTextField @bind-Value="Tour.Duration"
                                   Label="Duration (minutes)"
@@ -78,4 +109,22 @@
     }
 
     private void Cancel() => MudDialog.Cancel();
+
+    private async Task SelectTourImage()
+    {
+        var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Tour Image", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string imageUrl)
+        {
+            Tour.InfoImageUrl = imageUrl;
+            StateHasChanged();
+        }
+    }
 }
