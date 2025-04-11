@@ -21,10 +21,6 @@
     }
     else
     {
-        <div class="text-center mb-4">
-            <MudText Typo="Typo.h3" Class="mb-2">@blogPost.Title</MudText>
-            <MudText Typo="Typo.subtitle1">Published on @blogPost.CreatedDate.ToString("MMMM dd, yyyy")</MudText>
-        </div>
 
         @if (!string.IsNullOrEmpty(blogPost.FeaturedImageUrl))
         {
@@ -39,6 +35,11 @@
             </div>
         }
 
+        <div class="text-center mb-4">
+            <MudText Typo="Typo.h3" Class="mb-2">@blogPost.Title</MudText>
+            <MudText Typo="Typo.subtitle1">Published on @blogPost.CreatedDate.ToString("MMMM dd, yyyy")</MudText>
+        </div>
+
 
         @if (blogPost.ContentSections != null && blogPost.ContentSections.Any())
         {
@@ -51,9 +52,13 @@
                     <div class="d-flex flex-column @(isEven ? "flex-md-row" : "flex-md-row-reverse") gap-4 align-center">
                         @if (!string.IsNullOrEmpty(contentSection.ImageUrl))
                         {
-                            <div class="flex-shrink-0" style="width: 300px;">
-                                <MudImage Src="@contentSection.ImageUrl" Alt="Section image" Width="300" Height="200"
-                                          Class="rounded mud-elevation-2" ObjectFit="ObjectFit.Cover" />
+                            <div class="section-image-container">
+                                <MudImage Src="@contentSection.ImageUrl"
+                                          Alt="Section image"
+                                          Fluid="true"
+                                          ObjectFit="ObjectFit.Cover"
+                                          Style="min-height: 250px;"
+                                          Class="rounded mud-elevation-2 d-block" />
                             </div>
                         }
                         <div class="flex-grow-1">
@@ -61,6 +66,8 @@
                         </div>
                     </div>
                 </MudPaper>
+
+
             }
         }
 
@@ -91,15 +98,44 @@
         .image-container {
             margin-bottom: 2rem;
             width: 100%;
-            
+        }
+
+        .section-image-container {
+            width: 100%;
+            max-width: 300px; 
+            flex: 0 0 auto;
+        }
+
+        @@media (min-width: 960px) {
+            .section-image-container
+
+        {
+            max-width: 500px; 
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .section-image-container
+
+        {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto 1rem auto;
+        }
+
         }
 
         @@media (min-width: 600px) {
-            .image-container {
-                margin-bottom: 3rem;
-            }
+            .image-container
+
+        {
+            margin-bottom: 3rem;
         }
-    </style>
+
+        }</style>
+
+
 
     @code {
     [Parameter]
