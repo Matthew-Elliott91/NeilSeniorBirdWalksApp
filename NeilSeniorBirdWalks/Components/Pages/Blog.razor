@@ -6,7 +6,7 @@
 
 <PageTitle>News Post - @(blogPost?.Title ?? "Loading...")</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+<MudContainer Class="mt-4">
     @if (blogPost == null && !loading)
     {
         <MudAlert Severity="Severity.Error">Sorry, this blog post was not found.</MudAlert>
@@ -21,30 +21,43 @@
     }
     else
     {
-        <MudText Typo="Typo.h3" Class="mb-4">@blogPost.Title</MudText>
-        <MudText Typo="Typo.subtitle1" Class="mb-4">Published on @blogPost.CreatedDate.ToString("MMMM dd, yyyy")</MudText>
+        <div class="text-center mb-4">
+            <MudText Typo="Typo.h3" Class="mb-2">@blogPost.Title</MudText>
+            <MudText Typo="Typo.subtitle1">Published on @blogPost.CreatedDate.ToString("MMMM dd, yyyy")</MudText>
+        </div>
 
         @if (!string.IsNullOrEmpty(blogPost.FeaturedImageUrl))
         {
-            <div class="mb-4">
-                <MudImage Src="@blogPost.FeaturedImageUrl" Alt="Featured image" Width="100" Class="rounded" />
+            <div class="image-container">
+                <MudPaper Elevation="0" Class="rounded-0" Style="overflow: hidden; text-align: center; background-color: #c3e0e5">
+                    <MudImage Src="@blogPost.FeaturedImageUrl"
+                              Alt="Featured image"
+                              Style="max-width: 90%; height: auto; margin: 0 auto; display: block;"
+                              Class="mx-auto"
+                              ObjectFit="ObjectFit.Cover" />
+                </MudPaper>
             </div>
         }
 
+
         @if (blogPost.ContentSections != null && blogPost.ContentSections.Any())
         {
-            @foreach (var contentSection in blogPost.ContentSections.OrderBy(s => s.Id))
+            @for (int i = 0; i < blogPost.ContentSections.OrderBy(s => s.Id).Count(); i++)
             {
-                <MudPaper Class="pa-4 mb-4" Elevation="2">
-                    <div class="d-flex flex-column flex-md-row gap-4">
+                var contentSection = blogPost.ContentSections.OrderBy(s => s.Id).ElementAt(i);
+                bool isEven = i % 2 == 0;
+
+                <MudPaper Class="pa-4 mb-6" Elevation="2" Style="background-color: white">
+                    <div class="d-flex flex-column @(isEven ? "flex-md-row" : "flex-md-row-reverse") gap-4 align-center">
                         @if (!string.IsNullOrEmpty(contentSection.ImageUrl))
                         {
                             <div class="flex-shrink-0" style="width: 300px;">
-                                <MudImage Src="@contentSection.ImageUrl" Alt="Section image" Width="100" Class="rounded" />
+                                <MudImage Src="@contentSection.ImageUrl" Alt="Section image" Width="300" Height="200"
+                                          Class="rounded mud-elevation-2" ObjectFit="ObjectFit.Cover" />
                             </div>
                         }
                         <div class="flex-grow-1">
-                            <MudText Color="Color.Success">@contentSection.Text</MudText>
+                            <MudText Typo="Typo.body1">@contentSection.Text</MudText>
                         </div>
                     </div>
                 </MudPaper>
@@ -58,7 +71,7 @@
                 @foreach (var imageUrl in blogPost.AdditionalImageUrls)
                 {
                     <MudItem xs="12" sm="6" md="4">
-                        <MudCard>
+                        <MudCard Elevation="3">
                             <MudCardMedia Image="@imageUrl" Height="200" />
                         </MudCard>
                     </MudItem>
@@ -73,6 +86,20 @@
         </div>
     }
     </MudContainer>
+
+    <style>
+        .image-container {
+            margin-bottom: 2rem;
+            width: 100%;
+            
+        }
+
+        @@media (min-width: 600px) {
+            .image-container {
+                margin-bottom: 3rem;
+            }
+        }
+    </style>
 
     @code {
     [Parameter]
