@@ -9,32 +9,49 @@
 	}
 </style>
 
-@if (imageUris is null)
+@if (imageUris is null || !imageUris.Any())
 {
-	<p>Loading...</p>
+	<div style="max-width: 1000px; margin: 0 auto; padding: 0 30px;">
+		<MudCarousel TData="MudCarouselItem"
+					 Class="mt-1 responsive-carousel"
+					 ShowBullets="false"
+					 ShowArrows="true"
+					 ArrowsPosition="Position.Center"
+					 NavigationButtonsClass="carousel-arrow">
+			<MudCarouselItem>
+				<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+					<MudImage src="@defaultImageUri"
+							  alt="Loading Image"
+							  ObjectFit="ObjectFit.Contain"
+							  Fluid="true"
+							  Style="max-height: 100%; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+				</div>
+			</MudCarouselItem>
+		</MudCarousel>
+	</div>
 }
 else
 {
 	<div style="max-width: 1000px; margin: 0 auto; padding: 0 30px;">
 		<MudCarousel TData="MudCarouselItem"
-		             Class="mt-1 responsive-carousel"
-		             AutoCycle="true"
+					 Class="mt-1 responsive-carousel"
+					 AutoCycle="true"
 					 AutoCycleTime="TimeSpan.FromSeconds(5)"
-		             ShowBullets="false"
-		             ShowArrows="true"
-		             ArrowsPosition="Position.Center"
-		             NavigationButtonsClass="carousel-arrow"
-		             EnableSwipeGesture="true">
+					 ShowBullets="false"
+					 ShowArrows="true"
+					 ArrowsPosition="Position.Center"
+					 NavigationButtonsClass="carousel-arrow"
+					 EnableSwipeGesture="true">
 
 			@foreach (var url in imageUris)
 			{
 				<MudCarouselItem>
 					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
 						<MudImage src="@url"
-						          alt="Bird Image"
-						          ObjectFit="ObjectFit.Contain"
-						          Fluid="true"
-						          Style="max-height: 100%; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"/>
+								  alt="Bird Image"
+								  ObjectFit="ObjectFit.Contain"
+								  Fluid="true"
+								  Style="max-height: 100%; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
 					</div>
 				</MudCarouselItem>
 			}
@@ -44,10 +61,18 @@ else
 
 @code {
 	[Parameter] public int ImageCount { get; set; }
+	[Parameter] public string DefaultImagePath { get; set; } = "/images/tours/westnorfolk.jpg";
+
 	private List<string> imageUris = new();
+	private string defaultImageUri => DefaultImagePath;
 
 	protected override async Task OnInitializedAsync()
 	{
-		imageUris = await BlobStorageService.ListBlobUrisAsync(ImageCount);
+		
+		var loadedImages = await BlobStorageService.ListBlobUrisAsync(ImageCount);
+		if (loadedImages != null && loadedImages.Any())
+		{
+			imageUris = loadedImages;
+		}
 	}
 }
