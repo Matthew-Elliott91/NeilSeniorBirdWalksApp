@@ -142,10 +142,29 @@
 
     private string GetOriginalFileName(string fileName)
     {
-        int dashIndex = fileName.IndexOf('-');
-        if (dashIndex >= 0 && dashIndex < fileName.Length - 1)
+        
+        int dashCount = 0;
+        int lastDashPos = -1;
+
+        for (int i = 0; i < fileName.Length; i++)
         {
-            return fileName.Substring(dashIndex + 1);
+            if (fileName[i] == '-')
+            {
+                dashCount++;
+                lastDashPos = i;
+
+                
+                if (dashCount == 5)
+                {
+                    return fileName.Substring(i + 1);
+                }
+            }
+        }
+
+       
+        if (lastDashPos >= 0 && lastDashPos < fileName.Length - 1)
+        {
+            return fileName.Substring(lastDashPos + 1);
         }
 
         return fileName;
