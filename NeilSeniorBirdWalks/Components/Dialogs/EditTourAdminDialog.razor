@@ -99,6 +99,7 @@
             try
             {
                 await TourService.EditTourAsync(Tour);
+                Snackbar.Add("Tour updated successfully", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             }
             catch (Exception ex)
@@ -115,10 +116,10 @@
         var options = new DialogOptions
             {
                 CloseButton = true,
-                MaxWidth = MaxWidth.Medium,
+                MaxWidth = MaxWidth.ExtraLarge,
                 FullWidth = true
             };
-        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Tour Image", options);
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Tour Image from Blob Storage", options);
         var result = await dialog.Result;
 
         if (!result.Canceled && result.Data is string imageUrl)

@@ -140,7 +140,7 @@
             MaxWidth = MaxWidth.Medium,
             FullWidth = true
         };
-        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Featured Image", options);
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Featured Image from Blob Storage", options);
         var result = await dialog.Result;
         
         if (!result.Canceled && result.Data is string imageUrl)
@@ -158,7 +158,7 @@
             MaxWidth = MaxWidth.Medium,
             FullWidth = true
         };
-        var dialog = await DialogService.ShowAsync<ImageSelectorDialog>("Select Section Image", options);
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Section Image from Blob Storage", options);
         var result = await dialog.Result;
         
         if (!result.Canceled && result.Data is string imageUrl)
