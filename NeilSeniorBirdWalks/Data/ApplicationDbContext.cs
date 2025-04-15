@@ -24,6 +24,7 @@ namespace NeilSeniorBirdWalks.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<ImageFileInfo> ImageFiles { get; set; }
+        public DbSet<HeaderImageSettings> HeaderImageSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

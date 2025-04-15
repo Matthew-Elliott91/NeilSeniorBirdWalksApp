@@ -6,25 +6,27 @@ namespace NeilSeniorBirdWalks.Services
 {
     public class CustomerService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public CustomerService(ApplicationDbContext context)
+        public CustomerService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            return await _context.Customers
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Customers
                 .Include(c => c.Address)
-                .Include(c => c.User)  
+                .Include(c => c.User)
                 .OrderBy(c => c.LastName)
                 .ToListAsync();
         }
 
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
-            return await _context.Customers
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Customers
                 .Include(c => c.Address)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -32,7 +34,8 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<Customer?> GetCustomerByUserIdAsync(string userId)
         {
-            return await _context.Customers
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Customers
                 .Include(c => c.Address)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
@@ -40,42 +43,46 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<Customer> CreateCustomerAsync(Customer customer)
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
             return customer;
         }
 
         public async Task<Customer> UpdateCustomerAsync(Customer customer)
         {
-            _context.Customers.Update(customer);
-            await _context.SaveChangesAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            context.Customers.Update(customer);
+            await context.SaveChangesAsync();
             return customer;
         }
 
         public async Task DeleteCustomerAsync(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var customer = await context.Customers.FindAsync(id);
             if (customer != null)
             {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
+                context.Customers.Remove(customer);
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task<List<Booking>> GetBookingsByCustomerIdAsync(int customerId)
         {
-           var customer = await _context.Customers
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var customer = await context.Customers
                 .FirstOrDefaultAsync(c => c.Id == customerId);
 
             if (customer == null || string.IsNullOrEmpty(customer.UserId))
             {
                 return new List<Booking>();
             }
-            return await _context.Bookings
+
+            return await context.Bookings
                 .Include(b => b.TourSchedule)
                 .Where(b => b.UserId == customer.UserId)
                 .ToListAsync();
         }
-
     }
 }

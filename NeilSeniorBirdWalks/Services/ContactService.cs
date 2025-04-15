@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using NeilSeniorBirdWalks.Data;
 using NeilSeniorBirdWalks.Models;
 
@@ -13,23 +12,25 @@ namespace NeilSeniorBirdWalks.Services
         Task<bool> DeleteContactFormAsync(int id);
         Task<IEnumerable<ContactFormModel>> GetUnreadMessagesAsync();
     }
+
     public class ContactService : IContactService
     {
         private readonly ILogger<ContactService> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public ContactService(ILogger<ContactService> logger, ApplicationDbContext context)
+        public ContactService(ILogger<ContactService> logger, IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _logger = logger;
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<bool> SubmitContactFormAsync(ContactFormModel contact)
         {
             try
             {
-                _context.ContactForms.Add(contact);
-                await _context.SaveChangesAsync();
+                using var context = await _contextFactory.CreateDbContextAsync();
+                context.ContactForms.Add(contact);
+                await context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
@@ -41,19 +42,20 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<List<ContactFormModel>> GetAllContactFormsAsync()
         {
-            return await _context.ContactForms.ToListAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.ContactForms.ToListAsync();
         }
 
         public async Task<bool> UpdateContactFormReadStatusAsync(int id, bool isRead)
         {
             try
             {
-                
-                var contactForm = await _context.ContactForms.FindAsync(id);
+                using var context = await _contextFactory.CreateDbContextAsync();
+                var contactForm = await context.ContactForms.FindAsync(id);
                 if (contactForm == null)
                     return false;
                 contactForm.IsRead = isRead;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
@@ -67,11 +69,12 @@ namespace NeilSeniorBirdWalks.Services
         {
             try
             {
-                var contactForm = await _context.ContactForms.FindAsync(id);
+                using var context = await _contextFactory.CreateDbContextAsync();
+                var contactForm = await context.ContactForms.FindAsync(id);
                 if (contactForm == null)
                     return false;
-                _context.ContactForms.Remove(contactForm);
-                await _context.SaveChangesAsync();
+                context.ContactForms.Remove(contactForm);
+                await context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
@@ -83,9 +86,9 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<IEnumerable<ContactFormModel>> GetUnreadMessagesAsync()
         {
-            var unreadMessages = await _context.ContactForms.Where(x => x.IsRead == false).ToListAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var unreadMessages = await context.ContactForms.Where(x => x.IsRead == false).ToListAsync();
             return unreadMessages;
-        } 
-
+        }
     }
 }

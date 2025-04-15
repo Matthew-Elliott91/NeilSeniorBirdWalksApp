@@ -1,0 +1,102 @@
+﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
+@inject HeaderImageSettingsService SettingsService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: auto">
+            <MudTextField @bind-Value="settings.Title"
+                          Label="Title"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField @bind-Value="settings.Subtitle"
+                          Label="Subtitle"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField @bind-Value="settings.BackgroundImageUrl"
+                          Label="Background Image URL"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Image"
+                       OnClick="OpenBlobImageSelector"
+                       Class="mb-3">
+                Select Image from Blob Storage
+            </MudButton>
+
+            @if (!string.IsNullOrEmpty(settings.BackgroundImageUrl))
+            {
+                <MudImage Src="@settings.BackgroundImageUrl"
+                          Alt="Background image preview"
+                          Class="rounded-lg mt-2"
+                          Elevation="2"
+                          ObjectFit="ObjectFit.Cover"
+                          Height="200"
+                          Width="300" />
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveChanges">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Subtitle { get; set; }
+
+    [Parameter]
+    public string BackgroundImageUrl { get; set; }
+
+    [Parameter]
+    public string PageIdentifier { get; set; } = "home";
+
+    [Inject]
+    private IDialogService DialogService { get; set; }
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; }
+
+    private HeaderImageSettings settings = new();
+
+    protected override void OnInitialized()
+    {
+        settings.Title = Title;
+        settings.Subtitle = Subtitle;
+        settings.BackgroundImageUrl = BackgroundImageUrl;
+        settings.PageIdentifier = PageIdentifier;
+    }
+
+    private async Task OpenBlobImageSelector()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large };
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Image from Blob Storage", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string selectedImageUrl)
+        {
+            settings.BackgroundImageUrl = selectedImageUrl;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        await SettingsService.UpdateHeaderSettingsAsync(settings);
+        MudDialog.Close(DialogResult.Ok(settings));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

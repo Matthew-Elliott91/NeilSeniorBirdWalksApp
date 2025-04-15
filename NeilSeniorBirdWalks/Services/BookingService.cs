@@ -6,16 +6,17 @@ namespace NeilSeniorBirdWalks.Services
 {
     public class BookingService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public BookingService(ApplicationDbContext context)
+        public BookingService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<Booking>> GetAllBookingsAsync()
         {
-            return await _context.Bookings
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Bookings
                 .Include(b => b.TourSchedule)
                 .ThenInclude(ts => ts.Tour)
                 .Include(b => b.User)
@@ -23,10 +24,10 @@ namespace NeilSeniorBirdWalks.Services
                 .ToListAsync();
         }
 
-
-        public async Task<List<Booking>> GetBookingsByUserIdAsync(string userId) 
+        public async Task<List<Booking>> GetBookingsByUserIdAsync(string userId)
         {
-            return await _context.Bookings
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Bookings
                 .Where(b => b.UserId == userId)
                 .Include(b => b.TourSchedule)
                 .ThenInclude(ts => ts.Tour)
@@ -36,41 +37,36 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<Booking> CreateBookingAsync(Booking booking)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                
-                var tourSchedule = await _context.TourSchedules.FindAsync(booking.TourScheduleId);
+                var tourSchedule = await context.TourSchedules.FindAsync(booking.TourScheduleId);
 
                 if (tourSchedule == null)
                 {
                     throw new Exception("Tour schedule not found");
                 }
 
-               
                 if (!tourSchedule.AvailableSpots.HasValue || tourSchedule.AvailableSpots < booking.NumberOfParticipants)
                 {
                     throw new Exception("Not enough available spots");
                 }
 
-                
                 tourSchedule.AvailableSpots -= booking.NumberOfParticipants;
-                _context.TourSchedules.Update(tourSchedule);
+                context.TourSchedules.Update(tourSchedule);
 
-              
-                _context.Bookings.Add(booking);
+                context.Bookings.Add(booking);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-               
                 await transaction.CommitAsync();
 
                 return booking;
             }
             catch (Exception)
             {
-               
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -78,12 +74,12 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<Booking> UpdateBookingAsync(Booking booking, int originalParticipantCount)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                
-                var tourSchedule = await _context.TourSchedules.FindAsync(booking.TourScheduleId);
+                var tourSchedule = await context.TourSchedules.FindAsync(booking.TourScheduleId);
 
                 if (tourSchedule == null)
                 {
@@ -98,24 +94,19 @@ namespace NeilSeniorBirdWalks.Services
                     throw new Exception("Not enough available spots for this update");
                 }
 
-                
                 tourSchedule.AvailableSpots -= participantDifference;
-                _context.TourSchedules.Update(tourSchedule);
+                context.TourSchedules.Update(tourSchedule);
 
-               
-                _context.Bookings.Update(booking);
+                context.Bookings.Update(booking);
 
-                
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-              
                 await transaction.CommitAsync();
 
                 return booking;
             }
             catch (Exception)
             {
-               
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -123,12 +114,12 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task DeleteBookingAsync(int bookingId)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                
-                var booking = await _context.Bookings
+                var booking = await context.Bookings
                     .Include(b => b.TourSchedule)
                     .FirstOrDefaultAsync(b => b.Id == bookingId);
 
@@ -137,24 +128,20 @@ namespace NeilSeniorBirdWalks.Services
                     throw new Exception("Booking not found");
                 }
 
-                
                 if (booking.TourSchedule != null)
                 {
                     booking.TourSchedule.AvailableSpots += booking.NumberOfParticipants;
-                    _context.TourSchedules.Update(booking.TourSchedule);
+                    context.TourSchedules.Update(booking.TourSchedule);
                 }
 
-              
-                _context.Bookings.Remove(booking);
+                context.Bookings.Remove(booking);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-                
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
-                
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -162,7 +149,8 @@ namespace NeilSeniorBirdWalks.Services
 
         public async Task<bool> UserHasBookingAsync(string userId, int tourScheduleId)
         {
-            return await _context.Bookings
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Bookings
                 .AnyAsync(b => b.UserId == userId && b.TourScheduleId == tourScheduleId);
         }
     }

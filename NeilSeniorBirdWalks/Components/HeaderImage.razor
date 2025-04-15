@@ -1,4 +1,10 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using NeilSeniorBirdWalks.Models
+@using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
+@inject NavigationManager NavigationManager
+@inject HeaderImageSettingsService SettingsService
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="header-banner d-flex mb-5"
               Style="@($"overflow: hidden; background-image: url('{BackgroundImageUrl}');")">
@@ -27,6 +33,17 @@
             }
         </div>
     </div>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <MudButton Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       OnClick="OpenEditDialog"
+                       Class="position-absolute top-0 end-0 m-2">
+                Edit Header
+            </MudButton>
+        </Authorized>
+    </AuthorizeView>
 </MudContainer>
 
 <style>
@@ -62,64 +79,134 @@
     }
 
     /* Mobile styles */
-    @@media (max-width: 959.98px)
-
-    {
-        .content-container
-
-    {
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 1rem;
-    }
-
-    .inner-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .button-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-        .button-container .mud-button {
-            min-width: 200px;
+    @@media (max-width: 959.98px) {
+        .content-container {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
         }
 
-  
+        .inner-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        .button-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+            .button-container .mud-button {
+                min-width: 200px;
+            }
     }
 
     /* Desktop styles */
-    @@media (min-width: 960px)
+    @@media (min-width: 960px) {
+        .content-container {
+            justify-content: flex-start;
+            padding: 2rem 0 0 2rem;
+        }
 
-    {
-        .content-container
-
-    {
-        justify-content: flex-start;
-        padding: 2rem 0 0 2rem;
+        .button-container {
+            flex-direction: row;
+        }
     }
-
-    .button-container {
-        flex-direction: row;
-    }
-
-    }</style>
+</style>
 
 @code {
-    [Parameter]
-    public string Title { get; set; } = "Explore! Discover! Soar! Birdwatching Adventures with Neil Senior!";
+   
+    private string Title { get; set; } = string.Empty;
+    private string Subtitle { get; set; } = string.Empty;
+    private string BackgroundImageUrl { get; set; } = string.Empty;
 
-    [Parameter]
-    public string Subtitle { get; set; } = "Discover amazing content and features";
-    [Parameter]
-    public string BackgroundImageUrl { get; set; } = "/Images/HeaderImg.jpg";
+    
     [Parameter]
     public bool ShowButtons { get; set; } = true;
+
+    
+    [Parameter]
+    public string PageIdentifier { get; set; } = "home";
+
+    [Inject]
+    private IDialogService DialogService { get; set; }
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DeterminePageIdentifier();
+        await LoadSettings();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        
+        DeterminePageIdentifier();
+        await LoadSettings();
+        await base.OnParametersSetAsync();
+    }
+
+    private void DeterminePageIdentifier()
+    {
+        if (string.IsNullOrEmpty(PageIdentifier))
+        {
+            // Try to determine current page from URL
+            var uri = NavigationManager.Uri;
+            var segments = uri.Split('/');
+            if (segments.Length > 0)
+            {
+                var lastSegment = segments[^1];
+                if (!string.IsNullOrEmpty(lastSegment))
+                {
+                    PageIdentifier = lastSegment;
+                }
+                else
+                {
+                    PageIdentifier = "home";
+                }
+            }
+        }
+    }
+
+    private async Task LoadSettings()
+    {
+        var settings = await SettingsService.GetHeaderSettingsAsync(PageIdentifier);
+        if (settings != null)
+        {
+            Title = settings.Title;
+            Subtitle = settings.Subtitle;
+            BackgroundImageUrl = settings.BackgroundImageUrl;
+        }
+    }
+
+    private async Task OpenEditDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Title", Title },
+            { "Subtitle", Subtitle },
+            { "BackgroundImageUrl", BackgroundImageUrl },
+            { "PageIdentifier", PageIdentifier }
+        };
+
+        var dialog = await DialogService.ShowAsync<HeaderImageEditDialog>("Edit Header", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is HeaderImageSettings updatedSettings)
+        {
+            
+            Title = updatedSettings.Title;
+            Subtitle = updatedSettings.Subtitle;
+            BackgroundImageUrl = updatedSettings.BackgroundImageUrl;
+
+            Snackbar.Add("Header updated successfully", Severity.Success);
+        }
+    }
 
     private void ViewTours()
     {
