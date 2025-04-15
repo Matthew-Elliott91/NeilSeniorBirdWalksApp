@@ -42,7 +42,7 @@
                         {
                             <MudItem xs="6" sm="4" md="3">
                                 <MudCard Outlined="true" Class="@(selectedImage == image.Uri ? "mud-border-primary" : "")"
-                                         @onclick="() => SelectImage(image.Uri)">
+                                         @onclick="() => SelectImage(image.Uri, image.Name)">
                                     <MudCardMedia Image="@image.Uri" Height="150" />
                                     <MudCardContent Class="pa-2">
                                         <MudText Typo="Typo.caption" Align="Align.Center" Style="text-wrap: wrap;">
@@ -55,6 +55,7 @@
                                 </MudCard>
                             </MudItem>
                         }
+
                     </MudGrid>
                 }
             </MudItem>
@@ -63,6 +64,7 @@
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" Disabled="@string.IsNullOrEmpty(selectedImage)" OnClick="Submit">Select</MudButton>
+        <MudButton Color="Color.Primary" Disabled="@string.IsNullOrEmpty(selectedImage)" OnClick="DeleteSelectedImage">Delete Image</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -71,6 +73,7 @@
 
 	private List<BlobImage> images = new List<BlobImage>();
 	private string selectedImage = string.Empty;
+	private string selectedImageName = string.Empty;
 	private bool isUploading = false;
 	private const int MaxAllowedSize = 10 * 1024 * 1024; //10mb
 
@@ -86,10 +89,33 @@
 
 	}
 
-	private void SelectImage(string imageUrl)
+	private void SelectImage(string imageUrl, string imageName)
 	{
 		selectedImage = imageUrl;
+		selectedImageName = imageName;
+
 	}
+
+    private async Task DeleteSelectedImage()
+    {
+        if (string.IsNullOrEmpty(selectedImageName))
+        {
+            Snackbar.Add("No image selected for deletion", Severity.Warning);
+            return;
+        }
+        try
+        {
+            await BlobStorageService.DeleteImageAsync(selectedImageName);
+            Snackbar.Add("Image deleted successfully", Severity.Success);
+            await LoadImagesAsync();
+            selectedImage = string.Empty;
+            selectedImageName = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting image: {ex.Message}", Severity.Error);
+        }
+    }
 
     private async Task UploadFile(InputFileChangeEventArgs e)
     {

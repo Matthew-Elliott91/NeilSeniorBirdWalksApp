@@ -54,7 +54,14 @@ namespace BlobStorageLibrary.Services
                 Size = content.Length
             };
         }
-        
+
+        public async Task DeleteImageAsync(string blobName)
+        {
+            var containerClient = GetContainerClient();
+            var blobClient = containerClient.GetBlobClient(blobName);
+            await blobClient.DeleteIfExistsAsync();
+        }
+
         public async Task<List<BlobImage>> GetImagesWithMetaDataAsync(int count = 30)
         {
             var ContainerClient = GetContainerClient();
