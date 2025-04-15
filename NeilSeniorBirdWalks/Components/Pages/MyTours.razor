@@ -24,7 +24,7 @@
             }
             else if (bookings == null || !bookings.Any())
             {
-                <MudPaper Elevation="2" Class="pa-4 mb-4">
+                <MudPaper style="background-color: white;" Elevation="2" Class="pa-4 mb-4">
                     <MudText>You haven't booked any tours yet.</MudText>
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/tours" Class="mt-3">
                         Browse Available Tours
@@ -37,7 +37,7 @@
                     @foreach (var booking in bookings)
                     {
                         <MudItem xs="12" sm="6" md="4">
-                            <MudCard Elevation="3" Class="h-100">
+                            <MudCard style="background-color: white;" Elevation="3" Class="h-100">
                                 <MudCardMedia Image="@booking.TourSchedule.TourScheduleImgUrl" Height="200" />
                                 <MudCardContent>
                                     <MudText Typo="Typo.h5" Class="mb-2">@booking.TourSchedule.Tour.Title</MudText>

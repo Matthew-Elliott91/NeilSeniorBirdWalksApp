@@ -25,7 +25,7 @@
         <MudGrid Class="mt-4">
 
             <MudItem xs="12" md="8">
-                <MudCard Elevation="3">
+                <MudCard style="background-color: white;" Elevation="3">
                     <MudCardMedia Image="@tourSchedule.Tour.InfoImageUrl" Height="300" />
                     <MudCardContent>
                         <MudText Typo="Typo.h4">@tourSchedule.Tour.Title</MudText>
@@ -46,7 +46,7 @@
 
 
             <MudItem xs="12" md="4">
-                <MudCard Elevation="3" Class="h-100">
+                <MudCard style="background-color: white;" Elevation="3" Class="h-100">
                     <MudCardMedia Image="@tourSchedule.TourScheduleImgUrl" Height="200" />
                     <MudCardContent>
                         <MudText Typo="Typo.h5" Class="mb-3">Schedule Details</MudText>
@@ -91,7 +91,7 @@
 
 
             <MudItem xs="12" Class="mt-4">
-                <MudPaper Elevation="3" Class="pa-4">
+                <MudPaper style="background-color: white;" Elevation="3" Class="pa-4">
                     <MudText Typo="Typo.h5">Book This Tour</MudText>
 
                     @if (tourSchedule.IsCanceled)
