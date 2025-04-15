@@ -37,6 +37,7 @@
     <AuthorizeView Roles="Admin">
         <Authorized>
             <MudButton Color="Color.Primary"
+                       Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.Edit"
                        OnClick="OpenEditDialog"
                        Class="position-absolute top-0 end-0 m-2">
@@ -153,25 +154,33 @@
 
     private void DeterminePageIdentifier()
     {
-        if (string.IsNullOrEmpty(PageIdentifier))
+        if (string.IsNullOrEmpty(PageIdentifier) || PageIdentifier == "home")
         {
-            // Try to determine current page from URL
+           
             var uri = NavigationManager.Uri;
             var segments = uri.Split('/');
-            if (segments.Length > 0)
+
+           
+            string lastSegment = "home";
+
+            for (int i = segments.Length - 1; i >= 0; i--)
             {
-                var lastSegment = segments[^1];
-                if (!string.IsNullOrEmpty(lastSegment))
+                if (!string.IsNullOrEmpty(segments[i]))
                 {
-                    PageIdentifier = lastSegment;
-                }
-                else
-                {
-                    PageIdentifier = "home";
+                    lastSegment = segments[i].ToLowerInvariant();
+                    break;
                 }
             }
+
+            if (lastSegment == "localhost:5000" || lastSegment.Contains(".com") || lastSegment.Contains(".net"))
+            {
+                lastSegment = "home";
+            }
+
+            PageIdentifier = lastSegment;
         }
     }
+
 
     private async Task LoadSettings()
     {
