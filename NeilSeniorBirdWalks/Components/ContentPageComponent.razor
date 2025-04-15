@@ -1,10 +1,12 @@
 ﻿@using NeilSeniorBirdWalks.Models
 @using NeilSeniorBirdWalks.Services
+@using NeilSeniorBirdWalks.Components.Dialogs
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using MudExRichTextEditor
 @inject PageContentService DataService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
 
@@ -87,35 +89,33 @@
                     <Authorized>
                         @if (isEditMode)
                         {
-                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" MaximumFileCount="1" OnFilesChanged="UploadMainImage" Validation="(Func<IBrowserFile, bool>)ValidateImageFile">
-                                <ActivatorContent>
-                                    <MudButton Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    StartIcon="@Icons.Material.Filled.CloudUpload">
-                                        Edit Image
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Image"
+                                       OnClick="OpenBlobImageSelectorMain"
+                                       Class="mb-3">
+                                Select Image from Blob Storage
+                            </MudButton>
                             @if (!string.IsNullOrEmpty(editableContent.MainContentImage))
                             {
                                 <MudImage Src="@editableContent.MainContentImage" Alt="Main content image preview"
-                                Class="rounded-lg mt-2" Elevation="2"
-                                ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                          Class="rounded-lg mt-2" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
                             }
                         }
                         else if (!string.IsNullOrEmpty(Content.MainContentImage))
                         {
                             <MudImage Src="@Content.MainContentImage" Alt="Main content image"
-                            Class="rounded-lg" Elevation="2"
-                            ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                                      Class="rounded-lg" Elevation="2"
+                                      ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
                         }
                     </Authorized>
                     <NotAuthorized>
                         @if (!string.IsNullOrEmpty(Content.MainContentImage))
                         {
                             <MudImage Src="@Content.MainContentImage" Alt="Main content image"
-                            Class="rounded-lg" Elevation="2"
-                            ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                                      Class="rounded-lg" Elevation="2"
+                                      ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
                         }
                     </NotAuthorized>
                 </AuthorizeView>
@@ -135,20 +135,18 @@
                             Class="mb-3" />
                         </MudItem>
                         <MudItem xs="12" md="6">
-                           <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" MaximumFileCount="1" OnFilesChanged="UploadSecondaryImage" Validation="(Func<IBrowserFile, bool>)ValidateImageFile">
-                                <ActivatorContent>
-                                    <MudButton Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    StartIcon="@Icons.Material.Filled.CloudUpload">
-                                        Edit Image
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Image"
+                                       OnClick="OpenBlobImageSelectorSecondary"
+                                       Class="mb-3">
+                                Select Image from Blob Storage
+                            </MudButton>
                             @if (!string.IsNullOrEmpty(editableContent.SecondaryContentImage))
                             {
                                 <MudImage Src="@editableContent.SecondaryContentImage" Alt="Secondary content image preview"
-                                Class="rounded-lg mt-2" Elevation="2"
-                                ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                          Class="rounded-lg mt-2" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
                             }
                         </MudItem>
                     </MudGrid>
@@ -206,20 +204,18 @@
                             Class="mb-3" />
                         </MudItem>
                         <MudItem xs="12" md="6">
-                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" MaximumFileCount="1" OnFilesChanged="UploadTertiaryImage" Validation="(Func<IBrowserFile, bool>)ValidateImageFile">
-                                <ActivatorContent>
-                                    <MudButton Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    StartIcon="@Icons.Material.Filled.CloudUpload">
-                                        Edit Image
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Image"
+                                       OnClick="OpenBlobImageSelectorTertiary"
+                                       Class="mb-3">
+                                Select Image from Blob Storage
+                            </MudButton>
                             @if (!string.IsNullOrEmpty(editableContent.TertiaryContentImage))
                             {
                                 <MudImage Src="@editableContent.TertiaryContentImage" Alt="Tertiary content image preview"
-                                Class="rounded-lg mt-2" Elevation="2"
-                                ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                          Class="rounded-lg mt-2" Elevation="2"
+                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
                             }
                         </MudItem>
                     </MudGrid>
@@ -337,6 +333,66 @@ else
                 TertiaryContentImage = Content.TertiaryContentImage,
                 IsPublished = Content.IsPublished
             };
+    }
+
+    private async Task OpenBlobImageSelectorMain()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large };
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Image from Blob Storage", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string selectedImageUrl)
+        {
+            
+            editableContent.MainContentImage = selectedImageUrl;
+
+            
+            tempMainImageFile = null;
+            tempMainImagePath = null;
+
+            StateHasChanged();
+            Snackbar.Add("Image selected from Blob Storage. Click 'Save Changes' to apply.", Severity.Info);
+        }
+    }
+
+    private async Task OpenBlobImageSelectorSecondary()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large };
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Image from Blob Storage", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string selectedImageUrl)
+        {
+
+            editableContent.SecondaryContentImage = selectedImageUrl;
+
+
+            tempSecondaryImageFile = null;
+            tempSecondaryImagePath = null;
+
+            StateHasChanged();
+            Snackbar.Add("Image selected from Blob Storage. Click 'Save Changes' to apply.", Severity.Info);
+        }
+    }
+
+    private async Task OpenBlobImageSelectorTertiary()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large };
+        var dialog = await DialogService.ShowAsync<BlobImageSelectorDialog>("Select Image from Blob Storage", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string selectedImageUrl)
+        {
+
+            editableContent.TertiaryContentImage = selectedImageUrl;
+
+
+            tempTertiaryImageFile = null;
+            tempTertiaryImagePath = null;
+
+            StateHasChanged();
+            Snackbar.Add("Image selected from Blob Storage. Click 'Save Changes' to apply.", Severity.Info);
+        }
     }
 
     private async Task UploadMainImage(InputFileChangeEventArgs e)
