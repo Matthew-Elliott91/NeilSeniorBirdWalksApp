@@ -1,0 +1,170 @@
+﻿@using BlobStorageLibrary.Models
+@using BlobStorageLibrary.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject BlobStorageService BlobStorageService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">Select Image from Blob Storage</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudFileUpload T="IBrowserFile" Accept=".jpg,.jpeg,.png,.gif" OnFilesChanged="UploadFile">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Upload New Image to Blob Storage
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+                @if (isUploading)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
+                }
+            </MudItem>
+            <MudItem xs="12">
+                @if (images == null)
+                {
+                    <MudProgressCircular Indeterminate="true" />
+                }
+                else if (!images.Any())
+                {
+                    <MudAlert Severity="Severity.Info">No images found in blob storage.</MudAlert>
+                }
+                else
+                {
+                    <MudText Typo="Typo.subtitle1" Class="mb-2">Available Images in Blob Storage</MudText>
+                    <MudGrid>
+                        @foreach (var image in images)
+                        {
+                            <MudItem xs="6" sm="4" md="3">
+                                <MudCard Outlined="true" Class="@(selectedImage == image.Uri ? "mud-border-primary" : "")"
+                                         @onclick="() => SelectImage(image.Uri)">
+                                    <MudCardMedia Image="@image.Uri" Height="150" />
+                                    <MudCardContent Class="pa-2">
+                                        <MudText Typo="Typo.caption" Align="Align.Center" Style="text-wrap: wrap;">
+                                            @GetOriginalFileName(image.Name)
+                                        </MudText>
+                                        <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary">
+                                            Size: @FormatFileSize(image.Size)
+                                        </MudText>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Disabled="@string.IsNullOrEmpty(selectedImage)" OnClick="Submit">Select</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+	private List<BlobImage> images = new List<BlobImage>();
+	private string selectedImage = string.Empty;
+	private bool isUploading = false;
+	private const int MaxAllowedSize = 10 * 1024 * 1024; //10mb
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadImagesAsync();
+	}
+
+	private async Task LoadImagesAsync()
+	{
+		images = await BlobStorageService.GetImagesWithMetaDataAsync(50);
+		StateHasChanged();
+
+	}
+
+	private void SelectImage(string imageUrl)
+	{
+		selectedImage = imageUrl;
+	}
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isUploading = true;
+            if (e.File != null)
+            {
+                string extension = Path.GetExtension(e.File.Name).ToLowerInvariant();
+                if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".gif")
+                {
+                    Snackbar.Add("Only image files are allowed (.jpg, .jpeg, .png, .gif)", Severity.Error);
+                    return;
+                }
+
+                // Read the file into a memory stream
+                using var stream = e.File.OpenReadStream(maxAllowedSize: MaxAllowedSize);
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                // Upload to blob storage
+                var uploadedImage = await BlobStorageService.UploadImageAsync(memoryStream, e.File.Name);
+
+                // Refresh the image list
+                await LoadImagesAsync();
+
+                // Select the newly uploaded image
+                selectedImage = uploadedImage.Uri;
+
+                Snackbar.Add("Image uploaded successfully to Blob Storage", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading image: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(selectedImage));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private string GetOriginalFileName(string fileName)
+    {
+        int dashIndex = fileName.IndexOf('-');
+        if (dashIndex >= 0 && dashIndex < fileName.Length - 1)
+        {
+            return fileName.Substring(dashIndex + 1);
+        }
+
+        return fileName;
+    }
+
+    private string FormatFileSize(long? bytes)
+    {
+        if (bytes == null) return "Unknown";
+
+        double size = bytes.Value;
+        string[] units = { "B", "KB", "MB", "GB" };
+        int unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.Length - 1)
+        {
+            size /= 1024;
+            unitIndex++;
+        }
+
+        return $"{size:0.##} {units[unitIndex]}";
+    }
+}

@@ -177,6 +177,24 @@
                 </MudCardActions>
             </MudCard>
         </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Class="mud-height-full">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Blob Image Management</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@Icons.Material.Filled.Image" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Manage Blob Images</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton onclick="OpenImageSelector" Variant="Variant.Filled" Color="Color.Primary">Edit Blog</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
@@ -211,6 +229,18 @@
         catch (Exception)
         {
             Snackbar.Add("Error loading dashboard data", Severity.Error);
+        }
+    }
+
+    private async Task OpenImageSelector()
+    {
+        var dialog = DialogService.Show<BlobImageSelectorDialog>("Select Image");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var selectedImageUrl = result.Data.ToString();
+          
         }
     }
 

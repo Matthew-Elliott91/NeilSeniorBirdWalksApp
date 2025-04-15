@@ -38,6 +38,23 @@ namespace BlobStorageLibrary.Services
 
             return blobUris;
         }
+
+        public async Task<BlobImage> UploadImageAsync(Stream content, string fileName)
+        {
+            var containerClient = GetContainerClient();
+            string uniqueblobName = $"{Guid.NewGuid()}-{fileName}";
+            var blobClient = containerClient.GetBlobClient(uniqueblobName);
+
+            await blobClient.UploadAsync(content, overwrite: true);
+
+            return new BlobImage
+            {
+                Name = uniqueblobName,
+                Uri = blobClient.Uri.ToString(),
+                Size = content.Length
+            };
+        }
+        
         public async Task<List<BlobImage>> GetImagesWithMetaDataAsync(int count = 30)
         {
             var ContainerClient = GetContainerClient();
