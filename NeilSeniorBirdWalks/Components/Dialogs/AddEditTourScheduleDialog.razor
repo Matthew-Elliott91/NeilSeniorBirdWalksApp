@@ -16,10 +16,6 @@
 
             <MudDatePicker Label="Start Date" @bind-Date="startDate" Required="true" HelperText="Select the start date" Class="mt-3" />
             <MudTimePicker Label="Start Time" @bind-Time="startTime" Required="true" HelperText="Select the start time" Class="mt-3" />
-
-            <MudDatePicker Label="End Date" @bind-Date="endDate" Required="true" HelperText="Select the end date" Class="mt-3" />
-            <MudTimePicker Label="End Time" @bind-Time="endTime" Required="true" HelperText="Select the end time" Class="mt-3" />
-
             <MudNumericField Label="Available Spots" @bind-Value="TourSchedule.AvailableSpots" Required="true" Min="1" HelperText="Number of available spots" Class="mt-3" />
         </MudForm>
     </DialogContent>
@@ -62,7 +58,6 @@
                 TourSchedule = new TourSchedule
                     {
                         StartDateTime = DateTime.Now.Date.AddHours(9),
-                        EndDateTime = DateTime.Now.Date.AddHours(12),
                         AvailableSpots = 8,
                         IsCanceled = false,
                         TourScheduleImgUrl = "images/logo.svg"
@@ -94,7 +89,7 @@
             {
                 TourSchedule.TourId = selectedTourId;
                 TourSchedule.StartDateTime = startDate.Value.Date.Add(startTime.Value);
-                TourSchedule.EndDateTime = endDate.Value.Date.Add(endTime.Value);
+                
 
                 
                 if (IsEdit)

@@ -5,7 +5,9 @@
         public int Id { get; set; }
         public int TourId { get; set; }
         public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
+        public DateTime EndDateTime => Tour?.Duration.HasValue == true
+            ? StartDateTime.AddMinutes(Tour.Duration.Value)
+            : StartDateTime.AddHours(2); 
         public int? AvailableSpots { get; set; } = 8;
         public bool IsCanceled { get; set; }
         public string TourScheduleImgUrl { get; set; } = "images/logo.svg";

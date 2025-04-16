@@ -284,7 +284,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 1,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 15, 13, 58, 13, 31, DateTimeKind.Utc).AddTicks(2304),
+                            CreatedDate = new DateTime(2025, 4, 16, 11, 33, 48, 140, DateTimeKind.Utc).AddTicks(6851),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "first-blog-post",
                             Title = "First Blog Post"
@@ -293,7 +293,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 2,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 15, 13, 58, 13, 31, DateTimeKind.Utc).AddTicks(2308),
+                            CreatedDate = new DateTime(2025, 4, 16, 11, 33, 48, 140, DateTimeKind.Utc).AddTicks(6854),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "second-blog-post",
                             Title = "Second Blog Post"
@@ -302,7 +302,7 @@ namespace NeilSeniorBirdWalks.Migrations
                         {
                             Id = 3,
                             AdditionalImageUrls = "[\"/Images/ToursHeaderImg.jpg\"]",
-                            CreatedDate = new DateTime(2025, 4, 15, 13, 58, 13, 31, DateTimeKind.Utc).AddTicks(2310),
+                            CreatedDate = new DateTime(2025, 4, 16, 11, 33, 48, 140, DateTimeKind.Utc).AddTicks(6856),
                             FeaturedImageUrl = "/Images/ToursHeaderImg.jpg",
                             Slug = "third-blog-post",
                             Title = "Third Blog Post"
@@ -691,9 +691,6 @@ namespace NeilSeniorBirdWalks.Migrations
 
                     b.Property<int?>("AvailableSpots")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDateTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsCanceled")
                         .HasColumnType("bit");
