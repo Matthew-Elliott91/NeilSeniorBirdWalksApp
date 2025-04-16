@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using MudExRichTextEditor
+@using MudExRichTextEditor.Types
 @inject PageContentService DataService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService DialogService
@@ -71,8 +72,24 @@
                     <Authorized>
                         @if (isEditMode)
                         {
-                            <MudExRichTextEdit @bind-Value="editableContent.MainContent"
-                            Class="mb-3" />
+                            <MudExRichTextEdit @bind-Value="editableContent.MainContent" Class="mb-3">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+                                </ToolbarContent>
+                            </MudExRichTextEdit>
                         }
                         else
                         {
@@ -131,8 +148,24 @@
                 {
                     <MudGrid>
                         <MudItem xs="12" md="6">
-                            <MudExRichTextEdit @bind-Value="editableContent.SecondaryContent"
-                            Class="mb-3" />
+                            <MudExRichTextEdit @bind-Value="editableContent.SecondaryContent" Class="mb-3">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+                                </ToolbarContent>
+                            </MudExRichTextEdit>
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudButton Variant="Variant.Filled"
@@ -200,8 +233,24 @@
                 {
                     <MudGrid>
                         <MudItem xs="12" md="6">
-                            <MudExRichTextEdit @bind-Value="editableContent.TertiaryContent"
-                            Class="mb-3" />
+                            <MudExRichTextEdit @bind-Value="editableContent.TertiaryContent" Class="mb-3">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+                                </ToolbarContent>
+                            </MudExRichTextEdit>
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudButton Variant="Variant.Filled"
