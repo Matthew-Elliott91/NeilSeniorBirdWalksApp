@@ -6,7 +6,7 @@
 
 <PageTitle>News Post - @(blogPost?.Title ?? "Loading...")</PageTitle>
 
-<MudContainer Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     @if (blogPost == null && !loading)
     {
         <MudAlert Severity="Severity.Error">Sorry, this blog post was not found.</MudAlert>

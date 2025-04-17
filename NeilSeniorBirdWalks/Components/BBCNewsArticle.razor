@@ -1,0 +1,38 @@
+﻿<MudCard style="background-color: white;" Class="mud-elevation-4 my-3 cursor-pointer" @onclick="NavigateToArticle">
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <MudImage Src="@ImageUrl" Alt="@Title" Elevation="0" Class="rounded" ObjectFit="ObjectFit.Cover" fluid="true" />
+            </MudItem>
+            <MudItem xs="12" sm="8" Class="d-flex flex-column">
+                <MudText Typo="Typo.h1" Class="mb-2 text-center">@Title</MudText>
+                <MudText Typo="Typo.body1" Class="mb-3 d-flex align-center justify-center" Style="flex-grow: 1;">@Summary</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public string ImageUrl { get; set; } = "";
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string Summary { get; set; } = "";
+
+    [Parameter]
+    public string ArticleUrl { get; set; } = "";
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private void NavigateToArticle()
+    {
+        if (!string.IsNullOrEmpty(ArticleUrl))
+        {
+            NavigationManager.NavigateTo(ArticleUrl, true);
+        }
+    }
+}

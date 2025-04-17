@@ -11,7 +11,7 @@
     <DialogContent>
         <MudGrid>
             <MudItem xs="12">
-                <MudFileUpload T="IBrowserFile" Accept=".jpg,.jpeg,.png,.gif" OnFilesChanged="UploadFile">
+                <MudFileUpload T="IBrowserFile" Accept=".jpg,.jpeg,.png,.gif,.WEBP" OnFilesChanged="UploadFile">
                     <ActivatorContent>
                         <MudButton Variant="Variant.Filled"
                         Color="Color.Primary"
@@ -125,9 +125,9 @@
             if (e.File != null)
             {
                 string extension = Path.GetExtension(e.File.Name).ToLowerInvariant();
-                if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".gif")
+                if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".gif" && extension != ".webp")
                 {
-                    Snackbar.Add("Only image files are allowed (.jpg, .jpeg, .png, .gif)", Severity.Error);
+                    Snackbar.Add("Only image files are allowed (.jpg, .jpeg, .png, .gif, .WEBP)", Severity.Error);
                     return;
                 }
 

@@ -1,16 +1,28 @@
-﻿
-@page "/"
+﻿@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<HeaderImage PageIdentifier="home"/>
+<HeaderImage PageIdentifier="home" />
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" >
-	<ImageCarouselComponent ImageCount="12" />
-	<AboutMeGridComponent></AboutMeGridComponent>
-	<ContactComponent></ContactComponent>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <BBCNewsArticle ArticleUrl="https://www.bbc.co.uk/news/articles/cvglr46n734o"
+                    ImageUrl="https://neilseniorwildlife.blob.core.windows.net/wildlife-photos/ee45d789-ac52-43d5-9dc1-8e38b37231f5-NeilSeniorRSPB.webp"
+                    Title="Meet Your Local Bird Guide"
+                    Summary="@articleSummary">
+    </BBCNewsArticle>
+
+    <AboutMeGridComponent></AboutMeGridComponent>
+    <ImageCarouselComponent ImageCount="12" />
+    <ContactComponent></ContactComponent>
 </MudContainer>
 
+@code {
+    private string articleSummary = @"Hi, I'm Neil Senior – your local birding guide here on the stunning Norfolk coast.
+With years of experience as a beach ranger at Snettisham, I've spent countless hours alongside some of the UK's rarest and most remarkable coastal birds – especially the ringed plover. These clever, camouflaged little birds nest right on our beaches, and I've been part of the conservation efforts that have helped bring their numbers back from the brink.
 
+As part of the Plovers in Peril project with the RSPB, I've worked to protect breeding grounds, guide visitors, and share the magic of our coastline. Watching these birds thrive again has been one of the most rewarding parts of my work. When I take people out on bird walks, I don't just point out species – I tell their stories, show you how to spot them, and explain how we can all help protect them.
 
+Whether you're a seasoned birder or just starting out, I'll help you discover the hidden life of Norfolk's shores – and maybe, if we're lucky, we'll see a ringed plover chick right where it belongs.
 
+Let's walk, watch, and wonder – together.";
+}

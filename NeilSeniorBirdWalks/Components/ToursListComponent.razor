@@ -2,7 +2,7 @@
 @using NeilSeniorBirdWalks.Services
 @inject TourScheduleService TourScheduleService
 
-<MudContainer>
+
     @if (tourSchedules == null)
     {
         <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
@@ -110,7 +110,7 @@
             Class="pa-4 d-flex justify-center" />
         }
     }
-    </MudContainer>
+  
 
 
     @code {

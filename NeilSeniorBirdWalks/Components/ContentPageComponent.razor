@@ -67,12 +67,12 @@
         </AuthorizeView>
 
         <MudGrid>
-            <MudItem xs="12" md="6">
+            <MudItem xs="12" md="6" Class="d-flex align-center justify-center" Style="height: 400px;">
                 <AuthorizeView Roles="Admin">
                     <Authorized>
                         @if (isEditMode)
                         {
-                            <MudExRichTextEdit @bind-Value="editableContent.MainContent" Class="mb-3">
+                            <MudExRichTextEdit @bind-Value="editableContent.MainContent" Class="mb-3 w-100">
                                 <ToolbarContent>
                                     <span class="ql-formats">
                                         <button class="ql-bold"></button>
@@ -93,11 +93,15 @@
                         }
                         else
                         {
-                            <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+                            <div class="d-flex align-center justify-center w-100">
+                                <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
+                            </div>
                         }
                     </Authorized>
                     <NotAuthorized>
-                        <MudText Class="mb-4">@((MarkupString)Content.MainContent)</MudText>
+                        <div class="d-flex align-center justify-center w-100">
+                            <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
+                        </div>
                     </NotAuthorized>
                 </AuthorizeView>
             </MudItem>
@@ -138,6 +142,7 @@
                 </AuthorizeView>
             </MudItem>
         </MudGrid>
+
 
         <MudDivider Class="my-6" />
 
@@ -197,8 +202,8 @@
                                     ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
                                 }
                             </MudItem>
-                            <MudItem xs="12" md="6" Order="1" OrderMd="2">
-                                <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                            <MudItem Class="d-flex" xs="12" md="6" Order="1" OrderMd="2">
+                                <MudText Class="mb-4 align-self-center">@((MarkupString)Content.SecondaryContent)</MudText>
                             </MudItem>
                         </MudGrid>
                     }
@@ -216,8 +221,8 @@
                                 ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
                             }
                         </MudItem>
-                        <MudItem xs="12" md="6" Order="1" OrderMd="2">
-                            <MudText Class="mb-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                        <MudItem class="d-flex " xs="12" md="6" Order="1" OrderMd="2">
+                            <MudText Class="mb-4 align-self-center">@((MarkupString)Content.SecondaryContent)</MudText>
                         </MudItem>
                     </MudGrid>
                 }
@@ -274,8 +279,8 @@
                     @if (!string.IsNullOrEmpty(Content.TertiaryContent))
                     {
                         <MudGrid>
-                            <MudItem xs="12" md="6">
-                                <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                            <MudItem xs="12" md="6" Class="d-flex">
+                                <MudText  Class="mb-4 align-self-center">@((MarkupString)Content.TertiaryContent)</MudText>
                             </MudItem>
                             <MudItem xs="12" md="6">
                                 @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
@@ -294,8 +299,8 @@
                 @if (!string.IsNullOrEmpty(Content.TertiaryContent))
                 {
                     <MudGrid>
-                        <MudItem xs="12" md="6">
-                            <MudText Class="mb-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                        <MudItem Class="d-flex" xs="12" md="6">
+                            <MudText Class="mb-4 align-self-center">@((MarkupString)Content.TertiaryContent)</MudText>
                         </MudItem>
                         <MudItem xs="12" md="6">
                             @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
