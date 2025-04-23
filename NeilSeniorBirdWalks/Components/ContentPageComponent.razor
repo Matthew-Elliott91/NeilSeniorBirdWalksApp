@@ -10,312 +10,325 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        <MudPaper Elevation="0" Class="mb-2">
-            @if (isEditMode)
-            {
-                <MudButton Color="Color.Primary"
-                OnClick="SaveChanges"
-                StartIcon="@Icons.Material.Filled.Save"
-                Variant="Variant.Filled"
-                Class="mr-2">
-                    Save Changes
-                </MudButton>
-                <MudButton Color="Color.Default"
-                OnClick="CancelEdits"
-                StartIcon="@Icons.Material.Filled.Cancel">
-                    Cancel
-                </MudButton>
-            }
-            else
-            {
-                <MudButton Color="Color.Primary"
-                OnClick="@(() => isEditMode = true)"
-                StartIcon="@Icons.Material.Filled.Edit"
-                Variant="Variant.Outlined">
-                    Edit Content
-                </MudButton>
-            }
-        </MudPaper>
-    </Authorized>
-</AuthorizeView>
-
 @if (Content != null)
 {
-    <MudPaper Elevation="3" Class="pa-6 mb-6" Style="background-color: white">
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                @if (isEditMode)
-                {
-                    <MudTextField @bind-Value="editableContent.Title" Label="Title" Variant="Variant.Outlined"
-                    Class="mb-3" Immediate="true" />
-                    <MudTextField @bind-Value="editableContent.Subtitle" Label="Subtitle" Variant="Variant.Outlined"
-                    Class="mb-3" />
-                }
-                else
-                {
-                    <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
-                    <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
-                }
-            </Authorized>
-            <NotAuthorized>
-                <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@Content.Title</MudText>
-                <MudText Typo="Typo.h5" Class="mb-6">@Content.Subtitle</MudText>
-            </NotAuthorized>
-        </AuthorizeView>
-
-        <MudGrid>
-            <MudItem xs="12" md="6" Class="d-flex align-center justify-center" Style="height: 400px;">
-                <AuthorizeView Roles="Admin">
-                    <Authorized>
+    <MudGrid Spacing="4">
+        <MudItem xs="12">
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <MudPaper Elevation="0" Class="mb-2">
                         @if (isEditMode)
                         {
-                            <MudExRichTextEdit @bind-Value="editableContent.MainContent" Class="mb-3 w-100">
-                                <ToolbarContent>
-                                    <span class="ql-formats">
-                                        <button class="ql-bold"></button>
-                                        <button class="ql-italic"></button>
-                                        <button class="ql-underline"></button>
-                                        <button class="ql-strike"></button>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <select class="ql-color"></select>
-                                        <select class="ql-background"></select>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <button class="ql-list" value="ordered"></button>
-                                        <button class="ql-list" value="bullet"></button>
-                                    </span>
-                                </ToolbarContent>
-                            </MudExRichTextEdit>
+                            <MudButton Color="Color.Primary"
+                                       OnClick="SaveChanges"
+                                       StartIcon="@Icons.Material.Filled.Save"
+                                       Variant="Variant.Filled"
+                                       Class="mr-2">
+                                Save Changes
+                            </MudButton>
+                            <MudButton Color="Color.Default"
+                                       OnClick="CancelEdits"
+                                       StartIcon="@Icons.Material.Filled.Cancel">
+                                Cancel
+                            </MudButton>
                         }
                         else
                         {
-                            <div class="d-flex align-center justify-center w-100">
-                                <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
-                            </div>
-                        }
-                    </Authorized>
-                    <NotAuthorized>
-                        <div class="d-flex align-center justify-center w-100">
-                            <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
-                        </div>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </MudItem>
-            <MudItem xs="12" md="6">
-                <AuthorizeView Roles="Admin">
-                    <Authorized>
-                        @if (isEditMode)
-                        {
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Image"
-                                       OnClick="OpenBlobImageSelectorMain"
-                                       Class="mb-3">
-                                Select Image from Blob Storage
+                            <MudButton Color="Color.Primary"
+                                       OnClick="@(() => isEditMode = true)"
+                                       StartIcon="@Icons.Material.Filled.Edit"
+                                       Variant="Variant.Outlined">
+                                Edit Content
                             </MudButton>
-                            @if (!string.IsNullOrEmpty(editableContent.MainContentImage))
-                            {
-                                <MudImage Src="@editableContent.MainContentImage" Alt="Main content image preview"
-                                          Class="rounded-lg mt-2" Elevation="2"
-                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
-                            }
                         }
-                        else if (!string.IsNullOrEmpty(Content.MainContentImage))
+                    </MudPaper>
+                </Authorized>
+            </AuthorizeView>
+        </MudItem>
+        <MudItem xs="12">
+            <MudGrid>
+                <!-- Text content -->
+                <MudItem xs="12" md="6" Class="mb-4 mb-md-0">
+                    <MudPaper Elevation="0" Class="h-100 py-2">
+                        <AuthorizeView Roles="Admin">
+                            <Authorized>
+                                @if (isEditMode)
+                                {
+                                    <MudExRichTextEdit @bind-Value="editableContent.MainContent" Class="w-100">
+                                        <ToolbarContent>
+                                            <span class="ql-formats">
+                                                <button class="ql-bold"></button>
+                                                <button class="ql-italic"></button>
+                                                <button class="ql-underline"></button>
+                                                <button class="ql-strike"></button>
+                                            </span>
+                                            <span class="ql-formats">
+                                                <select class="ql-color"></select>
+                                                <select class="ql-background"></select>
+                                            </span>
+                                            <span class="ql-formats">
+                                                <button class="ql-list" value="ordered"></button>
+                                                <button class="ql-list" value="bullet"></button>
+                                            </span>
+                                        </ToolbarContent>
+                                    </MudExRichTextEdit>
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-center justify-center h-100 mx-4">
+                                        <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
+                                    </div>
+                                }
+                            </Authorized>
+                            <NotAuthorized>
+                                <div class="d-flex align-center justify-center h-100 mx-4">
+                                    <MudText Class="text-center">@((MarkupString)Content.MainContent)</MudText>
+                                </div>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Image content -->
+                <MudItem xs="12" md="6">
+                    
+                        <AuthorizeView Roles="Admin">
+                            <Authorized>
+                                @if (isEditMode)
+                                {
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               StartIcon="@Icons.Material.Filled.Image"
+                                               OnClick="OpenBlobImageSelectorMain"
+                                               Class="mb-3">
+                                        Select Image from Blob Storage
+                                    </MudButton>
+                                    @if (!string.IsNullOrEmpty(editableContent.MainContentImage))
+                                    {
+                                        <MudImage Src="@editableContent.MainContentImage" Alt="Main content image preview"
+                                                  Class="rounded-lg mt-2" Elevation="2"
+                                                  ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(Content.MainContentImage))
+                                {
+                                    <div class="d-flex justify-center">
+                                        <MudImage Src="@Content.MainContentImage" Alt="Main content image"
+                                                  Class="rounded-lg" Elevation="2"
+                                                  ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                    </div>
+                                }
+                            </Authorized>
+                            <NotAuthorized>
+                                @if (!string.IsNullOrEmpty(Content.MainContentImage))
+                                {
+                                    <div class="d-flex justify-center">
+                                        <MudImage Src="@Content.MainContentImage" Alt="Main content image"
+                                                  Class="rounded-lg" Elevation="2"
+                                                  ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                    </div>
+                                }
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider Class="my-6" />
+        </MudItem>
+
+        <!-- Second section: Secondary content -->
+        <MudItem xs="12">
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    @if (isEditMode)
+                    {
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudExRichTextEdit @bind-Value="editableContent.SecondaryContent" Class="mb-3">
+                                    <ToolbarContent>
+                                        <span class="ql-formats">
+                                            <button class="ql-bold"></button>
+                                            <button class="ql-italic"></button>
+                                            <button class="ql-underline"></button>
+                                            <button class="ql-strike"></button>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <select class="ql-color"></select>
+                                            <select class="ql-background"></select>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <button class="ql-list" value="ordered"></button>
+                                            <button class="ql-list" value="bullet"></button>
+                                        </span>
+                                    </ToolbarContent>
+                                </MudExRichTextEdit>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Image"
+                                           OnClick="OpenBlobImageSelectorSecondary"
+                                           Class="mb-3">
+                                    Select Image from Blob Storage
+                                </MudButton>
+                                @if (!string.IsNullOrEmpty(editableContent.SecondaryContentImage))
+                                {
+                                    <MudImage Src="@editableContent.SecondaryContentImage" Alt="Secondary content image preview"
+                                              Class="rounded-lg mt-2" Elevation="2"
+                                              ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrEmpty(Content.SecondaryContent))
                         {
-                            <MudImage Src="@Content.MainContentImage" Alt="Main content image"
-                                      Class="rounded-lg" Elevation="2"
-                                      ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
+                            <MudGrid>
+                                <MudItem xs="12" md="6" Order="2" OrderMd="1" Class="mb-4 mb-md-0">
+                                    
+                                        @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
+                                        {
+                                            <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
+                                                      Class="rounded-lg" Elevation="2"
+                                                      ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                        }
+                                   
+                                </MudItem>
+                                <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                                    <MudPaper Elevation="0" Class="d-flex h-100" Style="background-color: white;">
+                                        <MudText Class="align-self-center m-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                                    </MudPaper>
+                                </MudItem>
+                            </MudGrid>
                         }
-                    </Authorized>
-                    <NotAuthorized>
-                        @if (!string.IsNullOrEmpty(Content.MainContentImage))
-                        {
-                            <MudImage Src="@Content.MainContentImage" Alt="Main content image"
-                                      Class="rounded-lg" Elevation="2"
-                                      ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
-                        }
-                    </NotAuthorized>
-                </AuthorizeView>
-            </MudItem>
-        </MudGrid>
-
-
-        <MudDivider Class="my-6" />
-
-
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                @if (isEditMode)
-                {
-                    <MudGrid>
-                        <MudItem xs="12" md="6">
-                            <MudExRichTextEdit @bind-Value="editableContent.SecondaryContent" Class="mb-3">
-                                <ToolbarContent>
-                                    <span class="ql-formats">
-                                        <button class="ql-bold"></button>
-                                        <button class="ql-italic"></button>
-                                        <button class="ql-underline"></button>
-                                        <button class="ql-strike"></button>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <select class="ql-color"></select>
-                                        <select class="ql-background"></select>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <button class="ql-list" value="ordered"></button>
-                                        <button class="ql-list" value="bullet"></button>
-                                    </span>
-                                </ToolbarContent>
-                            </MudExRichTextEdit>
-                        </MudItem>
-                        <MudItem xs="12" md="6">
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Image"
-                                       OnClick="OpenBlobImageSelectorSecondary"
-                                       Class="mb-3">
-                                Select Image from Blob Storage
-                            </MudButton>
-                            @if (!string.IsNullOrEmpty(editableContent.SecondaryContentImage))
-                            {
-                                <MudImage Src="@editableContent.SecondaryContentImage" Alt="Secondary content image preview"
-                                          Class="rounded-lg mt-2" Elevation="2"
-                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
-                            }
-                        </MudItem>
-                    </MudGrid>
-                }
-                else
-                {
+                    }
+                </Authorized>
+                <NotAuthorized>
                     @if (!string.IsNullOrEmpty(Content.SecondaryContent))
                     {
                         <MudGrid>
-                            <MudItem xs="12" md="6" Order="2" OrderMd="1">
-                                @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
-                                {
-                                    <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
-                                    Class="rounded-lg" Elevation="2"
-                                    ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
-                                }
+                            <MudItem xs="12" md="6" Order="2" OrderMd="1" Class="mb-4 mb-md-0">
+                                
+                                    @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
+                                    {
+                                        <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
+                                                  Class="rounded-lg" Elevation="2"
+                                                  ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                    }
+                                
                             </MudItem>
-                            <MudItem Class="d-flex" xs="12" md="6" Order="1" OrderMd="2">
-                                <MudText Class="mb-4 align-self-center">@((MarkupString)Content.SecondaryContent)</MudText>
+                            <MudItem xs="12" md="6" Order="1" OrderMd="2">
+                                <MudPaper Elevation="0" Class="d-flex h-100" Style="background-color: white;">
+                                    <MudText Class="align-self-center m-4">@((MarkupString)Content.SecondaryContent)</MudText>
+                                </MudPaper>
                             </MudItem>
                         </MudGrid>
                     }
-                }
-            </Authorized>
-            <NotAuthorized>
-                @if (!string.IsNullOrEmpty(Content.SecondaryContent))
-                {
-                    <MudGrid>
-                        <MudItem xs="12" md="6" Order="2" OrderMd="1">
-                            @if (!string.IsNullOrEmpty(Content.SecondaryContentImage))
-                            {
-                                <MudImage Src="@Content.SecondaryContentImage" Alt="Secondary content image"
-                                Class="rounded-lg" Elevation="2"
-                                ObjectFit="ObjectFit.Cover" Height="400" Fluid="true" />
-                            }
-                        </MudItem>
-                        <MudItem class="d-flex " xs="12" md="6" Order="1" OrderMd="2">
-                            <MudText Class="mb-4 align-self-center">@((MarkupString)Content.SecondaryContent)</MudText>
-                        </MudItem>
-                    </MudGrid>
-                }
-            </NotAuthorized>
-        </AuthorizeView>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudItem>
 
-        <MudDivider Class="my-6" />
+        <MudItem xs="12">
+            <MudDivider Class="my-6" />
+        </MudItem>
 
-
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                @if (isEditMode)
-                {
-                    <MudGrid>
-                        <MudItem xs="12" md="6">
-                            <MudExRichTextEdit @bind-Value="editableContent.TertiaryContent" Class="mb-3">
-                                <ToolbarContent>
-                                    <span class="ql-formats">
-                                        <button class="ql-bold"></button>
-                                        <button class="ql-italic"></button>
-                                        <button class="ql-underline"></button>
-                                        <button class="ql-strike"></button>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <select class="ql-color"></select>
-                                        <select class="ql-background"></select>
-                                    </span>
-                                    <span class="ql-formats">
-                                        <button class="ql-list" value="ordered"></button>
-                                        <button class="ql-list" value="bullet"></button>
-                                    </span>
-                                </ToolbarContent>
-                            </MudExRichTextEdit>
-                        </MudItem>
-                        <MudItem xs="12" md="6">
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Image"
-                                       OnClick="OpenBlobImageSelectorTertiary"
-                                       Class="mb-3">
-                                Select Image from Blob Storage
-                            </MudButton>
-                            @if (!string.IsNullOrEmpty(editableContent.TertiaryContentImage))
-                            {
-                                <MudImage Src="@editableContent.TertiaryContentImage" Alt="Tertiary content image preview"
-                                          Class="rounded-lg mt-2" Elevation="2"
-                                          ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
-                            }
-                        </MudItem>
-                    </MudGrid>
-                }
-                else
-                {
+        <!-- Third section: Tertiary content -->
+        <MudItem xs="12">
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    @if (isEditMode)
+                    {
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudExRichTextEdit @bind-Value="editableContent.TertiaryContent" Class="mb-3">
+                                    <ToolbarContent>
+                                        <span class="ql-formats">
+                                            <button class="ql-bold"></button>
+                                            <button class="ql-italic"></button>
+                                            <button class="ql-underline"></button>
+                                            <button class="ql-strike"></button>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <select class="ql-color"></select>
+                                            <select class="ql-background"></select>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <button class="ql-list" value="ordered"></button>
+                                            <button class="ql-list" value="bullet"></button>
+                                        </span>
+                                    </ToolbarContent>
+                                </MudExRichTextEdit>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Image"
+                                           OnClick="OpenBlobImageSelectorTertiary"
+                                           Class="mb-3">
+                                    Select Image from Blob Storage
+                                </MudButton>
+                                @if (!string.IsNullOrEmpty(editableContent.TertiaryContentImage))
+                                {
+                                    <MudImage Src="@editableContent.TertiaryContentImage" Alt="Tertiary content image preview"
+                                              Class="rounded-lg mt-2" Elevation="2"
+                                              ObjectFit="ObjectFit.Cover" Height="200" Width="300" />
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrEmpty(Content.TertiaryContent))
+                        {
+                            <MudGrid>
+                                <MudItem xs="12" md="6" Class="mb-4 mb-md-0">
+                                    <MudPaper Elevation="0" Class="d-flex h-100" Style="background-color: white;">
+                                        <MudText Class="align-self-center m-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                                    </MudPaper>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    
+                                        @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+                                        {
+                                            <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
+                                                      Class="rounded-lg" Elevation="2"
+                                                      ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                        }
+                                    
+                                </MudItem>
+                            </MudGrid>
+                        }
+                    }
+                </Authorized>
+                <NotAuthorized>
                     @if (!string.IsNullOrEmpty(Content.TertiaryContent))
                     {
                         <MudGrid>
-                            <MudItem xs="12" md="6" Class="d-flex">
-                                <MudText  Class="mb-4 align-self-center">@((MarkupString)Content.TertiaryContent)</MudText>
+                            <MudItem xs="12" md="6" Class="mb-4 mb-md-0">
+                                <MudPaper Elevation="0" Class="d-flex h-100" Style="background-color: white;">
+                                    <MudText Class="align-self-center m-4">@((MarkupString)Content.TertiaryContent)</MudText>
+                                </MudPaper>
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
-                                {
-                                    <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
-                                    Class="rounded-lg" Elevation="2"
-                                    ObjectFit="ObjectFit.Cover" Height="400"
-                                    Fluid="true" />
-                                }
+                               
+                                    @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
+                                    {
+                                        <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
+                                                  Class="rounded-lg" Elevation="2"
+                                                  ObjectFit="ObjectFit.Cover" Fluid="true" />
+                                    }
+                                
                             </MudItem>
                         </MudGrid>
                     }
-                }
-            </Authorized>
-            <NotAuthorized>
-                @if (!string.IsNullOrEmpty(Content.TertiaryContent))
-                {
-                    <MudGrid>
-                        <MudItem Class="d-flex" xs="12" md="6">
-                            <MudText Class="mb-4 align-self-center">@((MarkupString)Content.TertiaryContent)</MudText>
-                        </MudItem>
-                        <MudItem xs="12" md="6">
-                            @if (!string.IsNullOrEmpty(Content.TertiaryContentImage))
-                            {
-                                <MudImage Src="@Content.TertiaryContentImage" Alt="Tertiary content image"
-                                Class="rounded-lg" Elevation="2"
-                                ObjectFit="ObjectFit.Cover" Height="400"
-                                Fluid="true" />
-                            }
-                        </MudItem>
-                    </MudGrid>
-                }
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudPaper>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudItem>
+    </MudGrid>
 }
 else
 {
